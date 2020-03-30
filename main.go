@@ -8,18 +8,29 @@ import (
 )
 
 func main() {
-	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	//	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-	//})
-	//log.Println("Listening on localhost:8080")
-	//log.Fatal(http.ListenAndServe(":8080", nil))
 	filePath, err := filepath.Abs("tgexchbot.cfg")
 	lang.CheckErr(err)
+	conf, err := cfg.ReadCfgFile(filePath)
+	lang.CheckErr(err)
+
 	{
+		pin.D("connect BTCD RPC")
+		btcconnect := cfg.RPCConnectionConfig{
+			Host:            conf.BTCDConfig.Host,
+			User:            conf.BTCDConfig.User,
+			Pass:            conf.BTCDConfig.Pass,
+			CertificateFile: conf.BTCDConfig.CertificateFile,
+		}
 
-		conf, err := cfg.ReadCfgFile(filePath)
+		client, err := cfg.NewBTCConnection(btcconnect)
 		lang.CheckErr(err)
+		hash, err := client.GetBlockHash(0)
+		lang.CheckErr(err)
+		pin.D("hash", hash)
+	}
 
+	{
+		pin.D("connect PFCD RPC")
 		pfcconnect := cfg.RPCConnectionConfig{
 			Host:            conf.PFCDConfig.Host,
 			User:            conf.PFCDConfig.User,
