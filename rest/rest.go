@@ -20,7 +20,7 @@ func main() {
 			Host:            "127.0.0.1",
 			User:            "u",
 			Pass:            "p",
-			CertificateFile: "~/.pfcd/rpc.crt",
+			CertificateFile: "~/.pfcd/rpc.cert",
 		}
 
 		client, err := NewPFCConnection(pfcconnect)
