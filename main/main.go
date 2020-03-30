@@ -1,57 +1,37 @@
 package main
 
-func main() {
-	//pin.D("Deploy Bitcoin")
-	//setup := &Setup{
-	//	WorkingDir: pin.NewTempDir(setupWorkingDir(), "simpleregtest").MakeDir(),
-	//}
-	//wEXE := &commandline.ExplicitExecutablePathString{
-	//	PathString: "btcwallet",
-	//}
-	//consoleWalletFactory := &walletcls.ConsoleWalletFactory{
-	//	WalletExecutablePathProvider: wEXE,
-	//}
-	//
-	////mainnetWalletFactory := consoleWalletFactory
-	//testnetWalletFactory := consoleWalletFactory
-	//
-	//dEXE := &commandline.ExplicitExecutablePathString{
-	//	PathString: "btcd",
-	//}
-	//nodeFactory := &nodecls.ConsoleNodeFactory{
-	//	NodeExecutablePathProvider: dEXE,
-	//}
-	//
-	//portManager := &coinharness.LazyPortManager{
-	//	BasePort: 30000,
-	//}
-	//
-	//testSeed := btcharness.NewTestSeed
-	//
-	//setup.btcNet = &coinharness.ChainWithMatureOutputsSpawner{
-	//	WorkingDir:        setup.WorkingDir.Path(),
-	//	DebugNodeOutput:   true,
-	//	DebugWalletOutput: true,
-	//	NumMatureOutputs:  0,
-	//	NetPortManager:    portManager,
-	//	WalletFactory:     testnetWalletFactory,
-	//	NodeFactory:       nodeFactory,
-	//	ActiveNet:         &btcharness.Network{&chaincfg.RegressionNetParams},
-	//	CreateTempWallet:  true,
-	//	NewTestSeed:       testSeed,
-	//}
-	//
-	//h := setup.btcNet.NewInstance("").(*coinharness.Harness)
-	//
-	//coinharness.DeploySimpleChain(setup.btcNet, h)
-}
+import (
+	"github.com/jfixby/pin"
+	"github.com/jfixby/pin/lang"
+	"github.com/picfight/tgexchbot/tgexchbot"
+	"path/filepath"
+)
 
-func setupWorkingDir() string {
-	//testWorkingDir, err := ioutil.TempDir("", "integrationtest")
-	//if err != nil {
-	//	fmt.Println("Unable to create working dir: ", err)
-	//	os.Exit(-1)
-	//}
-	//return testWorkingDir
-	return ""
+func main() {
+	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	//	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+	//})
+	//log.Println("Listening on localhost:8080")
+	//log.Fatal(http.ListenAndServe(":8080", nil))
+	filePath, err := filepath.Abs("tgexchbot.cfg")
+	lang.CheckErr(err)
+	{
+
+		cfg, err := tgexchbot.ReadCfgFile(filePath)
+		lang.CheckErr(err)
+
+		pfcconnect := tgexchbot.RPCConnectionConfig{
+			Host:            cfg.PFCDConfig.Host,
+			User:            cfg.PFCDConfig.User,
+			Pass:            cfg.PFCDConfig.Pass,
+			CertificateFile: cfg.PFCDConfig.CertificateFile,
+		}
+
+		client, err := tgexchbot.NewPFCConnection(pfcconnect)
+		lang.CheckErr(err)
+		hash, err := client.GetBlockHash(0)
+		lang.CheckErr(err)
+		pin.D("hash", hash)
+	}
+
 }
