@@ -1,4 +1,4 @@
-package tgexchbot
+package main
 
 import (
 	"fmt"
