@@ -21,6 +21,7 @@ func main() {
 			User:            conf.PFCDConfig.User,
 			Pass:            conf.PFCDConfig.Pass,
 			CertificateFile: conf.PFCDConfig.CertificateFile,
+			Endpoint:        "ws",
 		}
 
 		client, err := cfg.NewPFCConnection(pfcconnect)
@@ -36,6 +37,7 @@ func main() {
 			User:            conf.BTCDConfig.User,
 			Pass:            conf.BTCDConfig.Pass,
 			CertificateFile: conf.BTCDConfig.CertificateFile,
+			Endpoint:        "ws",
 		}
 
 		client, err := cfg.NewBTCConnection(btcconnect)
