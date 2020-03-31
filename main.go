@@ -26,9 +26,9 @@ func main() {
 
 		client, err := cfg.NewPFCConnection(pfcconnect)
 		lang.CheckErr(err)
-		hash, err := client.GetBlockHash(0)
+		hash, height, err := client.GetBestBlock()
 		lang.CheckErr(err)
-		pin.D("hash", hash)
+		pin.D("best PFC block", hash, height)
 	}
 	{
 		pin.D("connect BTCD RPC")
@@ -42,9 +42,40 @@ func main() {
 
 		client, err := cfg.NewBTCConnection(btcconnect)
 		lang.CheckErr(err)
-		hash, err := client.GetBlockHash(0)
+		hash, height, err := client.GetBestBlock()
 		lang.CheckErr(err)
-		pin.D("hash", hash)
+		pin.D("best BTC block", hash, height)
 	}
+	{
+		pin.D("connect PFCWallet RPC")
+		pfcconnect := cfg.RPCConnectionConfig{
+			Host:            conf.PFCWalletConfig.Host,
+			User:            conf.PFCWalletConfig.User,
+			Pass:            conf.PFCWalletConfig.Pass,
+			CertificateFile: conf.PFCWalletConfig.CertificateFile,
+			Endpoint:        "ws",
+		}
 
+		client, err := cfg.NewPFCConnection(pfcconnect)
+		lang.CheckErr(err)
+		br, err := client.GetBalance("default")
+		lang.CheckErr(err)
+		pin.D("PFC balance", br)
+	}
+	{
+		pin.D("connect BTCWallet RPC")
+		btcconnect := cfg.RPCConnectionConfig{
+			Host:            conf.BTCWalletConfig.Host,
+			User:            conf.BTCWalletConfig.User,
+			Pass:            conf.BTCWalletConfig.Pass,
+			CertificateFile: conf.BTCWalletConfig.CertificateFile,
+			Endpoint:        "ws",
+		}
+
+		client, err := cfg.NewBTCConnection(btcconnect)
+		lang.CheckErr(err)
+		br, err := client.GetBalance("default")
+		lang.CheckErr(err)
+		pin.D("BTC balance", br)
+	}
 }
