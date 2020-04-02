@@ -6,6 +6,12 @@
 		"CertificateFile": ""
 	},
 	"PFCDConfig": {
+		"Host": "127.0.0.1:9709",
+		"User": "u",
+		"Pass": "p",
+		"CertificateFile": ""
+	},
+	"DCRDConfig": {
 		"Host": "127.0.0.1:9109",
 		"User": "u",
 		"Pass": "p",
@@ -18,6 +24,12 @@
 		"CertificateFile": ""
 	},
 	"PFCWalletConfig": {
+		"Host": "127.0.0.1:9710",
+		"User": "u",
+		"Pass": "p",
+		"CertificateFile": ""
+	},
+	"DCRWalletConfig": {
 		"Host": "127.0.0.1:9110",
 		"User": "u",
 		"Pass": "p",

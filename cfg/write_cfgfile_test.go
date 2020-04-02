@@ -22,9 +22,15 @@ func TestWriteCfgFile(t *testing.T) {
 		//data.BTCDConfig.CertificateFile = "~/.btcd/rpc.cert"
 	}
 	{
-		data.PFCDConfig.Host = "127.0.0.1:9109"
+		data.PFCDConfig.Host = "127.0.0.1:9709"
 		data.PFCDConfig.User = "u"
 		data.PFCDConfig.Pass = "p"
+		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
+	}
+	{
+		data.DCRDConfig.Host = "127.0.0.1:9109"
+		data.DCRDConfig.User = "u"
+		data.DCRDConfig.Pass = "p"
 		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
 	}
 
@@ -35,9 +41,15 @@ func TestWriteCfgFile(t *testing.T) {
 		//data.BTCDConfig.CertificateFile = "~/.btcd/rpc.cert"
 	}
 	{
-		data.PFCWalletConfig.Host = "127.0.0.1:9110"
+		data.PFCWalletConfig.Host = "127.0.0.1:9710"
 		data.PFCWalletConfig.User = "u"
 		data.PFCWalletConfig.Pass = "p"
+		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
+	}
+	{
+		data.DCRWalletConfig.Host = "127.0.0.1:9110"
+		data.DCRWalletConfig.User = "u"
+		data.DCRWalletConfig.Pass = "p"
 		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
 	}
 

@@ -12,8 +12,10 @@ import (
 type ConfigJson struct {
 	BTCDConfig      RPCConfig `json: "btcdconfig"`
 	PFCDConfig      RPCConfig `json: "pfcdconfig"`
+	DCRDConfig      RPCConfig `json: "dcrdconfig"`
 	BTCWalletConfig RPCConfig `json: "btcwalletconfig"`
 	PFCWalletConfig RPCConfig `json: "pfcwalletconfig"`
+	DCRWalletConfig RPCConfig `json: "dcrwalletconfig"`
 }
 
 type RPCConfig struct {
@@ -63,6 +65,20 @@ func ReadCfgFile(filePath string) (*ConfigJson, error) {
 	{
 		//defaultConfigFilename := "btcd.conf"
 		//defaultDataDirname := "data"
+		defaultHomeDir := dcrutil.AppDataDir("dcrd", false)
+		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
+		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
+		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
+		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
+
+		if data.DCRDConfig.CertificateFile == "" {
+			data.DCRDConfig.CertificateFile = defaultRPCCertFile
+		}
+	}
+
+	{
+		//defaultConfigFilename := "btcd.conf"
+		//defaultDataDirname := "data"
 		defaultHomeDir := btcutil.AppDataDir("btcwallet", false)
 		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
 		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
@@ -85,6 +101,20 @@ func ReadCfgFile(filePath string) (*ConfigJson, error) {
 
 		if data.PFCWalletConfig.CertificateFile == "" {
 			data.PFCWalletConfig.CertificateFile = defaultRPCCertFile
+		}
+	}
+
+	{
+		//defaultConfigFilename := "btcd.conf"
+		//defaultDataDirname := "data"
+		defaultHomeDir := dcrutil.AppDataDir("dcrwallet", false)
+		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
+		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
+		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
+		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
+
+		if data.DCRWalletConfig.CertificateFile == "" {
+			data.DCRWalletConfig.CertificateFile = defaultRPCCertFile
 		}
 	}
 

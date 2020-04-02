@@ -13,7 +13,22 @@ func main() {
 	conf, err := cfg.ReadCfgFile(filePath)
 	lang.CheckErr(err)
 	pin.S("conf", conf)
+	{
+		pin.D("connect DCRD RPC")
+		dcrconnect := cfg.RPCConnectionConfig{
+			Host:            conf.DCRDConfig.Host,
+			User:            conf.DCRDConfig.User,
+			Pass:            conf.DCRDConfig.Pass,
+			CertificateFile: conf.DCRDConfig.CertificateFile,
+			Endpoint:        "ws",
+		}
 
+		client, err := cfg.NewDCRConnection(dcrconnect)
+		lang.CheckErr(err)
+		hash, height, err := client.GetBestBlock()
+		lang.CheckErr(err)
+		pin.D("best DCR block", hash, height)
+	}
 	{
 		pin.D("connect PFCD RPC")
 		pfcconnect := cfg.RPCConnectionConfig{
@@ -45,6 +60,22 @@ func main() {
 		hash, height, err := client.GetBestBlock()
 		lang.CheckErr(err)
 		pin.D("best BTC block", hash, height)
+	}
+	{
+		pin.D("connect DCRWallet RPC")
+		dcrconnect := cfg.RPCConnectionConfig{
+			Host:            conf.DCRWalletConfig.Host,
+			User:            conf.DCRWalletConfig.User,
+			Pass:            conf.DCRWalletConfig.Pass,
+			CertificateFile: conf.DCRWalletConfig.CertificateFile,
+			Endpoint:        "ws",
+		}
+
+		client, err := cfg.NewDCRConnection(dcrconnect)
+		lang.CheckErr(err)
+		br, err := client.GetBalance("default")
+		lang.CheckErr(err)
+		pin.D("DCR balance", br)
 	}
 	{
 		pin.D("connect PFCWallet RPC")
