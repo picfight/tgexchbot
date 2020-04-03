@@ -1,0 +1,70 @@
+import com.amazonaws.services.lambda.model.Runtime
+import jp.classmethod.aws.gradle.lambda.AWSLambdaUpdateFunctionCodeTask
+
+plugins {
+    id 'java'
+    id 'maven'
+    id 'jp.classmethod.aws.lambda' version '0.41'
+}
+
+
+repositories {
+          	 maven { url 'https://jitpack.io' }
+        	 mavenCentral()
+}
+
+sourceCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+dependencies {
+
+      compile "com.github.Scarabei.Scarabei:scarabei-api:$scarabeiVersion"
+      compile "com.github.Scarabei.Scarabei:scarabei-red:$scarabeiVersion"
+      compile "com.github.Scarabei.Scarabei:scarabei-api-desktop:$scarabeiVersion"
+      compile "com.github.Scarabei.Scarabei:scarabei-red-desktop:$scarabeiVersion"
+      
+      compile group: 'com.amazonaws', name: 'aws-lambda-java-core', version: '1.2.0'
+      compile group: 'com.amazonaws', name: 'aws-lambda-java-events', version: '2.2.7'
+      
+      //compile 'com.google.guava:guava:23.0'
+       
+      // https://mvnrepository.com/artifact/org.telegram/telegrambots
+      compile group: 'org.telegram', name: 'telegrambots', version: '4.4.0.1'
+}	
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/']
+        }
+        resources {
+            
+        }
+    }
+}
+
+jar {
+    from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+}
+
+aws {
+    profileName = 'default'
+}
+
+lambda {
+    //region = "eu-west-3"
+    region = "eu-central-1"
+}
+
+def lambda_name_production = "chatbot_picfight_org"
+def lambda_role = System.getenv('AWS_ROLE_ARN')
+def lambda_handler = "org.picfight.exchbot.lambda.LambdaEntryPoint"
+
+task deploy_production(type: AWSLambdaUpdateFunctionCodeTask, dependsOn: build) {
+    functionName = lambda_name_production
+    zipFile = jar.archivePath
+}
