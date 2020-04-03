@@ -46,9 +46,9 @@ func main() {
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
 
-		address, err := client.GetNewAddress("default")
-		lang.CheckErr(err)
-		pin.D("new address", address)
+		//address, err := client.GetNewAddress("default")
+		//lang.CheckErr(err)
+		//pin.D("new address", address)
 
 		client.Disconnect()
 	}
