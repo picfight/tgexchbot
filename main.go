@@ -38,13 +38,18 @@ func main() {
 		pin.D("best PFC block", hash, height)
 		client.Disconnect()
 	}
-
+	//-------------------------------------------
 	{
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
 		br, err := client.GetBalance("default")
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
+
+		address, err := client.GetNewAddress("default")
+		lang.CheckErr(err)
+		pin.D("new address", address)
+
 		client.Disconnect()
 	}
 
@@ -54,6 +59,11 @@ func main() {
 		br, err := client.GetBalance("default")
 		lang.CheckErr(err)
 		pin.D("DCR balance", br)
+
+		address, err := client.GetNewAddress("default")
+		lang.CheckErr(err)
+		pin.D("new address", address)
+
 		client.Disconnect()
 	}
 	{
@@ -62,6 +72,11 @@ func main() {
 		br, err := client.GetBalance("default")
 		lang.CheckErr(err)
 		pin.D("PFC balance", br)
+
+		address, err := client.GetNewAddress("default")
+		lang.CheckErr(err)
+		pin.D("new address", address)
+
 		client.Disconnect()
 	}
 

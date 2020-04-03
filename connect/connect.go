@@ -3,8 +3,9 @@ package connect
 import (
 	btcclient "github.com/btcsuite/btcd/rpcclient"
 	dcrclient "github.com/decred/dcrd/rpcclient"
+		pfcclient "github.com/picfight/pfcd/rpcclient"
+
 	"github.com/jfixby/pin"
-	pfcclient "github.com/picfight/pfcd/rpcclient"
 	"github.com/picfight/tgexchbot/cfg"
 )
 
