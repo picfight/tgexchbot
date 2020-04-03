@@ -38,7 +38,7 @@ public class ChatBotActionHandler {
 
 	public static final void bind () {
 		try {
-			final String gateway = "https://00000000.execute-api.eu-central-1.amazonaws.com/0_0_2/";
+			final String gateway = "https://17qhk58f54.execute-api.eu-central-1.amazonaws.com/default/exchangebot_picfight_org";
 			final ID id = Names.newID("TELEGRAM_BOT_TOKEN");
 			final String token = SystemSettings.getStringParameter(id, null);
 			Debug.checkNull(id.toString(), token);
@@ -66,7 +66,11 @@ public class ChatBotActionHandler {
 		if (success) {
 			return;
 		}
-// Handlers.respond(this.bot, chatid, "Echo: " + text);
+		try {
+			Handlers.respond(this.bot, chatid, "Echo: " + text);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

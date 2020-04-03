@@ -60,7 +60,7 @@ lambda {
     region = "eu-central-1"
 }
 
-def lambda_name_production = "chatbot_picfight_org"
+def lambda_name_production = "exchangebot_picfight_org"
 def lambda_role = System.getenv('AWS_ROLE_ARN')
 def lambda_handler = "org.picfight.exchbot.lambda.LambdaEntryPoint"
 

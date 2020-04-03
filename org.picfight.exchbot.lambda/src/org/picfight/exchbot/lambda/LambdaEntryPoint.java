@@ -13,6 +13,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jfixby.scarabei.api.io.IO;
+import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.sys.settings.ExecutionMode;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
@@ -26,8 +28,17 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 
 	@Override
 	public void handleRequest (final InputStream input, final OutputStream output, final Context context) throws IOException {
-		Update update;
-		update = objectReader.readValue(input, Update.class);
+
+		final com.jfixby.scarabei.api.io.InputStream is = IO.newInputStream( () -> input);
+		is.open();
+		final String data = is.readAllToString();
+		is.close();
+		L.d("DATA", data);
+
+		final Data dt = Json.deserializeFromString(Data.class, data);
+
+		final Update update = objectReader.readValue(dt.body, Update.class);
+// update = objectReader.readValue(input, );
 		L.d("Update @ '" + getFormattedTimestamp(update) + "' : " + update);
 		L.d("Starting handling update " + update.getUpdateId());
 		this.handleUpdate(update);
