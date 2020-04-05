@@ -5,6 +5,7 @@ import (
 	"github.com/jfixby/pin/lang"
 	"github.com/picfight/tgexchbot/cfg"
 	"github.com/picfight/tgexchbot/connect"
+	"github.com/picfight/tgexchbot/server"
 	"path/filepath"
 )
 
@@ -14,6 +15,11 @@ func main() {
 	conf, err := cfg.ReadCfgFile(filePath)
 	lang.CheckErr(err)
 	pin.S("conf", conf)
+	{
+		srv := server.NewServer(conf.ServerConfig)
+		srv.Start()
+	}
+
 	{
 		client, err := connect.BTCD(conf)
 		lang.CheckErr(err)

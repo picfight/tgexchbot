@@ -55,6 +55,7 @@ public class Handlers {
 // return true;
 
 		try {
+			L.d("debug args", args);
 			return h.handle(args);
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -105,6 +106,13 @@ class HandleArgs {
 	public TelegramUpdate update;
 	public String command;
 	public List<String> arguments;
+
+	@Override
+	public String toString () {
+		return "HandleArgs [inputRaw=" + this.inputRaw + ", bot=" + this.bot + ", update=" + this.update + ", command="
+			+ this.command + ", arguments=" + this.arguments + "]";
+	}
+
 }
 
 interface Handler {

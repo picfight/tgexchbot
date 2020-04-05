@@ -3,6 +3,12 @@ package org.picfight.exchbot.lambda;
 
 import java.io.IOException;
 
+import org.picfight.exchbot.lambda.backend.BTCAddress;
+import org.picfight.exchbot.lambda.backend.BTCAddressArgs;
+import org.picfight.exchbot.lambda.backend.ExchangeBackEnd;
+import org.picfight.exchbot.lambda.backend.PFCAddress;
+import org.picfight.exchbot.lambda.backend.PFCAddressArgs;
+
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.json.JsonString;
 import com.jfixby.scarabei.api.names.Names;
@@ -18,17 +24,51 @@ import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 public class TgBotMessageHandler implements Handler {
 	public static final String WALLET_CHECK = "/walletcheck";
 
+	public static final ExchangeBackEnd backEnd = new ExchangeBackEnd();
+
+	/**
+	 *
+	 */
 	@Override
 	public boolean handle (final HandleArgs args) throws IOException {
 
 		final boolean flag = SystemSettings.getFlag(Names.newID("disable_bot"));
+		final Long chatid = args.update.message.chatID;
+
 		if (flag) {
-			final Long chatid = args.update.message.chatID;
 			Handlers.respond(args.bot, chatid, "Бот отключен.", false);
 			return true;
 		}
 
-		return true;
+		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
+			final BTCAddressArgs a = new BTCAddressArgs();
+			final BTCAddress address = backEnd.obtainNewBTCAddress(a);
+			Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
+			final PFCAddressArgs a = new PFCAddressArgs();
+			final PFCAddress address = backEnd.obtainNewPFCAddress(a);
+			Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC_CH)) {
+			final BTCAddressArgs a = new BTCAddressArgs();
+			final BTCAddress address = backEnd.obtainNewBTCAddress(a);
+			Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC_CH)) {
+			final PFCAddressArgs a = new PFCAddressArgs();
+			final PFCAddress address = backEnd.obtainNewPFCAddress(a);
+			Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
+			return true;
+		}
+
+		return false;
 	}
 
 	public static JsonString retrieve (final HttpURL url) throws IOException {

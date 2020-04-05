@@ -24,7 +24,6 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 	static {
 		ScarabeiDesktop.deploy();
 	}
-	private static final ObjectMapper objectReader = new ObjectMapper();
 
 	@Override
 	public void handleRequest (final InputStream input, final OutputStream output, final Context context) throws IOException {
@@ -36,7 +35,7 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		L.d("DATA", data);
 
 		final Data dt = Json.deserializeFromString(Data.class, data);
-
+		final ObjectMapper objectReader = new ObjectMapper();
 		final Update update = objectReader.readValue(dt.body, Update.class);
 // update = objectReader.readValue(input, );
 		L.d("Update @ '" + getFormattedTimestamp(update) + "' : " + update);
@@ -66,6 +65,8 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 	}
 
 	private TelegramUpdate updatetoTelegramUpdate (final Update update) {
+		L.d("debug", update);
+
 		final TelegramUpdate u = new TelegramUpdate();
 		if (update.hasMessage()) {
 			final Message msg = update.getMessage();
