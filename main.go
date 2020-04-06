@@ -16,11 +16,6 @@ func main() {
 	lang.CheckErr(err)
 	pin.S("conf", conf)
 	{
-		srv := server.NewServer(conf.ServerConfig)
-		srv.Start()
-	}
-
-	{
 		client, err := connect.BTCD(conf)
 		lang.CheckErr(err)
 		hash, height, err := client.GetBestBlock()
@@ -84,6 +79,11 @@ func main() {
 		pin.D("new address", address)
 
 		client.Disconnect()
+	}
+	pin.D("Deploy server...")
+	{
+		srv := server.NewServer(conf.ServerConfig)
+		srv.Start()
 	}
 
 }
