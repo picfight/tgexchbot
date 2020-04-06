@@ -21,7 +21,7 @@ func (s HttpsServer) Start() {
 	// Use ListenAndServeTLS() instead of ListenAndServe() which accepts two extra parameters.
 	// We need to specify both the certificate file and the key file (which we've named
 	// https-server.crt and https-server.key).
-	err := http.ListenAndServeTLS(fmt.Sprintf(": %v", s.config.Port), s.config.CertificateFile, s.config.CertificateKeyFile, nil)
+	err := http.ListenAndServeTLS(fmt.Sprintf(":%v", s.config.Port), s.config.CertificateFile, s.config.CertificateKeyFile, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
