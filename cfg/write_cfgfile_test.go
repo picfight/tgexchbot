@@ -35,7 +35,7 @@ func TestWriteCfgFile(t *testing.T) {
 	}
 
 	{
-		data.BTCWalletConfig.Host = "127.0.0.1:18335"
+		data.BTCWalletConfig.Host = "127.0.0.1:18332"
 		data.BTCWalletConfig.User = "u"
 		data.BTCWalletConfig.Pass = "p"
 		//data.BTCDConfig.CertificateFile = "~/.btcd/rpc.cert"
@@ -55,9 +55,8 @@ func TestWriteCfgFile(t *testing.T) {
 	{
 		data.ServerConfig.Port = 8080
 		data.ServerConfig.AccessKey = ""
-		data.ServerConfig.CertificateFile = "~/.pfcd/rpc.cert"
-		data.ServerConfig.CertificateKeyFile = "~/.pfcd/rpc.key"
-		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
+		data.ServerConfig.CertificateFile = "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.crt"
+		data.ServerConfig.CertificateKeyFile = "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.key"
 	}
 
 	bytes, err := json.MarshalIndent(data, "", "	")

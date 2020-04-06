@@ -61,9 +61,9 @@ func main() {
 		lang.CheckErr(err)
 		pin.D("DCR balance", br)
 
-		address, err := client.GetNewAddress("default")
-		lang.CheckErr(err)
-		pin.D("new address", address)
+		//address, err := client.GetNewAddress("default")
+		//lang.CheckErr(err)
+		//pin.D("new address", address)
 
 		client.Disconnect()
 	}
@@ -74,9 +74,9 @@ func main() {
 		lang.CheckErr(err)
 		pin.D("PFC balance", br)
 
-		address, err := client.GetNewAddress("default")
-		lang.CheckErr(err)
-		pin.D("new address", address)
+		//address, err := client.GetNewAddress("default")
+		//lang.CheckErr(err)
+		//pin.D("new address", address)
 
 		client.Disconnect()
 	}

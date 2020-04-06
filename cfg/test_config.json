@@ -18,7 +18,7 @@
 		"CertificateFile": ""
 	},
 	"BTCWalletConfig": {
-		"Host": "127.0.0.1:18335",
+		"Host": "127.0.0.1:18332",
 		"User": "u",
 		"Pass": "p",
 		"CertificateFile": ""
@@ -38,7 +38,7 @@
 	"ServerConfig": {
 		"Port": 8080,
 		"AccessKey": "",
-		"CertificateFile": "~/.pfcd/rpc.cert",
-		"CertificateKeyFile": "~/.pfcd/rpc.key"
+		"CertificateFile": "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.crt",
+		"CertificateKeyFile": "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.key"
 	}
 }
