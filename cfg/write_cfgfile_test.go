@@ -52,6 +52,13 @@ func TestWriteCfgFile(t *testing.T) {
 		data.DCRWalletConfig.Pass = "p"
 		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
 	}
+	{
+		data.ServerConfig.Port = 8080
+		data.ServerConfig.AccessKey = ""
+		data.ServerConfig.CertificateFile = "~/.pfcd/rpc.cert"
+		data.ServerConfig.CertificateKeyFile = "~/.pfcd/rpc.key"
+		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
+	}
 
 	bytes, err := json.MarshalIndent(data, "", "	")
 	lang.CheckErr(err)

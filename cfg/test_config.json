@@ -34,5 +34,11 @@
 		"User": "u",
 		"Pass": "p",
 		"CertificateFile": ""
+	},
+	"ServerConfig": {
+		"Port": 8080,
+		"AccessKey": "",
+		"CertificateFile": "~/.pfcd/rpc.cert",
+		"CertificateKeyFile": "~/.pfcd/rpc.key"
 	}
 }
