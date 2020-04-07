@@ -9,4 +9,5 @@ require (
 	github.com/jfixby/coinharness v0.0.0-20200327152748-5be5b892422b
 	github.com/jfixby/pin v0.0.0-20190926185208-4828e1e664f4
 	github.com/picfight/pfcd v0.0.0-20191229010435-dfe5cf45f91b
+	github.com/picfight/picfightcoin v0.0.0-20191107151210-0ab5c80ba5bc
 )
