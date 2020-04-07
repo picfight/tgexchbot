@@ -14,7 +14,7 @@ import com.jfixby.scarabei.api.net.http.HttpURL;
 public class ExchangeBackEnd {
 
 	final public String host;
-	final public int port;
+	final public long port;
 	final public String access_key;
 
 	public ExchangeBackEnd (final ExchangeBackEndArgs args) {

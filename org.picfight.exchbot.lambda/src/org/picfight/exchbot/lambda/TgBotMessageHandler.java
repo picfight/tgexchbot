@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.picfight.exchbot.lambda.backend.BTCAddress;
 import org.picfight.exchbot.lambda.backend.BTCAddressArgs;
 import org.picfight.exchbot.lambda.backend.ExchangeBackEnd;
+import org.picfight.exchbot.lambda.backend.ExchangeBackEndArgs;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCAddressArgs;
 
@@ -23,12 +24,15 @@ import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
 public class TgBotMessageHandler implements Handler {
 	public static final String WALLET_CHECK = "/walletcheck";
+	public static final ExchangeBackEnd backEnd;
+	static {
+		final ExchangeBackEndArgs args = new ExchangeBackEndArgs();
+		args.access_key = SystemSettings.getRequiredStringParameter(Names.newID("ACCESS_KEY"));
+		args.host = SystemSettings.getRequiredStringParameter(Names.newID("BACKEND_HOST"));// "https://exchange.picfight.org";
+		args.port = SystemSettings.getIntParameter(Names.newID("BACKEND_HOST"));// "https://exchange.picfight.org";
+		backEnd = new ExchangeBackEnd(args);
+	}
 
-	public static final ExchangeBackEnd backEnd = new ExchangeBackEnd();
-
-	/**
-	 *
-	 */
 	@Override
 	public boolean handle (final HandleArgs args) throws IOException {
 
