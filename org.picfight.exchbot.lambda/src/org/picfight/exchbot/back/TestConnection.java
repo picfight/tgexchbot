@@ -16,7 +16,7 @@ public class TestConnection {
 		ScarabeiDesktop.deploy();
 
 		final HttpURL url = Http.newURL("https://exchange.picfight.org:8080/");
-		final JsonString data = BackEndConnector.retrieve(url);
+		final JsonString data = BackEndConnector.retrieve(url, null);
 		L.d("data", data);
 
 	}

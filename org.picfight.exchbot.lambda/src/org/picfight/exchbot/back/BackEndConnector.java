@@ -32,7 +32,11 @@ public class BackEndConnector {
 	public BackEndConnector () {
 	}
 
-	public static JsonString retrieve (final HttpURL Url, final Map<String, String> params) throws IOException {
+	public static JsonString retrieve (final HttpURL Url, Map<String, String> params) throws IOException {
+		if (params == null) {
+			params = Collections.newMap();
+		}
+
 		final URL url = new URL(Url.toString());
 
 		// final URL url = new URL("https://google.com/");

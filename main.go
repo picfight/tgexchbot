@@ -82,7 +82,7 @@ func main() {
 	}
 	pin.D("Deploy server...")
 	{
-		srv := server.NewServer(conf.ServerConfig)
+		srv := server.NewServer(conf)
 		srv.Start()
 	}
 

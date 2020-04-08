@@ -40,7 +40,7 @@ public class TgBotMessageHandler implements Handler {
 		if (args.command.equalsIgnoreCase(OPERATIONS.RATE)) {
 			final Rate rate = backEnd.getRate();
 			Handlers.respond(args.bot, chatid, "Circulating supply: " + rate.getCirculatingSupply(), false);
-			Handlers.respond(args.bot, chatid, "PicfightCoin price in USD: " + rate.PFCtoUSD(), false);
+			Handlers.respond(args.bot, chatid, "PicfightCoin price in BTC: " + rate.PFCtoBTC(), false);
 			Handlers.respond(args.bot, chatid, "Available PFC coins: " + rate.availablePFC(), false);
 			return true;
 		}
