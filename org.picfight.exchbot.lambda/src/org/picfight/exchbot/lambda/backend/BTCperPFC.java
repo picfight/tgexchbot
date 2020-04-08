@@ -1,5 +1,5 @@
 package org.picfight.exchbot.lambda.backend;
 
-public class PFCtoBTC {
+public class BTCperPFC {
 
 }

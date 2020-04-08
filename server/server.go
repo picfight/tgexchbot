@@ -36,7 +36,6 @@ func (s HttpsServer) Start() {
 	}
 }
 
-
 func NewServer(cfg *cfg.ConfigJson) *HttpsServer {
 	return &HttpsServer{config: cfg,}
 }
@@ -114,7 +113,7 @@ func (s *HttpsServer) processRate() string {
 		pfcAmount := rate.CirculatingSupplyCoins
 		pin.D("total pfc amount", pfcAmount)
 
-		rate.PFC2BTC = pfcAmount / btcAmount
+		rate.BTCperPFC = btcAmount / pfcAmount
 	}
 
 	return toJson(rate)

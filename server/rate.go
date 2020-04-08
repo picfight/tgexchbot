@@ -4,7 +4,7 @@ type Rate struct {
 	//	Host            string `json: "host"`
 	CirculatingSupplyCoins float64 `json: "CirculatingSupplyCoins"`
 	AvailablePFC           float64 `json: "AvailablePFC"`
-	PFC2BTC                float64 `json: "PFC2BTC"`
+	BTCperPFC                float64 `json: "BTCperPFC"`
 }
 
 //type RPCConfig struct {

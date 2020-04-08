@@ -4,15 +4,15 @@ package org.picfight.exchbot.lambda.backend;
 public class Rate {
 
 	private CirculatingSupply circulatingSupply;
-	private PFCtoBTC pfctobtc;
+	private BTCperPFC pfcperbtc;
 	private AvailablePFC availablePFC;
 
 	public CirculatingSupply getCirculatingSupply () {
 		return this.circulatingSupply;
 	}
 
-	public PFCtoBTC PFCtoBTC () {
-		return this.pfctobtc;
+	public BTCperPFC BTCperPFC () {
+		return this.pfcperbtc;
 	}
 
 	public AvailablePFC availablePFC () {
