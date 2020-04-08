@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path"
 )
 
 type HttpsServer struct {
@@ -39,6 +40,11 @@ func NewServer(cfg HttpsServerConfig) *HttpsServer {
 }
 
 func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
+	uri := r.RequestURI
+	dir, split := path.Split(uri)
+	pin.D("dir", dir)
+	pin.D("split", split)
+
 	w.Header().Add("Content-Type", "application/json")
 	io.WriteString(w, `{"status":"ok"}`)
 }
