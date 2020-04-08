@@ -5,19 +5,25 @@ import (
 	"github.com/btcsuite/btcutil"
 	"github.com/jfixby/pin/lang"
 	"github.com/picfight/pfcd/dcrutil"
-	"github.com/picfight/tgexchbot/server"
 	"io/ioutil"
 	"path/filepath"
 )
 
 type ConfigJson struct {
-	BTCDConfig      RPCConfig                `json: "btcdconfig"`
-	PFCDConfig      RPCConfig                `json: "pfcdconfig"`
-	DCRDConfig      RPCConfig                `json: "dcrdconfig"`
-	BTCWalletConfig RPCConfig                `json: "btcwalletconfig"`
-	PFCWalletConfig RPCConfig                `json: "pfcwalletconfig"`
-	DCRWalletConfig RPCConfig                `json: "dcrwalletconfig"`
-	ServerConfig    server.HttpsServerConfig `json: "serverconfig"`
+	BTCDConfig      RPCConfig         `json: "btcdconfig"`
+	PFCDConfig      RPCConfig         `json: "pfcdconfig"`
+	DCRDConfig      RPCConfig         `json: "dcrdconfig"`
+	BTCWalletConfig RPCConfig         `json: "btcwalletconfig"`
+	PFCWalletConfig RPCConfig         `json: "pfcwalletconfig"`
+	DCRWalletConfig RPCConfig         `json: "dcrwalletconfig"`
+	ServerConfig    HttpsServerConfig `json: "serverconfig"`
+}
+
+type HttpsServerConfig struct {
+	Port               int    `json: "Port"`
+	AccessKey          string `json: "accessKey"`
+	CertificateFile    string `json: "certfile"`
+	CertificateKeyFile string `json: "certfile_key"`
 }
 
 type RPCConfig struct {

@@ -36,12 +36,6 @@ func (s HttpsServer) Start() {
 	}
 }
 
-type HttpsServerConfig struct {
-	Port               int    `json: "Port"`
-	AccessKey          string `json: "accessKey"`
-	CertificateFile    string `json: "certfile"`
-	CertificateKeyFile string `json: "certfile_key"`
-}
 
 func NewServer(cfg *cfg.ConfigJson) *HttpsServer {
 	return &HttpsServer{config: cfg,}
