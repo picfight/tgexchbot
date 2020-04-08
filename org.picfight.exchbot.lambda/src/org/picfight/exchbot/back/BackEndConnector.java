@@ -1,10 +1,7 @@
 
 package org.picfight.exchbot.back;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -45,6 +42,8 @@ public class BackEndConnector {
 		connection.setRequestMethod("POST");
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
 		// JMD - this is a better way to do it that doesn't override the default SSL factory.
 		{
@@ -116,13 +115,28 @@ public class BackEndConnector {
 			conHttps.setHostnameVerifier(allHostsValid);
 		}
 
-		final OutputStream os = connection.getOutputStream();
-		final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+		{
+// params.put("name", "Freddie the Fish");
+// params.put("email", "fishie@seamail.example.com");
+// params.put("reply_to_thread", 10394);
+// params.put("message",
+// "Shark attacks in Botany Bay have gotten out of control. We need more defensive dolphins to protect the schools here, but Mayor
+// Porpoise is too busy stuffing his snout with lobsters. He's so shellfish.");
 
-		writer.write(getQuery(params));
-		writer.flush();
-		writer.close();
-		os.close();
+			final StringBuilder postData = new StringBuilder();
+			for (final String key : params.keys()) {
+				final String value = params.get(key);
+				if (postData.length() != 0) {
+					postData.append('&');
+				}
+				postData.append(URLEncoder.encode(key, "UTF-8"));
+				postData.append('=');
+				postData.append(URLEncoder.encode(value, "UTF-8"));
+			}
+			final byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+			connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+			connection.getOutputStream().write(postDataBytes);
+		}
 
 		final java.io.InputStream stream = connection.getInputStream();
 

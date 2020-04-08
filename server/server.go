@@ -51,6 +51,8 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 
 	pin.D("post", post)
 
+	pin.D("header", r.Header)
+
 	w.Header().Add("Content-Type", "application/json")
 	io.WriteString(w, `{"status":"ok"}`)
 }
