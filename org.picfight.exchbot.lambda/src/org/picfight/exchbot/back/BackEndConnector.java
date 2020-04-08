@@ -16,6 +16,7 @@ import javax.net.ssl.X509TrustManager;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.List;
+import com.jfixby.scarabei.api.collections.Map;
 import com.jfixby.scarabei.api.io.IO;
 import com.jfixby.scarabei.api.io.InputStream;
 import com.jfixby.scarabei.api.json.Json;
@@ -25,22 +26,20 @@ import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.net.http.HttpURL;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
-public class BackEndConnection {
+public class BackEndConnector {
 
-	private final String host;
-	private final int port;
-	private final String certFile;
-
-	public BackEndConnection (final BackEndConnectionConfig cfg) {
-		this.host = cfg.host;
-		this.port = cfg.port;
-		this.certFile = cfg.certFile;
+	public BackEndConnector () {
 	}
 
-	public static JsonString retrieve (final HttpURL Url) throws IOException {
+	public static JsonString retrieve (final HttpURL Url, final Map<String, String> params) throws IOException {
 		final URL url = new URL(Url.toString());
 		// final URL url = new URL("https://google.com/");
 		final URLConnection connection = url.openConnection();
+
+		for (final String key : params.keys()) {
+			connection.addRequestProperty(key, params.get(key));
+		}
+
 		// JMD - this is a better way to do it that doesn't override the default SSL factory.
 		if (connection instanceof HttpsURLConnection) {
 			final HttpsURLConnection conHttps = (HttpsURLConnection)connection;
