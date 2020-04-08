@@ -126,16 +126,17 @@ public class BackEndConnector {
 			final StringBuilder postData = new StringBuilder();
 			for (final String key : params.keys()) {
 				final String value = params.get(key);
-				if (postData.length() != 0) {
-					postData.append('&');
-				}
-				postData.append(URLEncoder.encode(key, "UTF-8"));
-				postData.append('=');
-				postData.append(URLEncoder.encode(value, "UTF-8"));
+// if (postData.length() != 0) {
+// postData.append('&');
+// }
+// postData.append(URLEncoder.encode(key, "UTF-8"));
+// postData.append('=');
+// postData.append(URLEncoder.encode(value, "UTF-8"));
+				connection.setRequestProperty(key, value);
 			}
-			final byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-			connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-			connection.getOutputStream().write(postDataBytes);
+// final byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+// connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+// connection.getOutputStream().write(postDataBytes);
 		}
 
 		final java.io.InputStream stream = connection.getInputStream();
