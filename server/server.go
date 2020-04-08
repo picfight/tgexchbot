@@ -44,10 +44,12 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	_, command := path.Split(uri)
 	//pin.D("dir", dir)
 	pin.D("command", command)
-
 	params := r.URL.Query()
-
 	pin.D("params", params)
+
+	post := r.PostForm
+
+	pin.D("post", post)
 
 	w.Header().Add("Content-Type", "application/json")
 	io.WriteString(w, `{"status":"ok"}`)

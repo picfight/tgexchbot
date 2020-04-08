@@ -1,9 +1,13 @@
 
 package org.picfight.exchbot.back;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -33,16 +37,18 @@ public class BackEndConnector {
 
 	public static JsonString retrieve (final HttpURL Url, final Map<String, String> params) throws IOException {
 		final URL url = new URL(Url.toString());
-		// final URL url = new URL("https://google.com/");
-		final URLConnection connection = url.openConnection();
 
-		for (final String key : params.keys()) {
-			connection.addRequestProperty(key, params.get(key));
-		}
+		// final URL url = new URL("https://google.com/");
+		final HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+		connection.setReadTimeout(10000);
+		connection.setConnectTimeout(15000);
+		connection.setRequestMethod("POST");
+		connection.setDoInput(true);
+		connection.setDoOutput(true);
 
 		// JMD - this is a better way to do it that doesn't override the default SSL factory.
-		if (connection instanceof HttpsURLConnection) {
-			final HttpsURLConnection conHttps = (HttpsURLConnection)connection;
+		{
+			final HttpsURLConnection conHttps = connection;
 			// Set up a Trust all manager
 			final TrustManager[] trustAllCerts = new TrustManager[] {
 				//
@@ -109,6 +115,15 @@ public class BackEndConnector {
 			// and set the hostname verifier.
 			conHttps.setHostnameVerifier(allHostsValid);
 		}
+
+		final OutputStream os = connection.getOutputStream();
+		final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+		writer.write(getQuery(params));
+		writer.flush();
+		writer.close();
+		os.close();
+
 		final java.io.InputStream stream = connection.getInputStream();
 
 		final InputStream is = IO.newInputStream( () -> stream);
@@ -118,6 +133,31 @@ public class BackEndConnector {
 // L.d("data", data);
 
 		return Json.newJsonString(data);
+	}
+
+	static private String getQuery (final Map<String, String> params) throws UnsupportedEncodingException {
+		final StringBuilder result = new StringBuilder();
+		boolean first = true;
+
+// for (final String key : params.keys()) {
+// // connection.addRequestProperty(key, params.get(key));
+// // connection.setRequestProperty(key, params.get(key));
+//
+// }
+
+		for (final String key : params.keys()) {
+			if (first) {
+				first = false;
+			} else {
+				result.append("&");
+			}
+
+			result.append(URLEncoder.encode(key, "UTF-8"));
+			result.append("=");
+			result.append(URLEncoder.encode(params.get(key), "UTF-8"));
+		}
+
+		return result.toString();
 	}
 
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();

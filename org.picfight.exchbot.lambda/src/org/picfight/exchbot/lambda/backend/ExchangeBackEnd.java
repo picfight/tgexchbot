@@ -35,6 +35,8 @@ public class ExchangeBackEnd {
 		final HttpURL Url = this.commadToUrl(command);
 
 		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
 		L.d("resultJson", resultJson);
