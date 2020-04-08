@@ -83,10 +83,14 @@ public class Handlers {
 					sendMessage.disableWebPagePreview();
 				}
 				// sendMessage.enableMarkdown(true);
-				L.d("Sending message[" + i + "]: " + sendMessage);
+// L.d("Sending message[" + i + "]: " + sendMessage);
 
-				bot.execute(sendMessage);
-				L.d("Message sent: " + sendMessage);
+				if (bot != null) {
+					bot.execute(sendMessage);
+					L.d("Message sent: " + sendMessage);
+				} else {
+					L.d("Resulting message: " + sendMessage.getText());
+				}
 				return;
 			} catch (final TelegramApiException e) {
 				x = e;

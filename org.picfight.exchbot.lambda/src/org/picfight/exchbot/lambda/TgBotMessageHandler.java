@@ -9,7 +9,9 @@ import org.picfight.exchbot.lambda.backend.ExchangeBackEnd;
 import org.picfight.exchbot.lambda.backend.ExchangeBackEndArgs;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCAddressArgs;
+import org.picfight.exchbot.lambda.backend.Rate;
 
+import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
@@ -20,18 +22,26 @@ public class TgBotMessageHandler implements Handler {
 		final ExchangeBackEndArgs args = new ExchangeBackEndArgs();
 		args.access_key = SystemSettings.getRequiredStringParameter(Names.newID("ACCESS_KEY"));
 		args.host = SystemSettings.getRequiredStringParameter(Names.newID("BACKEND_HOST"));// "https://exchange.picfight.org";
-		args.port = SystemSettings.getIntParameter(Names.newID("BACKEND_HOST"));// "https://exchange.picfight.org";
+		args.port = Integer.parseInt(SystemSettings.getRequiredStringParameter(Names.newID("BACKEND_PORT")));// "https://exchange.picfight.org";
 		backEnd = new ExchangeBackEnd(args);
 	}
 
 	@Override
 	public boolean handle (final HandleArgs args) throws IOException {
 
-		final boolean flag = SystemSettings.getFlag(Names.newID("disable_bot"));
+		final boolean flag = Boolean.parseBoolean(SystemSettings.getRequiredStringParameter(Names.newID("disable_bot")));
 		final Long chatid = args.update.message.chatID;
 
 		if (flag) {
 			Handlers.respond(args.bot, chatid, "Бот отключен.", false);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.RATE)) {
+			final Rate rate = backEnd.getRate();
+			Handlers.respond(args.bot, chatid, "Circulating supply: " + rate.getCirculatingSupply(), false);
+			Handlers.respond(args.bot, chatid, "PicfightCoin price in USD: " + rate.PFCtoUSD(), false);
+			Handlers.respond(args.bot, chatid, "Available PFC coins: " + rate.availablePFC(), false);
 			return true;
 		}
 
@@ -62,6 +72,8 @@ public class TgBotMessageHandler implements Handler {
 			Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
 			return true;
 		}
+
+		L.e("Command not found", args.command);
 
 		return false;
 	}
