@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.jfixby.scarabei.red.desktop.ScarabeiDesktop;
 
-public class Testhandler {
+public class TestRate {
 
 	public static void main (final String[] args) throws IOException {
 		ScarabeiDesktop.deploy();

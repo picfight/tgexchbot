@@ -45,6 +45,18 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
+		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
+			final BTCAddress address = backEnd.obtainNewBTCAddress(null);
+			Handlers.respond(args.bot, chatid, "New BTC Address: " + address, false);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_PFC_ADDRESS)) {
+			final PFCAddress address = backEnd.obtainNewPFCAddress(null);
+			Handlers.respond(args.bot, chatid, "New PFC Address: " + address, false);
+			return true;
+		}
+
 		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
 			final BTCAddressArgs a = new BTCAddressArgs();
 			final BTCAddress address = backEnd.obtainNewBTCAddress(a);
