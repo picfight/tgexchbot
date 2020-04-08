@@ -3,20 +3,20 @@ package org.picfight.exchbot.lambda.backend;
 
 public class Rate {
 
-	private CirculatingSupply circulatingSupply;
-	private BTCperPFC pfcperbtc;
-	private AvailablePFC availablePFC;
+	public Double CirculatingSupplyCoins;
+	public Double AvailablePFC;
+	public Double BTCperPFC;
 
-	public CirculatingSupply getCirculatingSupply () {
-		return this.circulatingSupply;
+	public Double getCirculatingSupply () {
+		return this.CirculatingSupplyCoins;
 	}
 
-	public BTCperPFC BTCperPFC () {
-		return this.pfcperbtc;
+	public Double BTCperPFC () {
+		return this.BTCperPFC;
 	}
 
-	public AvailablePFC availablePFC () {
-		return this.availablePFC;
+	public Double availablePFC () {
+		return this.AvailablePFC;
 	}
 
 }

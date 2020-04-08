@@ -7,6 +7,11 @@ type Rate struct {
 	BTCperPFC                float64 `json: "BTCperPFC"`
 }
 
+type AddressString struct {
+	AddressString string `json: "address_string"`
+	Type string `json: "type"`
+}
+
 //type RPCConfig struct {
 //	Host            string `json: "host"`
 //	User            string `json: "user"`

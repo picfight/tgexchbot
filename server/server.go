@@ -67,6 +67,14 @@ func (s *HttpsServer) processRequest(command string, key string, params http.Hea
 		return s.processRate()
 	}
 
+	if command == "new_pfc_address" {
+		return s.obrtainPFCAddress()
+	}
+
+	if command == "new_btc_address" {
+		return s.obrtainBTCAddress()
+	}
+
 	return `{"status":"ok"}`
 }
 
@@ -117,6 +125,40 @@ func (s *HttpsServer) processRate() string {
 	}
 
 	return toJson(rate)
+}
+
+func (s HttpsServer) obrtainPFCAddress() string {
+	address := &AddressString{
+		Type: "PFC",
+	}
+	{
+		client, err := connect.PFCWallet(s.config)
+		lang.CheckErr(err)
+
+		addressResult, err := client.GetNewAddress("default")
+		lang.CheckErr(err)
+		client.Disconnect()
+
+		address.AddressString = addressResult.String()
+	}
+	return toJson(address)
+}
+
+func (s HttpsServer) obrtainBTCAddress() string {
+	address := &AddressString{
+		Type: "BTC",
+	}
+	{
+		client, err := connect.BTCWallet(s.config)
+		lang.CheckErr(err)
+
+		addressResult, err := client.GetNewAddress("default")
+		lang.CheckErr(err)
+		client.Disconnect()
+
+		address.AddressString = addressResult.String()
+	}
+	return toJson(address)
 }
 
 func toJson(v interface{}) string {

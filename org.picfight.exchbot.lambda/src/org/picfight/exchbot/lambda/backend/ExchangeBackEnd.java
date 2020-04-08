@@ -7,13 +7,9 @@ import org.picfight.exchbot.back.BackEndConnector;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.json.JsonString;
-import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.net.http.Http;
-import com.jfixby.scarabei.api.net.http.HttpCall;
-import com.jfixby.scarabei.api.net.http.HttpCallExecutor;
-import com.jfixby.scarabei.api.net.http.HttpCallParams;
-import com.jfixby.scarabei.api.net.http.HttpCallProgress;
 import com.jfixby.scarabei.api.net.http.HttpURL;
 
 public class ExchangeBackEnd {
@@ -29,7 +25,6 @@ public class ExchangeBackEnd {
 	}
 
 	public Rate getRate () throws IOException {
-		final Rate r = new Rate();
 
 		final String command = "rate";
 		final HttpURL Url = this.commadToUrl(command);
@@ -39,7 +34,9 @@ public class ExchangeBackEnd {
 
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
-		L.d("resultJson", resultJson);
+// L.d("resultJson", resultJson);
+
+		final Rate r = Json.deserializeFromString(Rate.class, resultJson);
 
 		return r;
 	}
@@ -50,34 +47,47 @@ public class ExchangeBackEnd {
 	}
 
 	public BTCAddress obtainNewBTCAddress (final BTCAddressArgs a) throws IOException {
-		final BTCAddress result = new BTCAddress();
+		final String command = "new_btc_address";
+		final HttpURL Url = this.commadToUrl(command);
 
-		final String callResult = this.makeCall();
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
 
-		return result;
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+
+		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
+
+		return r;
 	}
-
-	private String makeCall () throws IOException {
-		final HttpCallExecutor exe = Http.newCallExecutor();
-		final HttpCallParams params = Http.newCallParams();
-
-		final String url_string = "";
-		final HttpURL http_url = Http.newURL(url_string);
-		params.setURL(http_url);
-
-		final HttpCall call = Http.newCall(params);
-		final HttpCallProgress call_result = exe.execute(call);
-		final String resultString = call_result.readResultAsString();
-		L.d("resultString", resultString);
-		return resultString;
-	}
+//
+// private String makeCall () throws IOException {
+// final HttpCallExecutor exe = Http.newCallExecutor();
+// final HttpCallParams params = Http.newCallParams();
+//
+// final String url_string = "";
+// final HttpURL http_url = Http.newURL(url_string);
+// params.setURL(http_url);
+//
+// final HttpCall call = Http.newCall(params);
+// final HttpCallProgress call_result = exe.execute(call);
+// final String resultString = call_result.readResultAsString();
+// L.d("resultString", resultString);
+// return resultString;
+// }
 
 	public PFCAddress obtainNewPFCAddress (final PFCAddressArgs a) throws IOException {
-		final PFCAddress result = new PFCAddress();
 
-		final String callResult = this.makeCall();
+		final String command = "new_pfc_address";
+		final HttpURL Url = this.commadToUrl(command);
 
-		return result;
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+
+		final PFCAddress r = Json.deserializeFromString(PFCAddress.class, resultJson);
+
+		return r;
 	}
 
 }
