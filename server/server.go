@@ -41,9 +41,13 @@ func NewServer(cfg HttpsServerConfig) *HttpsServer {
 
 func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	uri := r.RequestURI
-	dir, split := path.Split(uri)
-	pin.D("dir", dir)
-	pin.D("split", split)
+	_, command := path.Split(uri)
+	//pin.D("dir", dir)
+	pin.D("command", command)
+
+	params := r.URL.Query()
+
+	pin.D("params", params)
 
 	w.Header().Add("Content-Type", "application/json")
 	io.WriteString(w, `{"status":"ok"}`)
