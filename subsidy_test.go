@@ -26,9 +26,9 @@ func TestSubsidy(t *testing.T) {
 	}
 }
 
-func checkSubsidy(t *testing.T, block_subsidy int64, block_index int64, expected_subsidy int64) {
-	if expected_subsidy != block_subsidy {
-		t.Errorf("block_subsidy=%v block_index=%v expected_subsidy=%v", block_subsidy, block_index, expected_subsidy)
+func checkSubsidy(t *testing.T, blockSubsidy int64, blockIndex int64, expectedSubsidy int64) {
+	if expectedSubsidy != blockSubsidy {
+		t.Errorf("blockSubsidy=%v blockIndex=%v expectedSubsidy=%v", blockSubsidy, blockIndex, expectedSubsidy)
 		t.FailNow()
 	}
 
