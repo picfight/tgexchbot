@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	btccfg "github.com/btcsuite/btcd/chaincfg"
@@ -83,7 +82,7 @@ func (s *HttpsServer) processRequest(command string, key string, params http.Hea
 
 	if command == "analyze_string" {
 		raw_text := params["Raw_text"]
-		pin.D("Raw_text", raw_text)
+		//pin.D("Raw_text", raw_text)
 		return s.AnalyzeString(raw_text[0])
 	}
 
@@ -174,15 +173,17 @@ func (s HttpsServer) obrtainBTCAddress() string {
 }
 
 func (s HttpsServer) AnalyzeString(hextext string) string {
-	bytes, err := hex.DecodeString(hextext)
-	if err != nil {
-		pin.D("AnalyzeString", err)
-		result := &StringAnalysis{
-			Error: fmt.Sprintf("%v", err),
-		}
-		return toJson(result)
-	}
-	text := string(bytes)
+	//bytes, err := hex.DecodeString(hextext)
+	//if err != nil {
+	//	pin.D("AnalyzeString", err)
+	//	result := &StringAnalysis{
+	//		Error: fmt.Sprintf("%v", err),
+	//	}
+	//	return toJson(result)
+	//}
+	//text := string(bytes)
+
+	text := hextext
 
 	pin.D("text", text)
 
