@@ -63,6 +63,7 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	responseString := s.processRequest(command, access_key, r.Header)
 
 	w.Header().Add("Content-Type", "application/json")
+	pin.D("response", responseString)
 	io.WriteString(w, responseString)
 }
 
