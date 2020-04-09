@@ -32,10 +32,7 @@ public class Handlers {
 		final String command = lines.getElementAt(0);
 		lines.removeElementAt(0);
 
-		final Handler h = loadHandler();
-		if (h == null) {
-			return false;
-		}
+		final Handler h = new TgBotMessageHandler();
 
 		final HandleArgs args = new HandleArgs();
 		args.bot = bot;
@@ -43,16 +40,6 @@ public class Handlers {
 		args.command = command;
 		args.arguments = lines;
 		args.inputRaw = text;
-// final Runnable r = new Runnable() {
-// @Override
-// public void run () {
-// h.handle(args);
-// }
-// };
-// final Thread t = new Thread(r);
-// t.start();
-// Sys.sleep(20000);
-// return true;
 
 		try {
 			L.d("debug args", args);
@@ -61,10 +48,6 @@ public class Handlers {
 			e.printStackTrace();
 			return true;
 		}
-	}
-
-	private static Handler loadHandler () {
-		return new TgBotMessageHandler();
 	}
 
 	public static final void respond (final AbsSender bot, final Long chatID, final String responseText) throws IOException {

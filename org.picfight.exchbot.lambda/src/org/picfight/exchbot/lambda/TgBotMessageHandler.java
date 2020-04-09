@@ -2,14 +2,15 @@
 package org.picfight.exchbot.lambda;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
-import org.picfight.exchbot.lambda.backend.BTCAddress;
-import org.picfight.exchbot.lambda.backend.BTCAddressArgs;
 import org.picfight.exchbot.lambda.backend.ExchangeBackEnd;
 import org.picfight.exchbot.lambda.backend.ExchangeBackEndArgs;
-import org.picfight.exchbot.lambda.backend.PFCAddress;
-import org.picfight.exchbot.lambda.backend.PFCAddressArgs;
 import org.picfight.exchbot.lambda.backend.Rate;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
@@ -37,57 +38,144 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.RATE)) {
-			final Rate rate = backEnd.getRate();
-			Handlers.respond(args.bot, chatid, "Circulating supply: " + (rate.getCirculatingSupply()).longValue() + " PFC", false);
-			Handlers.respond(args.bot, chatid, "PicfightCoin price: " + rate.BTCperPFC() + " BTC per coin", false);
-			Handlers.respond(args.bot, chatid, "Available coins: " + rate.availablePFC() + " PFC", false);
-			return true;
+		if (false || //
+			args.command.equalsIgnoreCase(OPERATIONS.MENU) || //
+			args.command.equalsIgnoreCase(OPERATIONS.START) || //
+			args.command.equalsIgnoreCase(OPERATIONS.HELP) || //
+			false) {
+			this.respondMenu(args.bot, chatid);
+			this.respondMenuCH(args.bot, chatid);
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
-			final BTCAddress address = backEnd.obtainNewBTCAddress(null);
-			Handlers.respond(args.bot, chatid, "New BTC Address: " + address, false);
-			return true;
-		}
-
-		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_PFC_ADDRESS)) {
-			final PFCAddress address = backEnd.obtainNewPFCAddress(null);
-			Handlers.respond(args.bot, chatid, "New PFC Address: " + address, false);
-			return true;
-		}
-
-		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
-			final BTCAddressArgs a = new BTCAddressArgs();
-			final BTCAddress address = backEnd.obtainNewBTCAddress(a);
-			Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
-			return true;
-		}
-
-		if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
-			final PFCAddressArgs a = new PFCAddressArgs();
-			final PFCAddress address = backEnd.obtainNewPFCAddress(a);
-			Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
-			return true;
-		}
-
-		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC_CH)) {
-			final BTCAddressArgs a = new BTCAddressArgs();
-			final BTCAddress address = backEnd.obtainNewBTCAddress(a);
-			Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
-			return true;
-		}
-
-		if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC_CH)) {
-			final PFCAddressArgs a = new PFCAddressArgs();
-			final PFCAddress address = backEnd.obtainNewPFCAddress(a);
-			Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
-			return true;
-		}
+// if (args.command.equalsIgnoreCase(OPERATIONS.RATE)) {
+// final Rate rate = backEnd.getRate();
+// Handlers.respond(args.bot, chatid, "Circulating supply: " + (rate.getCirculatingSupply()).longValue() + " PFC", false);
+// Handlers.respond(args.bot, chatid, "PicfightCoin price: " + rate.BTCperPFC() + " BTC per coin", false);
+// Handlers.respond(args.bot, chatid, "Available coins: " + rate.availablePFC() + " PFC", false);
+// return true;
+// }
+//
+// if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
+// if (args.arguments.size() == 0) {
+// Handlers.respond(args.bot, chatid,
+// "To buy PicFight coins, send the following command: " + OPERATIONS.BUY_PFC + " " + address.AddressString(), false);
+// }
+//
+// final BTCAddressArgs a = new BTCAddressArgs();
+// final BTCAddress address = backEnd.obtainNewBTCAddress(a);
+// Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
+// return true;
+// }
+//
+// if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
+// final PFCAddressArgs a = new PFCAddressArgs();
+// final PFCAddress address = backEnd.obtainNewPFCAddress(a);
+// Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
+// return true;
+// }
+//
+// if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC_CH)) {
+// final BTCAddressArgs a = new BTCAddressArgs();
+// final BTCAddress address = backEnd.obtainNewBTCAddress(a);
+// Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
+// return true;
+// }
+//
+// if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC_CH)) {
+// final PFCAddressArgs a = new PFCAddressArgs();
+// final PFCAddress address = backEnd.obtainNewPFCAddress(a);
+// Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
+// return true;
+// }
 
 		L.e("Command not found", args.command);
+		this.respondMenu(args.bot, chatid);
+		this.respondMenuCH(args.bot, chatid);
+		return true;
+	}
 
-		return false;
+	private void respondMenu (final AbsSender bot, final Long chatid) throws IOException {
+		final Rate rate = backEnd.getRate();
+
+		final String N = "\n";
+		final StringBuilder b = new StringBuilder();
+		b.append("This bot sells and buys PicFight coins (PFC) for Bitcoins (BTC)");
+		b.append(N);
+		b.append("PFC available for sale: " + rate.availablePFC() + " PFC");
+		b.append(N);
+		b.append(N);
+		b.append("Exchange rate:");
+		b.append(N);
+		b.append("Buy 100 PFC for " + this.formatFloat(this.buyPrice(rate) * 100, UP) + " BTC");
+		b.append(N);
+		b.append("Sell 100 PFC for " + this.formatFloat(this.sellPrice(rate) * 100, DOWN) + " BTC");
+		b.append(N);
+		b.append(N);
+		b.append("To  buy PFC submit your PFC-wallet address");
+		b.append(N);
+		b.append("To sell PFC submit your BTC-wallet address");
+		b.append(N);
+		b.append(N);
+		b.append("You can download PFC wallet here: https://github.com/picfight/pfcredit");
+
+		Handlers.respond(bot, chatid, b.toString(), false);
+
+	}
+
+	private String formatFloat (final double value, final boolean roundUP) {
+		final DecimalFormat formatter = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		if (roundUP == UP) {
+			formatter.setRoundingMode(RoundingMode.UP);
+		}
+		if (roundUP == DOWN) {
+			formatter.setRoundingMode(RoundingMode.DOWN);
+		}
+		final String s = formatter.format(value);
+		return s;
+	}
+
+	static boolean UP = true;
+	static boolean DOWN = !UP;
+
+	private void respondMenuCH (final AbsSender bot, final Long chatid) throws IOException {
+		final Rate rate = backEnd.getRate();
+
+		final String N = "\n";
+		final StringBuilder b = new StringBuilder();
+		b.append("该机器人买卖比特币（BTC）的PicFight硬币（PFC）");
+		b.append(N);
+		b.append("PFC可供出售 " + rate.availablePFC() + "");
+		b.append(N);
+		b.append(N);
+		b.append("汇率:");
+		b.append(N);
+		b.append("为BTC购买100个PFC " + this.formatFloat(this.buyPrice(rate) * 100, UP) + "");
+		b.append(N);
+		b.append("为BTC出售100个PFC " + this.formatFloat(this.sellPrice(rate) * 100, DOWN) + "");
+		b.append(N);
+		b.append(N);
+		b.append("要购买PFC，请提交您的PFC钱包地址");
+		b.append(N);
+		b.append("要出售PFC，请提交您的BTC钱包地址");
+		b.append(N);
+		b.append(N);
+		b.append("您可以在这里下载PFC钱包: https://github.com/picfight/pfcredit");
+
+		Handlers.respond(bot, chatid, b.toString(), false);
+
+	}
+
+	private double buyPrice (final Rate rate) {
+		final double exchange_rate = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_RATE")));
+		final double margin = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_MARGIN")));
+
+		return exchange_rate * (1.0 + margin / 2.0);
+	}
+
+	private double sellPrice (final Rate rate) {
+		final double exchange_rate = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_RATE")));
+		final double margin = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_MARGIN")));
+		return exchange_rate * (1.0 - margin / 2.0);
 	}
 
 }

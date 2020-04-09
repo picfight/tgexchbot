@@ -13,4 +13,8 @@ public class OPERATIONS {
 	public static final String BUY_PFC_CH = "/买";
 	public static final String SELL_PFC_CH = "/卖";
 
+	public static final String MENU = "/menu";
+	public static final String START = "/start";
+	public static final String HELP = "/help";
+
 }

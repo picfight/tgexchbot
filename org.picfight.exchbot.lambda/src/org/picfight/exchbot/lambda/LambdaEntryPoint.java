@@ -43,6 +43,14 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		this.handleUpdate(update);
 		L.d("Finished handling update " + update.getUpdateId());
 
+		final String response = "{ \"statusCode\": 200, \"headers\": {\"Content-Type\": \"application/json\"}, \"body\": \"\" }";
+
+		final com.jfixby.scarabei.api.io.OutputStream os = IO.newOutputStream( () -> output);
+		os.open();
+		os.write(response.getBytes());
+		os.flush();
+		os.close();
+
 	}
 
 	private void handleUpdate (final Update update) {
