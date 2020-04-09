@@ -7,24 +7,37 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.picfight.exchbot.lambda.backend.ExchangeBackEnd;
-import org.picfight.exchbot.lambda.backend.ExchangeBackEndArgs;
+import org.picfight.exchbot.lambda.backend.BTCAddress;
+import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.Rate;
+import org.picfight.exchbot.lambda.backend.StringAnalysis;
+import org.picfight.exchbot.lambda.backend.Transaction;
+import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
+import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
+import org.picfight.exchbot.lambda.backend.WalletBackEnd;
+import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import com.jfixby.scarabei.api.collections.List;
+import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
+import com.jfixby.scarabei.api.strings.Strings;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
 public class TgBotMessageHandler implements Handler {
 	public static final String WALLET_CHECK = "/walletcheck";
-	public static final ExchangeBackEnd backEnd;
-	static {
-		final ExchangeBackEndArgs args = new ExchangeBackEndArgs();
-		args.access_key = SystemSettings.getRequiredStringParameter(Names.newID("ACCESS_KEY"));
-		args.host = SystemSettings.getRequiredStringParameter(Names.newID("BACKEND_HOST"));// "https://exchange.picfight.org";
-		args.port = Integer.parseInt(SystemSettings.getRequiredStringParameter(Names.newID("BACKEND_PORT")));// "https://exchange.picfight.org";
-		backEnd = new ExchangeBackEnd(args);
+	public final WalletBackEnd walletBackEnd;
+	public final TransactionBackEnd transactionsBackEnd;
+	{
+		final WalletBackEndArgs walletArgs = new WalletBackEndArgs();
+		walletArgs.access_key = SystemSettings.getRequiredStringParameter(Names.newID("ACCESS_KEY"));
+		walletArgs.host = SystemSettings.getRequiredStringParameter(Names.newID("BACKEND_HOST"));// "https://exchange.picfight.org";
+		walletArgs.port = Integer.parseInt(SystemSettings.getRequiredStringParameter(Names.newID("BACKEND_PORT")));// "https://exchange.picfight.org";
+		this.walletBackEnd = new WalletBackEnd(walletArgs);
+
+		final TransactionBackEndArgs transactionArgs = new TransactionBackEndArgs();
+		this.transactionsBackEnd = new TransactionBackEnd(transactionArgs);
 	}
 
 	@Override
@@ -45,6 +58,24 @@ public class TgBotMessageHandler implements Handler {
 			false) {
 			this.respondMenu(args.bot, chatid);
 			this.respondMenuCH(args.bot, chatid);
+			return true;
+		}
+
+		if (args.inputRaw != null) {
+			final List<String> list = Strings.split(args.inputRaw, " ");
+			if (list.size() > 0) {
+				final String text = list.getElementAt(0);
+				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
+				if (anal.BTCAddress != null) {
+					this.processSell(args, anal.BTCAddress);
+					return true;
+				}
+				if (anal.PFCAddress != null) {
+					this.processBuy(args, anal.PFCAddress);
+					return true;
+				}
+
+			}
 		}
 
 // if (args.command.equalsIgnoreCase(OPERATIONS.RATE)) {
@@ -94,8 +125,61 @@ public class TgBotMessageHandler implements Handler {
 		return true;
 	}
 
+	private void processBuy (final HandleArgs args, final PFCAddress pfcAddress) throws IOException {
+		final BTCAddress btcAddress = this.walletBackEnd.obtainNewBTCAddress();
+		final Long chatid = args.update.message.chatID;
+
+		final Transaction transact = new Transaction();
+		transact.chatID = chatid;
+		transact.timestamp = System.currentTimeMillis();
+		transact.userName = args.update.message.from.userName;
+		transact.firstName = args.update.message.from.firstName;
+		transact.lastName = args.update.message.from.lastName;
+
+		transact.type = Transaction.BUY;
+		transact.clientPFCWallet = pfcAddress;
+		transact.exchangeBTCWallet = btcAddress;
+		this.transactionsBackEnd.registerTransaction(transact);
+
+		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
+		Handlers.respond(args.bot, chatid, btcAddress.AddressString, false);
+		Handlers.respond(args.bot, chatid, "PFC will be sent to the following address:", false);
+		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + pfcAddress.AddressString, true);
+		Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
+		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
+
+		Handlers.respond(args.bot, chatid, "" + Json.serializeToString(transact), false);
+	}
+
+	private void processSell (final HandleArgs args, final BTCAddress btcAddress) throws IOException {
+		final PFCAddress pfcAddress = this.walletBackEnd.obtainNewPFCAddress();
+		final Long chatid = args.update.message.chatID;
+
+		final Transaction transact = new Transaction();
+		transact.chatID = chatid;
+		transact.timestamp = System.currentTimeMillis();
+		transact.userName = args.update.message.from.userName;
+		transact.firstName = args.update.message.from.firstName;
+		transact.lastName = args.update.message.from.lastName;
+
+		transact.type = Transaction.SELL;
+		transact.exchangePFCWallet = pfcAddress;
+		transact.clientBTCWallet = btcAddress;
+
+		this.transactionsBackEnd.registerTransaction(transact);
+
+		Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
+		Handlers.respond(args.bot, chatid, pfcAddress.AddressString, false);
+		Handlers.respond(args.bot, chatid, "BTC will be sent to the following address:", false);
+		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + btcAddress.AddressString, true);
+		Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
+		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
+
+		Handlers.respond(args.bot, chatid, "" + Json.serializeToString(transact), false);
+	}
+
 	private void respondMenu (final AbsSender bot, final Long chatid) throws IOException {
-		final Rate rate = backEnd.getRate();
+		final Rate rate = this.walletBackEnd.getRate();
 
 		final String N = "\n";
 		final StringBuilder b = new StringBuilder();
@@ -138,7 +222,7 @@ public class TgBotMessageHandler implements Handler {
 	static boolean DOWN = !UP;
 
 	private void respondMenuCH (final AbsSender bot, final Long chatid) throws IOException {
-		final Rate rate = backEnd.getRate();
+		final Rate rate = this.walletBackEnd.getRate();
 
 		final String N = "\n";
 		final StringBuilder b = new StringBuilder();

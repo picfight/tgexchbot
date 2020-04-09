@@ -1,7 +1,7 @@
 
 package org.picfight.exchbot.lambda.backend;
 
-public class ExchangeBackEndArgs {
+public class WalletBackEndArgs {
 
 	public String host;
 	public int port;

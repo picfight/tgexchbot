@@ -12,13 +12,13 @@ import com.jfixby.scarabei.api.json.JsonString;
 import com.jfixby.scarabei.api.net.http.Http;
 import com.jfixby.scarabei.api.net.http.HttpURL;
 
-public class ExchangeBackEnd {
+public class WalletBackEnd {
 
 	final public String host;
 	final public int port;
 	final public String access_key;
 
-	public ExchangeBackEnd (final ExchangeBackEndArgs args) {
+	public WalletBackEnd (final WalletBackEndArgs args) {
 		this.host = args.host;
 		this.port = args.port;
 		this.access_key = args.access_key;
@@ -46,7 +46,7 @@ public class ExchangeBackEnd {
 		return url;
 	}
 
-	public BTCAddress obtainNewBTCAddress (final BTCAddressArgs a) throws IOException {
+	public BTCAddress obtainNewBTCAddress () throws IOException {
 		final String command = "new_btc_address";
 		final HttpURL Url = this.commadToUrl(command);
 
@@ -56,6 +56,20 @@ public class ExchangeBackEnd {
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
 		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
+
+		return r;
+	}
+
+	public StringAnalysis analyzeString (final String text) throws IOException {
+		final String command = "analyze_string";
+		final HttpURL Url = this.commadToUrl(command);
+
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+
+		final StringAnalysis r = Json.deserializeFromString(StringAnalysis.class, resultJson);
 
 		return r;
 	}
@@ -75,7 +89,7 @@ public class ExchangeBackEnd {
 // return resultString;
 // }
 
-	public PFCAddress obtainNewPFCAddress (final PFCAddressArgs a) throws IOException {
+	public PFCAddress obtainNewPFCAddress () throws IOException {
 
 		final String command = "new_pfc_address";
 		final HttpURL Url = this.commadToUrl(command);

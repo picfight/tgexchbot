@@ -84,6 +84,10 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 				u.message.hasText = true;
 			}
 			u.message.chatID = update.getMessage().getChatId();
+
+			u.message.from.firstName = update.getMessage().getFrom().getFirstName();
+			u.message.from.lastName = update.getMessage().getFrom().getLastName();
+			u.message.from.userName = update.getMessage().getFrom().getUserName();
 		}
 
 		return u;
