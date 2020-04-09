@@ -16,7 +16,7 @@ public class TestAnalyze {
 		a.update = new TelegramUpdate();
 		a.update.message.chatID = -1L;
 		a.command = "/analyze";
-		a.inputRaw = "";
+		a.inputRaw = "JsFeTx96cSC2MtyBbDV1JV1m6mXwS8h8zhC";
 
 		h.handle(a);
 

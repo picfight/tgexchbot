@@ -187,7 +187,7 @@ func (s HttpsServer) AnalyzeString(text string) string {
 	}
 
 	if pfcAddress != nil {
-		result.BTCAddress = &AddressString{
+		result.PFCAddress = &AddressString{
 			AddressString: pfcAddress.String(),
 			Type:          "PFC",
 		}
