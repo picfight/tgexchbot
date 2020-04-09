@@ -2,11 +2,11 @@
 package org.picfight.exchbot.lambda.backend;
 
 public class PFCAddress {
-	public String AddressString;
-	public String Type;
+	public String address_string;
+	public String type;
 
 	public String AddressString () {
-		return this.AddressString;
+		return this.address_string;
 	}
 
 	@Override

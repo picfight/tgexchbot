@@ -86,24 +86,19 @@ public class TgBotMessageHandler implements Handler {
 // return true;
 // }
 //
-// if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
-// if (args.arguments.size() == 0) {
-// Handlers.respond(args.bot, chatid,
-// "To buy PicFight coins, send the following command: " + OPERATIONS.BUY_PFC + " " + address.AddressString(), false);
-// }
-//
-// final BTCAddressArgs a = new BTCAddressArgs();
-// final BTCAddress address = backEnd.obtainNewBTCAddress(a);
-// Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
-// return true;
-// }
-//
-// if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
-// final PFCAddressArgs a = new PFCAddressArgs();
-// final PFCAddress address = backEnd.obtainNewPFCAddress(a);
-// Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
-// return true;
-// }
+		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
+			final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
+			Handlers.respond(args.bot, chatid, "Send BTC here:", false);
+			Handlers.respond(args.bot, chatid, address.AddressString(), false);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_PFC_ADDRESS)) {
+			final PFCAddress address = this.walletBackEnd.obtainNewPFCAddress();
+			Handlers.respond(args.bot, chatid, "Send PFC here:", false);
+			Handlers.respond(args.bot, chatid, address.AddressString(), false);
+			return true;
+		}
 //
 // if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC_CH)) {
 // final BTCAddressArgs a = new BTCAddressArgs();
