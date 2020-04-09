@@ -60,7 +60,7 @@ public class ChatBotActionHandler {
 
 	public void handleRequest (final ChatRequestResponse requesthandler) {
 		final TelegramUpdate update = requesthandler.input;
-		final String text = update.message.text.toLowerCase();
+		final String text = update.message.text;
 		final Long chatid = update.message.chatID;
 		final boolean success = Handlers.handle(this.bot, update, text);
 		if (success) {

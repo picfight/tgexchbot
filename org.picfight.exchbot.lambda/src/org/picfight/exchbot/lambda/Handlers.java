@@ -29,7 +29,7 @@ public class Handlers {
 			return false;
 		}
 
-		final String command = lines.getElementAt(0);
+		final String command = lines.getElementAt(0).toLowerCase();
 		lines.removeElementAt(0);
 
 		final Handler h = new TgBotMessageHandler();
