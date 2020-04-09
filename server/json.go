@@ -13,6 +13,6 @@ type StringAnalysis struct {
 }
 
 type AddressString struct {
-	AddressString string `json: "address_string"`
-	Type          string `json: "type"`
+	AAddressString string `json: "address_string"`
+	TType          string `json: "type"`
 }
