@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	btccfg "github.com/btcsuite/btcd/chaincfg"
@@ -171,7 +172,17 @@ func (s HttpsServer) obrtainBTCAddress() string {
 	return toJson(address)
 }
 
-func (s HttpsServer) AnalyzeString(text string) string {
+func (s HttpsServer) AnalyzeString(hextext string) string {
+	bytes, err := hex.DecodeString(hextext)
+	if err != nil {
+		pin.D("AnalyzeString", err)
+		result := &StringAnalysis{
+			Error: fmt.Sprintf("%v", err),
+		}
+		return toJson(result)
+	}
+	text := string(bytes)
+
 	pin.D("text", text)
 
 	btcAddress, _ := btcutil.DecodeAddress(text, &btccfg.MainNetParams)

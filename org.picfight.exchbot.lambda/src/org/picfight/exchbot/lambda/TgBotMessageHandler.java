@@ -63,9 +63,11 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.inputRaw != null) {
 			final List<String> list = Strings.split(args.inputRaw, " ");
+			L.d("anal list", list);
 			if (list.size() > 0) {
 				final String text = list.getElementAt(0);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
+				L.d("anal", anal);
 				if (anal.BTCAddress != null) {
 					this.processSell(args, anal.BTCAddress);
 					return true;
@@ -74,46 +76,20 @@ public class TgBotMessageHandler implements Handler {
 					this.processBuy(args, anal.PFCAddress);
 					return true;
 				}
-
 			}
 		}
-
-// if (args.command.equalsIgnoreCase(OPERATIONS.RATE)) {
-// final Rate rate = backEnd.getRate();
-// Handlers.respond(args.bot, chatid, "Circulating supply: " + (rate.getCirculatingSupply()).longValue() + " PFC", false);
-// Handlers.respond(args.bot, chatid, "PicfightCoin price: " + rate.BTCperPFC() + " BTC per coin", false);
-// Handlers.respond(args.bot, chatid, "Available coins: " + rate.availablePFC() + " PFC", false);
-// return true;
-// }
-//
 		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
 			final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
 			Handlers.respond(args.bot, chatid, "Send BTC here:", false);
 			Handlers.respond(args.bot, chatid, address.AddressString(), false);
 			return true;
 		}
-
 		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_PFC_ADDRESS)) {
 			final PFCAddress address = this.walletBackEnd.obtainNewPFCAddress();
 			Handlers.respond(args.bot, chatid, "Send PFC here:", false);
 			Handlers.respond(args.bot, chatid, address.AddressString(), false);
 			return true;
 		}
-//
-// if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC_CH)) {
-// final BTCAddressArgs a = new BTCAddressArgs();
-// final BTCAddress address = backEnd.obtainNewBTCAddress(a);
-// Handlers.respond(args.bot, chatid, "Send BTC here: " + address.AddressString(), false);
-// return true;
-// }
-//
-// if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC_CH)) {
-// final PFCAddressArgs a = new PFCAddressArgs();
-// final PFCAddress address = backEnd.obtainNewPFCAddress(a);
-// Handlers.respond(args.bot, chatid, "Send PFC here: " + address.AddressString(), false);
-// return true;
-// }
-
 		L.e("Command not found", args.command);
 		this.respondMenu(args.bot, chatid);
 		this.respondMenuCH(args.bot, chatid);
