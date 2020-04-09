@@ -39,9 +39,9 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.RATE)) {
 			final Rate rate = backEnd.getRate();
-			Handlers.respond(args.bot, chatid, "Circulating supply: " + rate.getCirculatingSupply(), false);
-			Handlers.respond(args.bot, chatid, "PicfightCoin price in BTC: " + rate.BTCperPFC(), false);
-			Handlers.respond(args.bot, chatid, "Available PFC coins: " + rate.availablePFC(), false);
+			Handlers.respond(args.bot, chatid, "Circulating supply: " + (rate.getCirculatingSupply()).longValue() + " PFC", false);
+			Handlers.respond(args.bot, chatid, "PicfightCoin price: " + rate.BTCperPFC() + " BTC per coin", false);
+			Handlers.respond(args.bot, chatid, "Available coins: " + rate.availablePFC() + " PFC", false);
 			return true;
 		}
 
