@@ -139,7 +139,7 @@ func (s *HttpsServer) processRate() string {
 
 func (s HttpsServer) obrtainPFCAddress() string {
 	address := &AddressString{
-		TType: "PFC",
+		Type: "PFC",
 	}
 	{
 		client, err := connect.PFCWallet(s.config)
@@ -149,14 +149,14 @@ func (s HttpsServer) obrtainPFCAddress() string {
 		lang.CheckErr(err)
 		client.Disconnect()
 
-		address.AAddressString = addressResult.String()
+		address.AddressString = addressResult.String()
 	}
 	return toJson(address)
 }
 
 func (s HttpsServer) obrtainBTCAddress() string {
 	address := &AddressString{
-		TType: "BTC",
+		Type: "BTC",
 	}
 	{
 		client, err := connect.BTCWallet(s.config)
@@ -166,7 +166,7 @@ func (s HttpsServer) obrtainBTCAddress() string {
 		lang.CheckErr(err)
 		client.Disconnect()
 
-		address.AAddressString = addressResult.String()
+		address.AddressString = addressResult.String()
 	}
 	return toJson(address)
 }
@@ -181,15 +181,15 @@ func (s HttpsServer) AnalyzeString(text string) string {
 
 	if btcAddress != nil {
 		result.BTCAddress = &AddressString{
-			AAddressString: btcAddress.String(),
-			TType:          "BTC",
+			AddressString: btcAddress.String(),
+			Type:          "BTC",
 		}
 	}
 
 	if pfcAddress != nil {
 		result.BTCAddress = &AddressString{
-			AAddressString: pfcAddress.String(),
-			TType:          "PFC",
+			AddressString: pfcAddress.String(),
+			Type:          "PFC",
 		}
 	}
 

@@ -66,12 +66,12 @@ public class TgBotMessageHandler implements Handler {
 			if (list.size() > 0) {
 				final String text = list.getElementAt(0);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
-				if (anal.btc_address != null) {
-					this.processSell(args, anal.btc_address);
+				if (anal.BTCAddress != null) {
+					this.processSell(args, anal.BTCAddress);
 					return true;
 				}
-				if (anal.pfc_address != null) {
-					this.processBuy(args, anal.pfc_address);
+				if (anal.PFCAddress != null) {
+					this.processBuy(args, anal.PFCAddress);
 					return true;
 				}
 
@@ -137,7 +137,7 @@ public class TgBotMessageHandler implements Handler {
 		this.transactionsBackEnd.registerTransaction(transact);
 
 		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
-		Handlers.respond(args.bot, chatid, btcAddress.address_string, false);
+		Handlers.respond(args.bot, chatid, btcAddress.AddressString, false);
 		Handlers.respond(args.bot, chatid, "PFC will be sent to the following address:", false);
 		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + pfcAddress.AddressString, true);
 		Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
@@ -166,7 +166,7 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
 		Handlers.respond(args.bot, chatid, pfcAddress.AddressString, false);
 		Handlers.respond(args.bot, chatid, "BTC will be sent to the following address:", false);
-		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + btcAddress.address_string, true);
+		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + btcAddress.AddressString, true);
 		Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
 		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
 

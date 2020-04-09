@@ -8,11 +8,11 @@ type Rate struct {
 }
 
 type StringAnalysis struct {
-	BTCAddress *AddressString `json: "btc_address"`
-	PFCAddress *AddressString `json: "pfc_address"`
+	BTCAddress *AddressString `json: "BTCAddress"`
+	PFCAddress *AddressString `json: "PFCAddress"`
 }
 
 type AddressString struct {
-	AAddressString string `json: "address_string"`
-	TType          string `json: "type"`
+	AddressString string `json: "AddressString"`
+	Type          string `json: "Type"`
 }
