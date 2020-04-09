@@ -83,6 +83,7 @@ func (s *HttpsServer) processRequest(command string, key string, params http.Hea
 
 	if command == "analyze_string" {
 		raw_text := params["Raw_text"]
+		pin.D("Raw_text", raw_text)
 		return s.AnalyzeString(raw_text[0])
 	}
 

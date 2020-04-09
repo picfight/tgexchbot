@@ -84,7 +84,7 @@ public class WalletBackEnd {
 			hexChars[j * 2] = HEX_ARRAY[v >>> 4];
 			hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
 		}
-		return new String(hexChars);
+		return new String(hexChars).toLowerCase();
 	}
 
 //
