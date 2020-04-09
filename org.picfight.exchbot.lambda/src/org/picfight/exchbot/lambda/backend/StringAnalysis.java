@@ -3,7 +3,7 @@ package org.picfight.exchbot.lambda.backend;
 
 public class StringAnalysis {
 
-	public BTCAddress BTCAddress = null;
-	public PFCAddress PFCAddress = null;
+	public BTCAddress btc_address = null;
+	public PFCAddress pfc_address = null;
 
 }

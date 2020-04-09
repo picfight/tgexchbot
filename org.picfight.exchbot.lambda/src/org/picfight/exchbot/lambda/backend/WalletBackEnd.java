@@ -66,6 +66,7 @@ public class WalletBackEnd {
 
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
+		params.put("raw_text", text);
 
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 

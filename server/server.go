@@ -3,6 +3,10 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	btccfg "github.com/btcsuite/btcd/chaincfg"
+	"github.com/picfight/pfcd/dcrutil"
+
+	"github.com/btcsuite/btcutil"
 	"github.com/jfixby/coin"
 	"github.com/jfixby/pin"
 	"github.com/jfixby/pin/lang"
@@ -73,6 +77,11 @@ func (s *HttpsServer) processRequest(command string, key string, params http.Hea
 
 	if command == "new_btc_address" {
 		return s.obrtainBTCAddress()
+	}
+
+	if command == "analyze_string" {
+		raw_text := params["Raw_text"]
+		return s.AnalyzeString(raw_text[0])
 	}
 
 	return `{"status":"ok"}`
@@ -159,6 +168,31 @@ func (s HttpsServer) obrtainBTCAddress() string {
 		address.AddressString = addressResult.String()
 	}
 	return toJson(address)
+}
+
+func (s HttpsServer) AnalyzeString(text string) string {
+	pin.D("text", text)
+
+	btcAddress, _ := btcutil.DecodeAddress(text, &btccfg.MainNetParams)
+	pfcAddress, _ := dcrutil.DecodeAddress(text)
+
+	result := &StringAnalysis{}
+
+	if btcAddress != nil {
+		result.BTCAddress = &AddressString{
+			AddressString: btcAddress.String(),
+			Type:          "BTC",
+		}
+	}
+
+	if pfcAddress != nil {
+		result.BTCAddress = &AddressString{
+			AddressString: pfcAddress.String(),
+			Type:          "PFC",
+		}
+	}
+
+	return toJson(result)
 }
 
 func toJson(v interface{}) string {
