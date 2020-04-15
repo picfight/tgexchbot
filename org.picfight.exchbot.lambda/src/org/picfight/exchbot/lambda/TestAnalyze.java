@@ -3,12 +3,10 @@ package org.picfight.exchbot.lambda;
 
 import java.io.IOException;
 
-import com.jfixby.scarabei.red.desktop.ScarabeiDesktop;
-
 public class TestAnalyze {
 
 	public static void main (final String[] args) throws IOException {
-		ScarabeiDesktop.deploy();
+		LambdaEntryPoint.init();
 
 		final TgBotMessageHandler h = new TgBotMessageHandler();
 

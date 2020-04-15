@@ -18,11 +18,9 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import com.jfixby.scarabei.api.collections.List;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
-import com.jfixby.scarabei.api.strings.Strings;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
 public class TgBotMessageHandler implements Handler {
@@ -61,23 +59,75 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-		if (args.inputRaw != null) {
-			final List<String> list = Strings.split(args.inputRaw, " ");
-			L.d("anal list", list);
-			if (list.size() > 0) {
-				final String text = list.getElementAt(0);
+		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
+			if (args.arguments.size() != 0) {
+				final String text = args.arguments.getElementAt(0);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
-				L.d("anal", anal);
-				if (anal.BTCAddress != null) {
-					this.processSell(args, anal.BTCAddress);
-					return true;
-				}
 				if (anal.PFCAddress != null) {
 					this.processBuy(args, anal.PFCAddress);
 					return true;
 				}
 			}
+
+			Handlers.respond(args.bot, chatid, "Buy-command usage:/n" + OPERATIONS.BUY_PFC + " pfc_wallet_address/n example: "
+				+ OPERATIONS.BUY_PFC + " Ja0bBc1d2e3f4g5h6j7k8l9m0", false);
+
+			return true;
 		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
+			if (args.arguments.size() != 0) {
+				final String text = args.arguments.getElementAt(0);
+				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
+				if (anal.BTCAddress != null) {
+					this.processSell(args, anal.BTCAddress);
+					return true;
+				}
+			}
+
+			Handlers.respond(args.bot, chatid, "Sell-command usage:/n" + OPERATIONS.SELL_PFC + " btc_wallet_address/n example: "
+				+ OPERATIONS.SELL_PFC + " 1a0bBc1d2e3f4g5h6j7k8l9m0", false);
+
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.STATUS)) {
+			if (args.arguments.size() != 0) {
+				final String text = args.arguments.getElementAt(0);
+				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
+				if (anal.PFCAddress != null) {
+					this.processStatus(args, anal);
+					return true;
+				}
+				if (anal.BTCAddress != null) {
+					this.processStatus(args, anal);
+					return true;
+				}
+			}
+
+			Handlers.respond(args.bot, chatid, "Order status command usage:/n" + OPERATIONS.STATUS + " wallet_address/n example: "
+				+ OPERATIONS.STATUS + " za0bBc1d2e3f4g5h6j7k8l9m0", false);
+
+			return true;
+		}
+
+// if (args.inputRaw != null) {
+// final List<String> list = Strings.split(args.inputRaw, " ");
+// L.d("anal list", list);
+// if (list.size() > 0) {
+// final String text = list.getElementAt(0);
+// final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
+// L.d("anal", anal);
+// if (anal.BTCAddress != null) {
+// this.processSell(args, anal.BTCAddress);
+// return true;
+// }
+// if (anal.PFCAddress != null) {
+// this.processBuy(args, anal.PFCAddress);
+// return true;
+// }
+// }
+// }
 		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
 			final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
 			Handlers.respond(args.bot, chatid, "Send BTC here:", false);
@@ -94,6 +144,9 @@ public class TgBotMessageHandler implements Handler {
 		this.respondMenu(args.bot, chatid);
 		this.respondMenuCH(args.bot, chatid);
 		return true;
+	}
+
+	private void processStatus (final HandleArgs args, final StringAnalysis anal) {
 	}
 
 	private void processBuy (final HandleArgs args, final PFCAddress pfcAddress) throws IOException {

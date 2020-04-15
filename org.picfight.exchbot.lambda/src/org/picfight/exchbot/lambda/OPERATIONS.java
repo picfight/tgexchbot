@@ -16,5 +16,6 @@ public class OPERATIONS {
 	public static final String MENU = "/menu";
 	public static final String START = "/start";
 	public static final String HELP = "/help";
+	public static final String STATUS = "/status";
 
 }
