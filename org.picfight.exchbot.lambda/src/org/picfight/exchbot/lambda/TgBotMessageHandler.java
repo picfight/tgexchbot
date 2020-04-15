@@ -69,7 +69,7 @@ public class TgBotMessageHandler implements Handler {
 				}
 			}
 
-			Handlers.respond(args.bot, chatid, "Buy-command usage:\n" + OPERATIONS.BUY_PFC + " pfc_wallet_address\n example: "
+			Handlers.respond(args.bot, chatid, "Buy-command usage:\n" + OPERATIONS.BUY_PFC + " pfc_wallet_address\n\n Example:\n"
 				+ OPERATIONS.BUY_PFC + " Ja0bBc1d2e3f4g5h6j7k8l9m0", false);
 
 			return true;
