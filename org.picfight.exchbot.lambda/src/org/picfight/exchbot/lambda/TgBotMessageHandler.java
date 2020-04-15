@@ -69,7 +69,7 @@ public class TgBotMessageHandler implements Handler {
 				}
 			}
 
-			Handlers.respond(args.bot, chatid, "Buy-command usage:/n" + OPERATIONS.BUY_PFC + " pfc_wallet_address/n example: "
+			Handlers.respond(args.bot, chatid, "Buy-command usage:\n" + OPERATIONS.BUY_PFC + " pfc_wallet_address\n example: "
 				+ OPERATIONS.BUY_PFC + " Ja0bBc1d2e3f4g5h6j7k8l9m0", false);
 
 			return true;
@@ -85,7 +85,7 @@ public class TgBotMessageHandler implements Handler {
 				}
 			}
 
-			Handlers.respond(args.bot, chatid, "Sell-command usage:/n" + OPERATIONS.SELL_PFC + " btc_wallet_address/n example: "
+			Handlers.respond(args.bot, chatid, "Sell-command usage:\n" + OPERATIONS.SELL_PFC + " btc_wallet_address\n\n Example:\n"
 				+ OPERATIONS.SELL_PFC + " 1a0bBc1d2e3f4g5h6j7k8l9m0", false);
 
 			return true;
@@ -105,7 +105,7 @@ public class TgBotMessageHandler implements Handler {
 				}
 			}
 
-			Handlers.respond(args.bot, chatid, "Order status command usage:/n" + OPERATIONS.STATUS + " wallet_address/n example: "
+			Handlers.respond(args.bot, chatid, "Order status command usage:\n" + OPERATIONS.STATUS + " wallet_address\n\n Example:\n"
 				+ OPERATIONS.STATUS + " za0bBc1d2e3f4g5h6j7k8l9m0", false);
 
 			return true;
@@ -219,9 +219,9 @@ public class TgBotMessageHandler implements Handler {
 		b.append("Sell 100 PFC for " + this.formatFloat(this.sellPrice(rate) * 100, DOWN) + " BTC");
 		b.append(N);
 		b.append(N);
-		b.append("To  buy PFC submit your PFC-wallet address");
+		b.append(OPERATIONS.BUY_PFC + " to buy PFC");
 		b.append(N);
-		b.append("To sell PFC submit your BTC-wallet address");
+		b.append(OPERATIONS.SELL_PFC + " to sell PFC");
 		b.append(N);
 		b.append(N);
 		b.append("You can download PFC wallet here: https://github.com/picfight/pfcredit");
@@ -262,9 +262,9 @@ public class TgBotMessageHandler implements Handler {
 		b.append("为BTC出售100个PFC " + this.formatFloat(this.sellPrice(rate) * 100, DOWN) + "");
 		b.append(N);
 		b.append(N);
-		b.append("要购买PFC，请提交您的PFC钱包地址");
+		b.append(OPERATIONS.BUY_PFC + " 购买 PFC");
 		b.append(N);
-		b.append("要出售PFC，请提交您的BTC钱包地址");
+		b.append(OPERATIONS.SELL_PFC + " 出售 PFC");
 		b.append(N);
 		b.append(N);
 		b.append("您可以在这里下载PFC钱包: https://github.com/picfight/pfcredit");
