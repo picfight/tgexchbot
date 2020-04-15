@@ -15,7 +15,8 @@ import com.jfixby.scarabei.api.sys.Sys;
 
 public class Handlers {
 
-	public static boolean handle (final AbsSender bot, final TelegramUpdate update, final String text) {
+	public static boolean handle (final AbsSender bot, final TelegramUpdate update, final String text,
+		final FilesystemSetup filesystem) {
 		if (text == null) {
 			return false;
 		}
@@ -40,6 +41,7 @@ public class Handlers {
 		args.command = command;
 		args.arguments = lines;
 		args.inputRaw = text;
+		args.filesystem = filesystem;
 
 		try {
 			L.d("debug args", args);
@@ -88,6 +90,7 @@ public class Handlers {
 }
 
 class HandleArgs {
+	public FilesystemSetup filesystem;
 	public String inputRaw;
 	public AbsSender bot;
 	public TelegramUpdate update;

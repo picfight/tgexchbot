@@ -3,7 +3,7 @@ package org.picfight.exchbot.lambda;
 
 import com.jfixby.scarabei.api.file.File;
 
-public class S3Setup {
+public class FilesystemSetup {
 
 	public File root;
 	public File orders;

@@ -31,7 +31,7 @@ import com.jfixby.scarabei.aws.desktop.s3.DesktopS3;
 import com.jfixby.scarabei.red.desktop.ScarabeiDesktop;
 
 public class LambdaEntryPoint implements RequestStreamHandler {
-	private static S3Setup rootFS;
+	private static FilesystemSetup rootFS;
 
 	static {
 		ScarabeiDesktop.deploy();
@@ -40,30 +40,33 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 	}
 
 	@Override
-	public void handleRequest (final InputStream input, final OutputStream output, final Context context) throws IOException {
+	public void handleRequest (final InputStream input, final OutputStream output, final Context context) {
+		try {
+			final com.jfixby.scarabei.api.io.InputStream is = IO.newInputStream( () -> input);
+			is.open();
+			final String data = is.readAllToString();
+			is.close();
+			L.d("DATA", data);
 
-		final com.jfixby.scarabei.api.io.InputStream is = IO.newInputStream( () -> input);
-		is.open();
-		final String data = is.readAllToString();
-		is.close();
-		L.d("DATA", data);
-
-		final Data dt = Json.deserializeFromString(Data.class, data);
-		final ObjectMapper objectReader = new ObjectMapper();
-		final Update update = objectReader.readValue(dt.body, Update.class);
+			final Data dt = Json.deserializeFromString(Data.class, data);
+			final ObjectMapper objectReader = new ObjectMapper();
+			final Update update = objectReader.readValue(dt.body, Update.class);
 // update = objectReader.readValue(input, );
-		L.d("Update @ '" + getFormattedTimestamp(update) + "' : " + update);
-		L.d("Starting handling update " + update.getUpdateId());
-		this.handleUpdate(update);
-		L.d("Finished handling update " + update.getUpdateId());
+			L.d("Update @ '" + getFormattedTimestamp(update) + "' : " + update);
+			L.d("Starting handling update " + update.getUpdateId());
+			this.handleUpdate(update);
+			L.d("Finished handling update " + update.getUpdateId());
 
-		final String response = "{ \"statusCode\": 200, \"headers\": {\"Content-Type\": \"application/json\"}, \"body\": \"\" }";
+			final String response = "{ \"statusCode\": 200, \"headers\": {\"Content-Type\": \"application/json\"}, \"body\": \"\" }";
 
-		final com.jfixby.scarabei.api.io.OutputStream os = IO.newOutputStream( () -> output);
-		os.open();
-		os.write(response.getBytes());
-		os.flush();
-		os.close();
+			final com.jfixby.scarabei.api.io.OutputStream os = IO.newOutputStream( () -> output);
+			os.open();
+			os.write(response.getBytes());
+			os.flush();
+			os.close();
+		} catch (final Throwable e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -75,12 +78,12 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		}
 	}
 
-	public static S3Setup deployS3FileSystem () throws IOException {
+	public static FilesystemSetup deployS3FileSystem () throws IOException {
 		final S3Component s3 = S3.invoke();
 
 		SystemSettings.setExecutionMode(ExecutionMode.EARLY_DEVELOPMENT);
 		final Map<ID, Object> settings = SystemSettings.listAllSettings();
-		L.d("System settings", settings);
+// L.d("System settings", settings);
 
 		final S3FileSystemConfig s3config = s3.newFileSystemConfig();
 		s3config.awsCredentialsProvider = new AWSCredentialsViaSystemSettingsProvider();
@@ -94,7 +97,7 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		final File root = fs.ROOT().child("exchangebot");
 		root.makeFolder();
 
-		final S3Setup setup = new S3Setup();
+		final FilesystemSetup setup = new FilesystemSetup();
 
 		setup.root = root;
 
@@ -118,11 +121,11 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		requesthandler.input = this.updatetoTelegramUpdate(update);
 
 		if (ChatBotActionHandler.handler == null) {
-			ChatBotActionHandler.handler = new ChatBotActionHandler();
+			ChatBotActionHandler.handler = new ChatBotActionHandler(false);
 			SystemSettings.setExecutionMode(ExecutionMode.RELEASE_CANDIDATE);
 		}
 
-		ChatBotActionHandler.handler.handleRequest(requesthandler);
+		ChatBotActionHandler.handler.handleRequest(requesthandler, rootFS);
 
 		L.d("requesthandler", requesthandler);
 
@@ -158,6 +161,10 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 	}
 
 	public static void init () {
+	}
+
+	public static FilesystemSetup FS () {
+		return rootFS;
 	}
 
 }

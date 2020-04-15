@@ -18,6 +18,7 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
@@ -111,23 +112,6 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-// if (args.inputRaw != null) {
-// final List<String> list = Strings.split(args.inputRaw, " ");
-// L.d("anal list", list);
-// if (list.size() > 0) {
-// final String text = list.getElementAt(0);
-// final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
-// L.d("anal", anal);
-// if (anal.BTCAddress != null) {
-// this.processSell(args, anal.BTCAddress);
-// return true;
-// }
-// if (anal.PFCAddress != null) {
-// this.processBuy(args, anal.PFCAddress);
-// return true;
-// }
-// }
-// }
 		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
 			final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
 			Handlers.respond(args.bot, chatid, "Send BTC here:", false);
@@ -163,7 +147,7 @@ public class TgBotMessageHandler implements Handler {
 		transact.type = Transaction.BUY;
 		transact.clientPFCWallet = pfcAddress;
 		transact.exchangeBTCWallet = btcAddress;
-		this.transactionsBackEnd.registerTransaction(transact);
+		final File file = this.transactionsBackEnd.registerTransaction(transact, args.filesystem);
 
 		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
 		Handlers.respond(args.bot, chatid, btcAddress.AddressString, false);
@@ -173,6 +157,7 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
 
 		Handlers.respond(args.bot, chatid, "" + Json.serializeToString(transact), false);
+		Handlers.respond(args.bot, chatid, "" + file.toString(), false);
 	}
 
 	private void processSell (final HandleArgs args, final BTCAddress btcAddress) throws IOException {
@@ -190,7 +175,7 @@ public class TgBotMessageHandler implements Handler {
 		transact.exchangePFCWallet = pfcAddress;
 		transact.clientBTCWallet = btcAddress;
 
-		this.transactionsBackEnd.registerTransaction(transact);
+		final File file = this.transactionsBackEnd.registerTransaction(transact, args.filesystem);
 
 		Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
 		Handlers.respond(args.bot, chatid, pfcAddress.AddressString, false);
@@ -200,6 +185,7 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
 
 		Handlers.respond(args.bot, chatid, "" + Json.serializeToString(transact), false);
+		Handlers.respond(args.bot, chatid, "" + file.toString(), false);
 	}
 
 	private void respondMenu (final AbsSender bot, final Long chatid) throws IOException {
@@ -222,6 +208,8 @@ public class TgBotMessageHandler implements Handler {
 		b.append(OPERATIONS.BUY_PFC + " to buy PFC");
 		b.append(N);
 		b.append(OPERATIONS.SELL_PFC + " to sell PFC");
+		b.append(N);
+		b.append(OPERATIONS.STATUS + " to check your order status");
 		b.append(N);
 		b.append(N);
 		b.append("You can download PFC wallet here: https://github.com/picfight/pfcredit");
@@ -265,6 +253,8 @@ public class TgBotMessageHandler implements Handler {
 		b.append(OPERATIONS.BUY_PFC + " 购买 PFC");
 		b.append(N);
 		b.append(OPERATIONS.SELL_PFC + " 出售 PFC");
+		b.append(N);
+		b.append(OPERATIONS.STATUS + " 查看订单状态");
 		b.append(N);
 		b.append(N);
 		b.append("您可以在这里下载PFC钱包: https://github.com/picfight/pfcredit");

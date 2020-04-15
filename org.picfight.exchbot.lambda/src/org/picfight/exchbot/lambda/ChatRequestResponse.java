@@ -13,6 +13,7 @@ public class ChatRequestResponse {
 	public Object output;
 
 	public String build;
+	public boolean debug_mode;
 
 	@Override
 	public String toString () {

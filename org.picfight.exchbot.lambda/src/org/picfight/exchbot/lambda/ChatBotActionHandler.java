@@ -22,7 +22,11 @@ public class ChatBotActionHandler {
 
 	private final AbsSender bot;
 
-	public ChatBotActionHandler () {
+	public ChatBotActionHandler (final boolean debug_mode) {
+		if (debug_mode) {
+			this.bot = null;
+			return;
+		}
 		final String token = SystemSettings.getStringParameter(TELEGRAM_BOT_TOKEN, null);
 		final String username = SystemSettings.getStringParameter(TELEGRAM_BOT_USERNAME, null);
 
@@ -58,17 +62,18 @@ public class ChatBotActionHandler {
 
 	public static ChatBotActionHandler handler;
 
-	public void handleRequest (final ChatRequestResponse requesthandler) {
+	public void handleRequest (final ChatRequestResponse requesthandler, final FilesystemSetup filesystem) {
 		final TelegramUpdate update = requesthandler.input;
 		final String text = update.message.text;
 		final Long chatid = update.message.chatID;
-		final boolean success = Handlers.handle(this.bot, update, text);
-		if (success) {
-			return;
-		}
 		try {
+			final boolean success = Handlers.handle(this.bot, update, text, filesystem);
+			if (success) {
+				return;
+			}
+
 			Handlers.respond(this.bot, chatid, "Echo: " + text);
-		} catch (final IOException e) {
+		} catch (final Throwable e) {
 			e.printStackTrace();
 		}
 	}

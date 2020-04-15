@@ -29,11 +29,11 @@ public class JavaMainEntryPoint {
 		requesthandler.input.message.text = "/walletcheck https://vk.com/jfixbi";
 // requesthandler.input.message.text = "/vkalbums";
 		if (ChatBotActionHandler.handler == null) {
-			ChatBotActionHandler.handler = new ChatBotActionHandler();
+			ChatBotActionHandler.handler = new ChatBotActionHandler(true);
 			SystemSettings.setExecutionMode(ExecutionMode.EARLY_DEVELOPMENT);
 		}
-
-		ChatBotActionHandler.handler.handleRequest(requesthandler);
+		final FilesystemSetup filesystem = LambdaEntryPoint.FS();
+		ChatBotActionHandler.handler.handleRequest(requesthandler, filesystem);
 
 		L.d("requesthandler", requesthandler);
 	}
