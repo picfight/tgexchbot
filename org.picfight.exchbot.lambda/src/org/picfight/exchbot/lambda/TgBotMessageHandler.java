@@ -97,11 +97,11 @@ public class TgBotMessageHandler implements Handler {
 				final String text = args.arguments.getElementAt(0);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
 				if (anal.PFCAddress != null) {
-					this.processStatus(args, anal);
+					this.processStatus(args, anal.PFCAddress.AddressString);
 					return true;
 				}
 				if (anal.BTCAddress != null) {
-					this.processStatus(args, anal);
+					this.processStatus(args, anal.BTCAddress.AddressString);
 					return true;
 				}
 			}
@@ -130,7 +130,46 @@ public class TgBotMessageHandler implements Handler {
 		return true;
 	}
 
-	private void processStatus (final HandleArgs args, final StringAnalysis anal) {
+	private void processStatus (final HandleArgs args, final String searchterm) throws IOException {
+		final TransactionStatus status = this.transactionsBackEnd.findTransaction(searchterm, args.filesystem);
+
+		final Long chatid = args.update.message.chatID;
+		if (status == null) {
+			Handlers.respond(args.bot, chatid, "Order not found: " + searchterm, false);
+			return;
+		}
+
+		final StringBuilder b = new StringBuilder();
+		b.append("Order: " + searchterm);
+		b.append("\n");
+
+		b.append("Status: " + status.status);
+		b.append("\n");
+
+		b.append("Type: " + status.transact.type);
+		b.append("\n");
+
+		if (status.transact.exchangeBTCWallet != null) {
+			b.append("Exchange BTC wallet: " + status.transact.exchangeBTCWallet.AddressString);
+			b.append("\n");
+		}
+
+		if (status.transact.exchangePFCWallet != null) {
+			b.append("Exchange PFC wallet: " + status.transact.exchangePFCWallet.AddressString);
+			b.append("\n");
+		}
+
+		if (status.transact.clientBTCWallet != null) {
+			b.append("Client BTC wallet: " + status.transact.clientBTCWallet.AddressString);
+			b.append("\n");
+		}
+
+		if (status.transact.clientPFCWallet != null) {
+			b.append("Client PFC wallet: " + status.transact.clientPFCWallet.AddressString);
+			b.append("\n");
+		}
+
+		Handlers.respond(args.bot, chatid, b.toString(), false);
 	}
 
 	private void processBuy (final HandleArgs args, final PFCAddress pfcAddress) throws IOException {

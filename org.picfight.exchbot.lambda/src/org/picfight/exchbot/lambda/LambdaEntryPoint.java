@@ -106,6 +106,8 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		setup.newo.makeFolder();
 		setup.done = setup.orders.child("executed");
 		setup.done.makeFolder();
+		setup.expired = setup.orders.child("expired");
+		setup.expired.makeFolder();
 		setup.processing = setup.orders.child("processing");
 		setup.processing.makeFolder();
 
