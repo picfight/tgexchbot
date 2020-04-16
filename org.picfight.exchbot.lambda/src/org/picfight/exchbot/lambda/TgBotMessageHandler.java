@@ -9,7 +9,7 @@ import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.BTCAddress;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
-import org.picfight.exchbot.lambda.backend.Rate;
+import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.Transaction;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
@@ -140,32 +140,51 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		final StringBuilder b = new StringBuilder();
-		b.append("Order: " + searchterm);
+		b.append("Order:");
+		b.append("\n");
+		b.append(searchterm);
+		b.append("\n");
 		b.append("\n");
 
-		b.append("Status: " + status.status);
+		b.append("Status: ");
+		b.append(status.status);
 		b.append("\n");
 
-		b.append("Type: " + status.transact.type);
+		b.append("Type: ");
+		b.append(status.transact.type);
+		b.append("\n");
+
 		b.append("\n");
 
 		if (status.transact.exchangeBTCWallet != null) {
-			b.append("Exchange BTC wallet: " + status.transact.exchangeBTCWallet.AddressString);
+			b.append("Exchange BTC wallet:");
+			b.append("\n");
+			b.append(status.transact.exchangeBTCWallet.AddressString);
+			b.append("\n");
 			b.append("\n");
 		}
 
 		if (status.transact.exchangePFCWallet != null) {
-			b.append("Exchange PFC wallet: " + status.transact.exchangePFCWallet.AddressString);
+			b.append("Exchange PFC wallet:");
+			b.append("\n");
+			b.append(status.transact.exchangePFCWallet.AddressString);
+			b.append("\n");
 			b.append("\n");
 		}
 
 		if (status.transact.clientBTCWallet != null) {
-			b.append("Client BTC wallet: " + status.transact.clientBTCWallet.AddressString);
+			b.append("Client BTC wallet:");
+			b.append("\n");
+			b.append(status.transact.clientBTCWallet.AddressString);
+			b.append("\n");
 			b.append("\n");
 		}
 
 		if (status.transact.clientPFCWallet != null) {
-			b.append("Client PFC wallet: " + status.transact.clientPFCWallet.AddressString);
+			b.append("Client PFC wallet:");
+			b.append("\n");
+			b.append(status.transact.clientPFCWallet.AddressString);
+			b.append("\n");
 			b.append("\n");
 		}
 
@@ -228,7 +247,7 @@ public class TgBotMessageHandler implements Handler {
 	}
 
 	private void respondMenu (final AbsSender bot, final Long chatid) throws IOException {
-		final Rate rate = this.walletBackEnd.getRate();
+		final AvailableFunds rate = this.walletBackEnd.getFunds();
 
 		final String N = "\n";
 		final StringBuilder b = new StringBuilder();
@@ -239,9 +258,9 @@ public class TgBotMessageHandler implements Handler {
 		b.append(N);
 		b.append("Exchange rate:");
 		b.append(N);
-		b.append("Buy 100 PFC for " + this.formatFloat(this.buyPrice(rate) * 100, UP) + " BTC");
+		b.append("Buy 100 PFC for " + this.formatFloat(Exchange.buyPriceBTC(rate) * 100, UP) + " BTC");
 		b.append(N);
-		b.append("Sell 100 PFC for " + this.formatFloat(this.sellPrice(rate) * 100, DOWN) + " BTC");
+		b.append("Sell 100 PFC for " + this.formatFloat(Exchange.sellPriceBTC(rate) * 100, DOWN) + " BTC");
 		b.append(N);
 		b.append(N);
 		b.append(OPERATIONS.BUY_PFC + " to buy PFC");
@@ -273,7 +292,7 @@ public class TgBotMessageHandler implements Handler {
 	static boolean DOWN = !UP;
 
 	private void respondMenuCH (final AbsSender bot, final Long chatid) throws IOException {
-		final Rate rate = this.walletBackEnd.getRate();
+		final AvailableFunds rate = this.walletBackEnd.getFunds();
 
 		final String N = "\n";
 		final StringBuilder b = new StringBuilder();
@@ -284,9 +303,9 @@ public class TgBotMessageHandler implements Handler {
 		b.append(N);
 		b.append("汇率:");
 		b.append(N);
-		b.append("为BTC购买100个PFC " + this.formatFloat(this.buyPrice(rate) * 100, UP) + "");
+		b.append("为BTC购买100个PFC " + this.formatFloat(Exchange.buyPriceBTC(rate) * 100, UP) + "");
 		b.append(N);
-		b.append("为BTC出售100个PFC " + this.formatFloat(this.sellPrice(rate) * 100, DOWN) + "");
+		b.append("为BTC出售100个PFC " + this.formatFloat(Exchange.sellPriceBTC(rate) * 100, DOWN) + "");
 		b.append(N);
 		b.append(N);
 		b.append(OPERATIONS.BUY_PFC + " 购买 PFC");
@@ -300,19 +319,6 @@ public class TgBotMessageHandler implements Handler {
 
 		Handlers.respond(bot, chatid, b.toString(), false);
 
-	}
-
-	private double buyPrice (final Rate rate) {
-		final double exchange_rate = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_RATE")));
-		final double margin = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_MARGIN")));
-
-		return exchange_rate * (1.0 + margin / 2.0);
-	}
-
-	private double sellPrice (final Rate rate) {
-		final double exchange_rate = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_RATE")));
-		final double margin = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXCHANGE_MARGIN")));
-		return exchange_rate * (1.0 - margin / 2.0);
 	}
 
 }

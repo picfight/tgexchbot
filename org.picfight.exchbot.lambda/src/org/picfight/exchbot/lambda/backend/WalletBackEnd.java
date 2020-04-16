@@ -4,6 +4,7 @@ package org.picfight.exchbot.lambda.backend;
 import java.io.IOException;
 
 import org.picfight.exchbot.back.BackEndConnector;
+import org.picfight.exchbot.lambda.TransferResult;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
@@ -24,7 +25,7 @@ public class WalletBackEnd {
 		this.access_key = args.access_key;
 	}
 
-	public Rate getRate () throws IOException {
+	public AvailableFunds getFunds () throws IOException {
 
 		final String command = "rate";
 		final HttpURL Url = this.commadToUrl(command);
@@ -36,7 +37,7 @@ public class WalletBackEnd {
 
 // L.d("resultJson", resultJson);
 
-		final Rate r = Json.deserializeFromString(Rate.class, resultJson);
+		final AvailableFunds r = Json.deserializeFromString(AvailableFunds.class, resultJson);
 
 		return r;
 	}
@@ -115,6 +116,36 @@ public class WalletBackEnd {
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
 		final PFCAddress r = Json.deserializeFromString(PFCAddress.class, resultJson);
+
+		return r;
+	}
+
+	public Balance getBalanceForAddress (final String addressString) throws IOException {
+		final String command = "get_balance";
+		final HttpURL Url = this.commadToUrl(command);
+
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+
+		final Balance r = Json.deserializeFromString(Balance.class, resultJson);
+
+		return r;
+	}
+
+	public TransferResult transferPFC (final Transaction t) {
+		final TransferResult r = new TransferResult();
+
+		final String command = "transferPFC";
+		final HttpURL Url = this.commadToUrl(command);
+
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+
+		final Balance r = Json.deserializeFromString(Balance.class, resultJson);
 
 		return r;
 	}

@@ -15,13 +15,13 @@ public class TransactionBackEnd {
 	}
 
 	public File registerTransaction (final Transaction transact, final FilesystemSetup filesystem) throws IOException {
-		final String order_name = this.order_name(transact);
+		final String order_name = this.file_name(transact);
 		final File orderFile = filesystem.newo.child(order_name);
 		orderFile.writeJson(transact);
 		return orderFile;
 	}
 
-	private String order_name (final Transaction transact) {
+	public static String file_name (final Transaction transact) {
 		if (transact.type.equals(Transaction.BUY)) {
 			return transact.type + " " + transact.clientPFCWallet.AddressString + " " + transact.exchangeBTCWallet.AddressString
 				+ " " + transact.timestamp + ".json";

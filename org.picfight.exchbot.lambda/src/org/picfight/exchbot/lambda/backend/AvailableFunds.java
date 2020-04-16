@@ -1,7 +1,7 @@
 
 package org.picfight.exchbot.lambda.backend;
 
-public class Rate {
+public class AvailableFunds {
 
 	public Double CirculatingSupplyCoins;
 	public Double AvailablePFC;
