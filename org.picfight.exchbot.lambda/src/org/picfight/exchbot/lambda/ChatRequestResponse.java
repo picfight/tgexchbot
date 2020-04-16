@@ -1,8 +1,6 @@
 
 package org.picfight.exchbot.lambda;
 
-import com.jfixby.scarabei.api.json.Json;
-
 public class ChatRequestResponse {
 
 	public ChatRequestResponse () {
@@ -17,7 +15,8 @@ public class ChatRequestResponse {
 
 	@Override
 	public String toString () {
-		return Json.serializeToString(this).toString();
+		return super.toString();
+// return Json.serializeToString(this).toString();
 	}
 
 }
