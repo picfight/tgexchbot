@@ -89,19 +89,19 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		} catch (final Throwable e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void handle (final CloudWatchEvent dt) throws IOException {
-
 		final FilesList taskFileList = rootFS.Newo.listAllChildren();
-
 		for (final File f : taskFileList) {
 			final Transaction t = f.readJson(Transaction.class);
 			final TransactionStatus s = this.tryToExecute(t, rootFS);
-			f.delete();
+			if (s != null) {
+				f.delete();
+			} else {
+				Err.reportError("Failed transaction " + Json.serializeToString(t));
+			}
 		}
-
 	}
 
 	private TransactionStatus tryToExecute (final Transaction t, final FilesystemSetup fs) throws IOException {
@@ -203,7 +203,20 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		if (transferResult.success == true) {
 			return this.reportSuccess(t, fs, transferResult);
 		}
-		return null;
+		return this.reportBackendError(t, fs, transferResult);
+	}
+
+	private TransactionStatus reportBackendError (final Transaction t, final FilesystemSetup fs,
+		final TransferResult transferResult) throws IOException {
+		final TransactionStatus s = new TransactionStatus();
+		s.transact = t;
+		s.status = TransactionStatus.BACKEND_ERROR;
+		s.result = transferResult;
+		s.error_message = transferResult.error_message;
+		final String file_name = TransactionBackEnd.file_name(t);
+		final File file = fs.Error.child(file_name);
+		file.writeJson(s);
+		return s;
 	}
 
 	private TransactionStatus reportWalletNoEnoughBTC (final Transaction t, final FilesystemSetup fs, final AmountBTC btcAmount,
@@ -246,7 +259,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		if (transferResult.success == true) {
 			return this.reportSuccess(t, fs, transferResult);
 		}
-		return null;
+		return this.reportBackendError(t, fs, transferResult);
 	}
 
 // ----------------------
