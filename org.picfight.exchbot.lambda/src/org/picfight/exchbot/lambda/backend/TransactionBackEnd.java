@@ -15,8 +15,8 @@ public class TransactionBackEnd {
 	}
 
 	public File registerTransaction (final Transaction transact, final FilesystemSetup filesystem) throws IOException {
-		final String order_name = this.file_name(transact);
-		final File orderFile = filesystem.newo.child(order_name);
+		final String order_name = file_name(transact);
+		final File orderFile = filesystem.Newo.child(order_name);
 		orderFile.writeJson(transact);
 		return orderFile;
 	}
@@ -35,7 +35,7 @@ public class TransactionBackEnd {
 
 	public TransactionStatus findTransaction (final String searchterm, final FilesystemSetup filesystem) throws IOException {
 		{
-			final FilesList list = filesystem.newo.listAllChildren(f -> f.getName().contains(searchterm));
+			final FilesList list = filesystem.Newo.listAllChildren(f -> f.getName().contains(searchterm));
 			if (list.size() != 0) {
 				final File transactFile = list.getLast();
 				final Transaction transact = transactFile.readJson(Transaction.class);
@@ -49,7 +49,7 @@ public class TransactionBackEnd {
 		}
 
 		{
-			final FilesList list = filesystem.done.listAllChildren(f -> f.getName().contains(searchterm));
+			final FilesList list = filesystem.Executed.listAllChildren(f -> f.getName().contains(searchterm));
 			if (list.size() != 0) {
 				final File transactFile = list.getLast();
 				final TransactionStatus transact = transactFile.readJson(TransactionStatus.class);
@@ -58,7 +58,7 @@ public class TransactionBackEnd {
 		}
 
 		{
-			final FilesList list = filesystem.expired.listAllChildren(f -> f.getName().contains(searchterm));
+			final FilesList list = filesystem.Expired.listAllChildren(f -> f.getName().contains(searchterm));
 			if (list.size() != 0) {
 				final File transactFile = list.getLast();
 				final TransactionStatus transact = transactFile.readJson(TransactionStatus.class);
@@ -67,7 +67,7 @@ public class TransactionBackEnd {
 		}
 
 		{
-			final FilesList list = filesystem.processing.listAllChildren(f -> f.getName().contains(searchterm));
+			final FilesList list = filesystem.Processing.listAllChildren(f -> f.getName().contains(searchterm));
 			if (list.size() != 0) {
 				final File transactFile = list.getLast();
 				final TransactionStatus transact = transactFile.readJson(TransactionStatus.class);

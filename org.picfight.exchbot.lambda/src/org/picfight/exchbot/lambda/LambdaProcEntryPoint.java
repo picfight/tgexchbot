@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
+import org.picfight.exchbot.lambda.backend.AmountBTC;
+import org.picfight.exchbot.lambda.backend.AmountPFC;
 import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.BTCBalance;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
@@ -76,13 +78,6 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			final CloudWatchEvent dt = Json.deserializeFromString(CloudWatchEvent.class, data);
 
 			this.handle(dt);
-// final ObjectMapper objectReader = new ObjectMapper();
-// final Update update = objectReader.readValue(dt.body, Update.class);
-//// update = objectReader.readValue(input, );
-// L.d("Update @ '" + getFormattedTimestamp(update) + "' : " + update);
-// L.d("Starting handling update " + update.getUpdateId());
-// this.handleUpdate(update);
-// L.d("Finished handling update " + update.getUpdateId());
 
 			final String response = "{ \"statusCode\": 200, \"headers\": {\"Content-Type\": \"application/json\"}, \"body\": \"\" }";
 
@@ -118,7 +113,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		if (t.type.equalsIgnoreCase(Transaction.BUY)) {
 			final BTCBalance balance = walletBackEnd.getBalanceForBTCAddress(t.exchangeBTCWallet);
 
-			if (balance.value < minBTCOperation && balance.value > 0) {
+			if (balance.amount.value < minBTCOperation && balance.amount.value > 0) {
 				return this.processNoEnoughBTCReceived(t, fs, balance, minBTCOperation);
 			} else {
 				return this.processBuyPFC(t, fs, balance);
@@ -130,7 +125,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			final double pfcAmount = minBTCOperation / priceBTC;
 			final double minPFCOperation = pfcAmount;
 
-			if (balance.value < minPFCOperation && balance.value > 0) {
+			if (balance.amount.value < minPFCOperation && balance.amount.value > 0) {
 				return this.processNoEnoughPFCReceived(t, fs, balance, minBTCOperation);
 			} else {
 				return this.processSellPFC(t, fs, balance);
@@ -144,7 +139,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.NO_ENOUGH_PFC;
-		s.error_message = "No enough PFC to execute transaction. Received " + balance.value + "PFC, required at least "
+		s.error_message = "No enough PFC to execute transaction. Received " + balance.amount + "PFC, required at least "
 			+ minPFCOperation + "PFC";
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.NoEnoughPFC.child(file_name);
@@ -157,7 +152,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.NO_ENOUGH_BTC;
-		s.error_message = "No enough BTC to execute transaction. Received " + balance.value + "BTC, required at least "
+		s.error_message = "No enough BTC to execute transaction. Received " + balance.amount + "BTC, required at least "
 			+ minBTCOperation + "BTC";
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.NoEnoughBTC.child(file_name);
@@ -192,16 +187,16 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 	private TransactionStatus processSellPFC (final Transaction t, final FilesystemSetup fs, final PFCBalance balance)
 		throws IOException {
 
-		final double pfcAmount = balance.value;
+		final double pfcAmount = balance.amount.value;
 		final AvailableFunds funds = walletBackEnd.getFunds();
 		final double priceBTC = Exchange.sellPriceBTC(funds);
 
 		final double btcAmount = priceBTC * priceBTC;
 
-		t.btcAmount = btcAmount;
+		t.btcAmount = new AmountBTC(btcAmount);
 
-		if (funds.AvailableBTC <= btcAmount) {
-			return this.reportWalletNoEnoughBTC(t, fs, btcAmount, funds);
+		if (funds.AvailableBTC.value <= t.btcAmount.value) {
+			return this.reportWalletNoEnoughBTC(t, fs, t.btcAmount, funds);
 		}
 
 		final TransferResult transferResult = walletBackEnd.transferBTC(t);
@@ -211,7 +206,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return null;
 	}
 
-	private TransactionStatus reportWalletNoEnoughBTC (final Transaction t, final FilesystemSetup fs, final double btcAmount,
+	private TransactionStatus reportWalletNoEnoughBTC (final Transaction t, final FilesystemSetup fs, final AmountBTC btcAmount,
 		final AvailableFunds balance) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
@@ -223,7 +218,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return s;
 	}
 
-	private TransactionStatus reportWalletNoEnoughPFC (final Transaction t, final FilesystemSetup fs, final double pfcAmount,
+	private TransactionStatus reportWalletNoEnoughPFC (final Transaction t, final FilesystemSetup fs, final AmountPFC pfcAmount,
 		final AvailableFunds balance) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
@@ -239,12 +234,12 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		throws IOException {
 		final AvailableFunds funds = walletBackEnd.getFunds();
 		final double priceBTC = Exchange.buyPriceBTC(funds);
-		final double pfcAmount = balance.value / priceBTC;
+		final double pfcAmount = balance.amount.value / priceBTC;
 
-		t.pfcAmount = pfcAmount;
+		t.pfcAmount = new AmountPFC(pfcAmount);
 
-		if (funds.AvailablePFC <= pfcAmount) {
-			return this.reportWalletNoEnoughPFC(t, fs, pfcAmount, funds);
+		if (funds.AvailablePFC.value <= t.pfcAmount.value) {
+			return this.reportWalletNoEnoughPFC(t, fs, t.pfcAmount, funds);
 		}
 
 		final TransferResult transferResult = walletBackEnd.transferPFC(t);
@@ -283,34 +278,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final File root = fs.ROOT().child("exchangebot");
 		root.makeFolder();
 
-		final FilesystemSetup setup = new FilesystemSetup();
-
-		setup.Root = root;
-		setup.Orders = root.child("orders");
-		{
-			setup.Newo = setup.Orders.child("new");
-			setup.Newo.makeFolder();
-
-			setup.Executed = setup.Orders.child("executed");
-			setup.Executed.makeFolder();
-
-			setup.Expired = setup.Orders.child("expired");
-			setup.Expired.makeFolder();
-
-			setup.Processing = setup.Orders.child("processing");
-			setup.Processing.makeFolder();
-
-			{
-				setup.Error = setup.Processing.child("error");
-				setup.Error.makeFolder();
-
-				setup.NoEnoughBTC = setup.Processing.child("no_btc");
-				setup.NoEnoughBTC.makeFolder();
-
-				setup.NoEnoughPFC = setup.Processing.child("no_pfc");
-				setup.NoEnoughPFC.makeFolder();
-			}
-		}
+		final FilesystemSetup setup = new FilesystemSetup(root);
 
 		return setup;
 	}

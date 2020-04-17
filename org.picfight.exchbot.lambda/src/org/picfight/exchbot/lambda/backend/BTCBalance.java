@@ -3,7 +3,7 @@ package org.picfight.exchbot.lambda.backend;
 
 public class BTCBalance {
 
-	public double value;
+	public AmountBTC amount;
 	public BTCAddress address;
 
 }

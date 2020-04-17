@@ -97,19 +97,7 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		final File root = fs.ROOT().child("exchangebot");
 		root.makeFolder();
 
-		final FilesystemSetup setup = new FilesystemSetup();
-
-		setup.root = root;
-
-		setup.orders = root.child("orders");
-		setup.newo = setup.orders.child("new");
-		setup.newo.makeFolder();
-		setup.done = setup.orders.child("executed");
-		setup.done.makeFolder();
-		setup.expired = setup.orders.child("expired");
-		setup.expired.makeFolder();
-		setup.processing = setup.orders.child("processing");
-		setup.processing.makeFolder();
+		final FilesystemSetup setup = new FilesystemSetup(root);
 
 		return setup;
 	}
