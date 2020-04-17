@@ -92,31 +92,36 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 	}
 
 	private void handle (final CloudWatchEvent dt) throws IOException {
-		final FilesList taskFileList = rootFS.Newo.listAllChildren();
-		for (final File f : taskFileList) {
-			final Transaction t = f.readJson(Transaction.class);
-			final TransactionStatus s = this.tryToExecute(t, rootFS);
-			if (s != null) {
-				f.delete();
-			} else {
-				Err.reportError("Failed transaction " + Json.serializeToString(t));
+		{
+			final FilesList taskFileList = rootFS.Newo.listAllChildren();
+			for (final File f : taskFileList) {
+				final Transaction t = f.readJson(Transaction.class);
+				final TransactionStatus s = this.tryToExecute(t, rootFS, f);
 			}
 		}
+		{
+			final FilesList taskFileList = rootFS.Processing.listAllChildren();
+			for (final File f : taskFileList) {
+				final Transaction t = f.readJson(Transaction.class);
+				final TransactionStatus s = this.tryToExecute(t, rootFS, f);
+			}
+		}
+
 	}
 
-	private TransactionStatus tryToExecute (final Transaction t, final FilesystemSetup fs) throws IOException {
+	private TransactionStatus tryToExecute (final Transaction t, final FilesystemSetup fs, final File file) throws IOException {
 		final long now = System.currentTimeMillis();
 		final long deadline = t.timestamp + (long)(expirationHours * 60 * 60 * 1000);
 		if (deadline > now) {
-			return this.processExpired(t, fs, deadline);
+			return this.processExpired(t, fs, deadline, file);
 		}
 		if (t.type.equalsIgnoreCase(Transaction.BUY)) {
 			final BTCBalance balance = walletBackEnd.getBalanceForBTCAddress(t.exchangeBTCWallet);
 
 			if (balance.amount.value < minBTCOperation && balance.amount.value > 0) {
-				return this.processNoEnoughBTCReceived(t, fs, balance, minBTCOperation);
+				return this.processNoEnoughBTCReceived(t, fs, balance, minBTCOperation, file);
 			} else {
-				return this.processBuyPFC(t, fs, balance);
+				return this.processBuyPFC(t, fs, balance, file);
 			}
 		} else if (t.type.equalsIgnoreCase(Transaction.SELL)) {
 			final PFCBalance balance = walletBackEnd.getBalanceForPFCAddress(t.exchangePFCWallet);
@@ -126,16 +131,16 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			final double minPFCOperation = pfcAmount;
 
 			if (balance.amount.value < minPFCOperation && balance.amount.value > 0) {
-				return this.processNoEnoughPFCReceived(t, fs, balance, minBTCOperation);
+				return this.processNoEnoughPFCReceived(t, fs, balance, minBTCOperation, file);
 			} else {
-				return this.processSellPFC(t, fs, balance);
+				return this.processSellPFC(t, fs, balance, file);
 			}
 		}
 		return null;
 	}
 
 	private TransactionStatus processNoEnoughPFCReceived (final Transaction t, final FilesystemSetup fs, final PFCBalance balance,
-		final double minPFCOperation) throws IOException {
+		final double minPFCOperation, final File ofile) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.NO_ENOUGH_PFC;
@@ -143,12 +148,13 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			+ minPFCOperation + "PFC";
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.NoEnoughPFC.child(file_name);
+		ofile.delete();
 		file.writeJson(s);
 		return s;
 	}
 
 	private TransactionStatus processNoEnoughBTCReceived (final Transaction t, final FilesystemSetup fs, final BTCBalance balance,
-		final double minBTCOperation) throws IOException {
+		final double minBTCOperation, final File ofile) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.NO_ENOUGH_BTC;
@@ -156,11 +162,12 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			+ minBTCOperation + "BTC";
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.NoEnoughBTC.child(file_name);
+		ofile.delete();
 		file.writeJson(s);
 		return s;
 	}
 
-	private TransactionStatus processExpired (final Transaction t, final FilesystemSetup fs, final long deadline)
+	private TransactionStatus processExpired (final Transaction t, final FilesystemSetup fs, final long deadline, final File ofile)
 		throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
@@ -168,24 +175,26 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		s.error_message = "Transaction expired at " + new Date(deadline);
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.Expired.child(file_name);
+		ofile.delete();
 		file.writeJson(s);
 		return s;
 	}
 
-	private TransactionStatus reportSuccess (final Transaction t, final FilesystemSetup fs, final TransferResult transferResult)
-		throws IOException {
+	private TransactionStatus reportSuccess (final Transaction t, final FilesystemSetup fs, final TransferResult transferResult,
+		final File ofile) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.EXECUTED;
 		s.result = transferResult;
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.Executed.child(file_name);
+		ofile.delete();
 		file.writeJson(s);
 		return s;
 	}
 
-	private TransactionStatus processSellPFC (final Transaction t, final FilesystemSetup fs, final PFCBalance balance)
-		throws IOException {
+	private TransactionStatus processSellPFC (final Transaction t, final FilesystemSetup fs, final PFCBalance balance,
+		final File ofile) throws IOException {
 
 		final double pfcAmount = balance.amount.value;
 		final AvailableFunds funds = walletBackEnd.getFunds();
@@ -196,18 +205,18 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		t.btcAmount = new AmountBTC(btcAmount);
 
 		if (funds.AvailableBTC.value <= t.btcAmount.value) {
-			return this.reportWalletNoEnoughBTC(t, fs, t.btcAmount, funds);
+			return this.reportWalletNoEnoughBTC(t, fs, t.btcAmount, funds, ofile);
 		}
 
 		final TransferResult transferResult = walletBackEnd.transferBTC(t);
 		if (transferResult.success == true) {
-			return this.reportSuccess(t, fs, transferResult);
+			return this.reportSuccess(t, fs, transferResult, ofile);
 		}
-		return this.reportBackendError(t, fs, transferResult);
+		return this.reportBackendError(t, fs, transferResult, ofile);
 	}
 
 	private TransactionStatus reportBackendError (final Transaction t, final FilesystemSetup fs,
-		final TransferResult transferResult) throws IOException {
+		final TransferResult transferResult, final File ofile) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.BACKEND_ERROR;
@@ -215,36 +224,39 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		s.error_message = transferResult.error_message;
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.Error.child(file_name);
+		ofile.delete();
 		file.writeJson(s);
 		return s;
 	}
 
 	private TransactionStatus reportWalletNoEnoughBTC (final Transaction t, final FilesystemSetup fs, final AmountBTC btcAmount,
-		final AvailableFunds balance) throws IOException {
+		final AvailableFunds balance, final File ofile) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.BACKEND_ERROR;
 		s.error_message = "Available " + balance.AvailableBTC + "BTC, required " + btcAmount + "BTC to execute operation.";
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.Error.child(file_name);
+		ofile.delete();
 		file.writeJson(s);
 		return s;
 	}
 
 	private TransactionStatus reportWalletNoEnoughPFC (final Transaction t, final FilesystemSetup fs, final AmountPFC pfcAmount,
-		final AvailableFunds balance) throws IOException {
+		final AvailableFunds balance, final File ofile) throws IOException {
 		final TransactionStatus s = new TransactionStatus();
 		s.transact = t;
 		s.status = TransactionStatus.BACKEND_ERROR;
 		s.error_message = "Available " + balance.AvailablePFC + "PFC, required " + pfcAmount + "PFC to execute operation.";
 		final String file_name = TransactionBackEnd.file_name(t);
 		final File file = fs.Error.child(file_name);
+		ofile.delete();
 		file.writeJson(s);
 		return s;
 	}
 
-	private TransactionStatus processBuyPFC (final Transaction t, final FilesystemSetup fs, final BTCBalance balance)
-		throws IOException {
+	private TransactionStatus processBuyPFC (final Transaction t, final FilesystemSetup fs, final BTCBalance balance,
+		final File ofile) throws IOException {
 		final AvailableFunds funds = walletBackEnd.getFunds();
 		final double priceBTC = Exchange.buyPriceBTC(funds);
 		final double pfcAmount = balance.amount.value / priceBTC;
@@ -252,14 +264,14 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		t.pfcAmount = new AmountPFC(pfcAmount);
 
 		if (funds.AvailablePFC.value <= t.pfcAmount.value) {
-			return this.reportWalletNoEnoughPFC(t, fs, t.pfcAmount, funds);
+			return this.reportWalletNoEnoughPFC(t, fs, t.pfcAmount, funds, ofile);
 		}
 
 		final TransferResult transferResult = walletBackEnd.transferPFC(t);
 		if (transferResult.success == true) {
-			return this.reportSuccess(t, fs, transferResult);
+			return this.reportSuccess(t, fs, transferResult, ofile);
 		}
-		return this.reportBackendError(t, fs, transferResult);
+		return this.reportBackendError(t, fs, transferResult, ofile);
 	}
 
 // ----------------------
