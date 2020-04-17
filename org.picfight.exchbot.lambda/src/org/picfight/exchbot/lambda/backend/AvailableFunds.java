@@ -5,6 +5,7 @@ public class AvailableFunds {
 
 	public Double CirculatingSupplyCoins;
 	public Double AvailablePFC;
+	public Double AvailableBTC;
 	public Double BTCperPFC;
 
 	public Double getCirculatingSupply () {

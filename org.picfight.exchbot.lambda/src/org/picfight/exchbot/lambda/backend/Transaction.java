@@ -13,14 +13,16 @@ public class Transaction {
 	// BUY
 	public PFCAddress clientPFCWallet;
 	public BTCAddress exchangeBTCWallet;
+	public Double pfcAmount;
 
 	// SELL
 	public PFCAddress exchangePFCWallet;
 	public BTCAddress clientBTCWallet;
+	public Double btcAmount;
+
+	//
 	public String userName;
 	public String firstName;
 	public String lastName;
-
-	//
 
 }

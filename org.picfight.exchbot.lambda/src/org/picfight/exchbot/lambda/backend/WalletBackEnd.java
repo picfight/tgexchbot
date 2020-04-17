@@ -120,32 +120,60 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public Balance getBalanceForAddress (final String addressString) throws IOException {
-		final String command = "get_balance";
+	public BTCBalance getBalanceForBTCAddress (final BTCAddress address) throws IOException {
+		final String command = "get_balance_btc";
 		final HttpURL Url = this.commadToUrl(command);
 
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
-
+		params.put("btc_address", address.AddressString);
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
-		final Balance r = Json.deserializeFromString(Balance.class, resultJson);
-
+		final BTCBalance r = Json.deserializeFromString(BTCBalance.class, resultJson);
 		return r;
 	}
 
-	public TransferResult transferPFC (final Transaction t) {
-		final TransferResult r = new TransferResult();
+	public PFCBalance getBalanceForPFCAddress (final PFCAddress address) throws IOException {
+		final String command = "get_balance_pfc";
+		final HttpURL Url = this.commadToUrl(command);
 
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+		params.put("pfc_address", address.AddressString);
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+
+		final PFCBalance r = Json.deserializeFromString(PFCBalance.class, resultJson);
+		return r;
+	}
+
+	public TransferResult transferPFC (final Transaction t) throws IOException {
 		final String command = "transferPFC";
 		final HttpURL Url = this.commadToUrl(command);
 
 		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key);
+		params.put("access_key", this.access_key + "");
+		params.put("client_pfc_wallet", t.clientPFCWallet.AddressString + "");
+		params.put("pfc_amount", t.pfcAmount + "");
 
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
-		final Balance r = Json.deserializeFromString(Balance.class, resultJson);
+		final TransferResult r = Json.deserializeFromString(TransferResult.class, resultJson);
+
+		return r;
+	}
+
+	public TransferResult transferBTC (final Transaction t) throws IOException {
+		final String command = "transferBTC";
+		final HttpURL Url = this.commadToUrl(command);
+
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key + "");
+		params.put("client_btc_wallet", t.clientPFCWallet.AddressString + "");
+		params.put("btc_amount", t.pfcAmount + "");
+
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+
+		final TransferResult r = Json.deserializeFromString(TransferResult.class, resultJson);
 
 		return r;
 	}

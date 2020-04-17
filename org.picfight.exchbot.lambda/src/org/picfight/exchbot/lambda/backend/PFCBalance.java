@@ -1,8 +1,9 @@
 
 package org.picfight.exchbot.lambda.backend;
 
-public class Balance {
+public class PFCBalance {
 
 	public double value;
+	public PFCAddress address;
 
 }
