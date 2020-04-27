@@ -6,6 +6,7 @@ import (
 	btccfg "github.com/btcsuite/btcd/chaincfg"
 	"github.com/picfight/pfcd/dcrutil"
 	"os"
+	"strings"
 
 	"github.com/btcsuite/btcutil"
 	"github.com/jfixby/coin"
@@ -34,6 +35,12 @@ func (s HttpsServer) Start() {
 	isnotset := checkAccessKey("")
 	if isnotset {
 		set := os.Getenv(ACCESS_KEY)
+		pin.D("System settings:")
+		for _, e := range os.Environ() {
+			pair := strings.SplitN(e, "=", 2)
+			pin.D(pair[0])
+		}
+		pin.D("")
 		pin.D("Access key", set)
 		panic(fmt.Sprintf("%v is not set", ACCESS_KEY))
 	}
