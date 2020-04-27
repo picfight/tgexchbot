@@ -7,6 +7,8 @@ public class AvailableFunds {
 	public AmountPFC AvailablePFC;
 	public AmountBTC AvailableBTC;
 	public Double BTCperPFC;
+	public Double ExchangeRate;
+	public Double ExchangeMargin;
 
 	public AmountPFC availablePFC () {
 		return this.AvailablePFC;

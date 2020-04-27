@@ -126,7 +126,9 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		} else if (t.type.equalsIgnoreCase(Transaction.SELL)) {
 			final PFCBalance balance = walletBackEnd.getBalanceForPFCAddress(t.exchangePFCWallet);
 
-			final double priceBTC = Exchange.exchangeRateBTC();
+			final AvailableFunds funds = walletBackEnd.getFunds();
+
+			final double priceBTC = funds.ExchangeRate;
 			final double pfcAmount = minBTCOperation / priceBTC;
 			final double minPFCOperation = pfcAmount;
 

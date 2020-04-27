@@ -10,7 +10,7 @@ type Rate struct {
 type StringAnalysis struct {
 	BTCAddress *AddressString `json: "BTCAddress"`
 	PFCAddress *AddressString `json: "PFCAddress"`
-	Error string `json: "Error"`
+	Error      string         `json: "Error"`
 }
 
 type AddressString struct {

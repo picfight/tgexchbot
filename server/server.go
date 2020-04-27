@@ -41,7 +41,7 @@ func (s HttpsServer) Start() {
 }
 
 func NewServer(cfg *cfg.ConfigJson) *HttpsServer {
-	return &HttpsServer{config: cfg,}
+	return &HttpsServer{config: cfg}
 }
 
 func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {

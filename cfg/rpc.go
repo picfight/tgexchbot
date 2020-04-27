@@ -3,9 +3,9 @@ package cfg
 import (
 	"fmt"
 	btcclient "github.com/btcsuite/btcd/rpcclient"
+	dcrclient "github.com/decred/dcrd/rpcclient"
 	"github.com/jfixby/pin/lang"
 	pfcclient "github.com/picfight/pfcd/rpcclient"
-	dcrclient "github.com/decred/dcrd/rpcclient"
 	"io/ioutil"
 )
 
@@ -16,7 +16,6 @@ type RPCConnectionConfig struct {
 	Pass            string
 	CertificateFile string
 }
-
 
 func NewDCRConnection(config RPCConnectionConfig) (*dcrclient.Client, error) {
 	file := config.CertificateFile

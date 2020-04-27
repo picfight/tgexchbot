@@ -10,13 +10,19 @@ import (
 )
 
 type ConfigJson struct {
-	BTCDConfig      RPCConfig         `json: "btcdconfig"`
-	PFCDConfig      RPCConfig         `json: "pfcdconfig"`
-	DCRDConfig      RPCConfig         `json: "dcrdconfig"`
-	BTCWalletConfig RPCConfig         `json: "btcwalletconfig"`
-	PFCWalletConfig RPCConfig         `json: "pfcwalletconfig"`
-	DCRWalletConfig RPCConfig         `json: "dcrwalletconfig"`
-	ServerConfig    HttpsServerConfig `json: "serverconfig"`
+	BTCDConfig       RPCConfig         `json: "btcdconfig"`
+	PFCDConfig       RPCConfig         `json: "pfcdconfig"`
+	DCRDConfig       RPCConfig         `json: "dcrdconfig"`
+	BTCWalletConfig  RPCConfig         `json: "btcwalletconfig"`
+	PFCWalletConfig  RPCConfig         `json: "pfcwalletconfig"`
+	DCRWalletConfig  RPCConfig         `json: "dcrwalletconfig"`
+	ServerConfig     HttpsServerConfig `json: "serverconfig"`
+	ExchangeSettings ExchangeSettings  `json: "exchangesettings"`
+}
+
+type ExchangeSettings struct {
+	ExchangeRate   float64 `json: "ExchangeRate"`
+	ExchangeMargin float64 `json: "ExchangeMargin"`
 }
 
 type HttpsServerConfig struct {

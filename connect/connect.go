@@ -3,7 +3,7 @@ package connect
 import (
 	btcclient "github.com/btcsuite/btcd/rpcclient"
 	dcrclient "github.com/decred/dcrd/rpcclient"
-		pfcclient "github.com/picfight/pfcd/rpcclient"
+	pfcclient "github.com/picfight/pfcd/rpcclient"
 
 	"github.com/jfixby/pin"
 	"github.com/picfight/tgexchbot/cfg"
@@ -61,7 +61,6 @@ func BTCWallet(conf *cfg.ConfigJson) (*btcclient.Client, error) {
 	return cfg.NewBTCConnection(btcconnect)
 }
 
-
 func DCRWallet(conf *cfg.ConfigJson) (*dcrclient.Client, error) {
 	pin.D("connect DCRWallet RPC")
 	dcrconnect := cfg.RPCConnectionConfig{
@@ -74,7 +73,6 @@ func DCRWallet(conf *cfg.ConfigJson) (*dcrclient.Client, error) {
 
 	return cfg.NewDCRConnection(dcrconnect)
 }
-
 
 func PFCWallet(conf *cfg.ConfigJson) (*pfcclient.Client, error) {
 	pin.D("connect PFCWallet RPC")
