@@ -7,6 +7,7 @@ public class Transaction {
 	public static final String SELL = "SELL";
 
 	public Long chatID;
+
 	public Long timestamp;
 
 	public String type;

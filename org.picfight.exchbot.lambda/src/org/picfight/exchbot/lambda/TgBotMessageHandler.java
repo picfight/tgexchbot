@@ -7,9 +7,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.BTCAddress;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
-import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.Transaction;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
@@ -147,7 +147,7 @@ public class TgBotMessageHandler implements Handler {
 		b.append("\n");
 
 		b.append("Status: ");
-		b.append(status.status);
+		b.append(status.operations.get(status.operations.size() - 1));
 		b.append("\n");
 
 		b.append("Type: ");
@@ -205,7 +205,16 @@ public class TgBotMessageHandler implements Handler {
 		transact.type = Transaction.BUY;
 		transact.clientPFCWallet = pfcAddress;
 		transact.exchangeBTCWallet = btcAddress;
-		final File file = this.transactionsBackEnd.registerTransaction(transact, args.filesystem);
+
+		final TransactionStatus s = new TransactionStatus();
+		s.transact = transact;
+		{
+			final Operation oper = new Operation();
+			s.operations.add(oper);
+			oper.status = TransactionStatus.ORDER_REGISTERED;
+		}
+
+		final File file = this.transactionsBackEnd.registerTransaction(s, args.filesystem);
 
 		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
 		Handlers.respond(args.bot, chatid, btcAddress.AddressString, false);
@@ -233,7 +242,15 @@ public class TgBotMessageHandler implements Handler {
 		transact.exchangePFCWallet = pfcAddress;
 		transact.clientBTCWallet = btcAddress;
 
-		final File file = this.transactionsBackEnd.registerTransaction(transact, args.filesystem);
+		final TransactionStatus s = new TransactionStatus();
+		s.transact = transact;
+		{
+			final Operation oper = new Operation();
+			s.operations.add(oper);
+			oper.status = TransactionStatus.ORDER_REGISTERED;
+		}
+
+		final File file = this.transactionsBackEnd.registerTransaction(s, args.filesystem);
 
 		Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
 		Handlers.respond(args.bot, chatid, pfcAddress.AddressString, false);
