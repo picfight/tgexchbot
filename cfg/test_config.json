@@ -40,5 +40,9 @@
 		"AccessKey": "",
 		"CertificateFile": "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.crt",
 		"CertificateKeyFile": "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.key"
+	},
+	"ExchangeSettings": {
+		"ExchangeRate": 0.000001,
+		"ExchangeMargin": 0.11
 	}
 }

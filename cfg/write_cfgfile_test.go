@@ -62,7 +62,6 @@ func TestWriteCfgFile(t *testing.T) {
 	{
 		data.ExchangeSettings.ExchangeMargin = 0.11 //11%
 		data.ExchangeSettings.ExchangeRate = 0.000001
-
 	}
 
 	bytes, err := json.MarshalIndent(data, "", "	")
