@@ -33,6 +33,8 @@ func (s HttpsServer) Start() {
 	pin.D("Check access key...")
 	isnotset := checkAccessKey("")
 	if isnotset {
+		set := os.Getenv(ACCESS_KEY)
+		pin.D("Access key", set)
 		panic(fmt.Sprintf("%v is not set", ACCESS_KEY))
 	}
 
