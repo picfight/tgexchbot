@@ -1,7 +1,7 @@
 
 package org.picfight.exchbot.lambda;
 
-public class TransferResult {
+public class Result {
 
 	public Boolean success;
 	public String error_message;

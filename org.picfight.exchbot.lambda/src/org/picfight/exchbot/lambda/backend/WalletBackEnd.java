@@ -4,7 +4,7 @@ package org.picfight.exchbot.lambda.backend;
 import java.io.IOException;
 
 import org.picfight.exchbot.back.BackEndConnector;
-import org.picfight.exchbot.lambda.TransferResult;
+import org.picfight.exchbot.lambda.Result;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
@@ -146,7 +146,7 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public TransferResult transferPFC (final Transaction t) throws IOException {
+	public Result transferPFC (final Operation t) throws IOException {
 		final String command = "transferPFC";
 		final HttpURL Url = this.commadToUrl(command);
 
@@ -157,12 +157,12 @@ public class WalletBackEnd {
 
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
-		final TransferResult r = Json.deserializeFromString(TransferResult.class, resultJson);
+		final Result r = Json.deserializeFromString(Result.class, resultJson);
 
 		return r;
 	}
 
-	public TransferResult transferBTC (final Transaction t) throws IOException {
+	public Result transferBTC (final Operation t) throws IOException {
 		final String command = "transferBTC";
 		final HttpURL Url = this.commadToUrl(command);
 
@@ -173,7 +173,7 @@ public class WalletBackEnd {
 
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
-		final TransferResult r = Json.deserializeFromString(TransferResult.class, resultJson);
+		final Result r = Json.deserializeFromString(Result.class, resultJson);
 
 		return r;
 	}

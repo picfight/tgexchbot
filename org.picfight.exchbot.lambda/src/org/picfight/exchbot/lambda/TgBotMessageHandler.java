@@ -9,9 +9,9 @@ import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.BTCAddress;
+import org.picfight.exchbot.lambda.backend.Operation;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
-import org.picfight.exchbot.lambda.backend.Transaction;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
 import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
 import org.picfight.exchbot.lambda.backend.WalletBackEnd;
@@ -131,7 +131,7 @@ public class TgBotMessageHandler implements Handler {
 	}
 
 	private void processStatus (final HandleArgs args, final String searchterm) throws IOException {
-		final TransactionStatus status = this.transactionsBackEnd.findTransaction(searchterm, args.filesystem);
+		final Transaction status = this.transactionsBackEnd.findTransaction(searchterm, args.filesystem);
 
 		final Long chatid = args.update.message.chatID;
 		if (status == null) {
@@ -147,43 +147,43 @@ public class TgBotMessageHandler implements Handler {
 		b.append("\n");
 
 		b.append("Status: ");
-		b.append(status.operations.get(status.operations.size() - 1));
+		b.append(status.states.get(status.states.size() - 1));
 		b.append("\n");
 
 		b.append("Type: ");
-		b.append(status.transact.type);
+		b.append(status.operation.type);
 		b.append("\n");
 
 		b.append("\n");
 
-		if (status.transact.exchangeBTCWallet != null) {
+		if (status.operation.exchangeBTCWallet != null) {
 			b.append("Exchange BTC wallet:");
 			b.append("\n");
-			b.append(status.transact.exchangeBTCWallet.AddressString);
+			b.append(status.operation.exchangeBTCWallet.AddressString);
 			b.append("\n");
 			b.append("\n");
 		}
 
-		if (status.transact.exchangePFCWallet != null) {
+		if (status.operation.exchangePFCWallet != null) {
 			b.append("Exchange PFC wallet:");
 			b.append("\n");
-			b.append(status.transact.exchangePFCWallet.AddressString);
+			b.append(status.operation.exchangePFCWallet.AddressString);
 			b.append("\n");
 			b.append("\n");
 		}
 
-		if (status.transact.clientBTCWallet != null) {
+		if (status.operation.clientBTCWallet != null) {
 			b.append("Client BTC wallet:");
 			b.append("\n");
-			b.append(status.transact.clientBTCWallet.AddressString);
+			b.append(status.operation.clientBTCWallet.AddressString);
 			b.append("\n");
 			b.append("\n");
 		}
 
-		if (status.transact.clientPFCWallet != null) {
+		if (status.operation.clientPFCWallet != null) {
 			b.append("Client PFC wallet:");
 			b.append("\n");
-			b.append(status.transact.clientPFCWallet.AddressString);
+			b.append(status.operation.clientPFCWallet.AddressString);
 			b.append("\n");
 			b.append("\n");
 		}
@@ -195,23 +195,23 @@ public class TgBotMessageHandler implements Handler {
 		final BTCAddress btcAddress = this.walletBackEnd.obtainNewBTCAddress();
 		final Long chatid = args.update.message.chatID;
 
-		final Transaction transact = new Transaction();
+		final Operation transact = new Operation();
 		transact.chatID = chatid;
 		transact.timestamp = System.currentTimeMillis();
 		transact.userName = args.update.message.from.userName;
 		transact.firstName = args.update.message.from.firstName;
 		transact.lastName = args.update.message.from.lastName;
 
-		transact.type = Transaction.BUY;
+		transact.type = Operation.BUY;
 		transact.clientPFCWallet = pfcAddress;
 		transact.exchangeBTCWallet = btcAddress;
 
-		final TransactionStatus s = new TransactionStatus();
-		s.transact = transact;
+		final Transaction s = new Transaction();
+		s.operation = transact;
 		{
-			final Operation oper = new Operation();
-			s.operations.add(oper);
-			oper.status = TransactionStatus.ORDER_REGISTERED;
+			final Status oper = new Status();
+			s.states.add(oper);
+			oper.status = StateStrings.ORDER_REGISTERED;
 		}
 
 		final File file = this.transactionsBackEnd.registerTransaction(s, args.filesystem);
@@ -231,23 +231,23 @@ public class TgBotMessageHandler implements Handler {
 		final PFCAddress pfcAddress = this.walletBackEnd.obtainNewPFCAddress();
 		final Long chatid = args.update.message.chatID;
 
-		final Transaction transact = new Transaction();
+		final Operation transact = new Operation();
 		transact.chatID = chatid;
 		transact.timestamp = System.currentTimeMillis();
 		transact.userName = args.update.message.from.userName;
 		transact.firstName = args.update.message.from.firstName;
 		transact.lastName = args.update.message.from.lastName;
 
-		transact.type = Transaction.SELL;
+		transact.type = Operation.SELL;
 		transact.exchangePFCWallet = pfcAddress;
 		transact.clientBTCWallet = btcAddress;
 
-		final TransactionStatus s = new TransactionStatus();
-		s.transact = transact;
+		final Transaction s = new Transaction();
+		s.operation = transact;
 		{
-			final Operation oper = new Operation();
-			s.operations.add(oper);
-			oper.status = TransactionStatus.ORDER_REGISTERED;
+			final Status oper = new Status();
+			s.states.add(oper);
+			oper.status = StateStrings.ORDER_REGISTERED;
 		}
 
 		final File file = this.transactionsBackEnd.registerTransaction(s, args.filesystem);
