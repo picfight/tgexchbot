@@ -59,6 +59,7 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	//pin.D("header", r.Header)
 
 	access_key := r.Header.Get("Access_key")
+	pin.D("access_key", access_key)
 
 	responseString := s.processRequest(command, access_key, r.Header)
 
