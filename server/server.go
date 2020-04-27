@@ -27,6 +27,8 @@ type HttpsServer struct {
 	//handler func(s *HttpsServer) (w http.ResponseWriter, r *http.Request)
 }
 
+const ACCESS_KEY = "TGEXCHBOTKEY"
+
 func (s HttpsServer) Start() {
 	http.HandleFunc("/", s.Handler)
 
@@ -39,6 +41,11 @@ func (s HttpsServer) Start() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	isnotset := checkAccessKey("")
+	if isnotset {
+		panic(fmt.Sprintf("%v is not set", ACCESS_KEY))
+	}
+
 }
 
 func NewServer(cfg *cfg.ConfigJson) *HttpsServer {
@@ -96,7 +103,7 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 }
 
 func checkAccessKey(received_key string) bool {
-	set := os.Getenv("TGEXCHBOTKEY")
+	set := os.Getenv(ACCESS_KEY)
 	return received_key == set
 }
 
