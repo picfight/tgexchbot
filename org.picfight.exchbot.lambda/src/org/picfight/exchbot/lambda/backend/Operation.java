@@ -1,7 +1,7 @@
 
 package org.picfight.exchbot.lambda.backend;
 
-public class Transaction {
+public class Operation {
 
 	public static final String BUY = "BUY";
 	public static final String SELL = "SELL";
