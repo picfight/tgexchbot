@@ -30,6 +30,12 @@ type HttpsServer struct {
 const ACCESS_KEY = "TGEXCHBOTKEY"
 
 func (s HttpsServer) Start() {
+	pin.D("Check access key...")
+	isnotset := checkAccessKey("")
+	if isnotset {
+		panic(fmt.Sprintf("%v is not set", ACCESS_KEY))
+	}
+
 	http.HandleFunc("/", s.Handler)
 
 	pin.D(fmt.Sprintf("Starting server at port: %v", s.config.ServerConfig.Port))
@@ -40,10 +46,6 @@ func (s HttpsServer) Start() {
 	err := http.ListenAndServeTLS(fmt.Sprintf(":%v", s.config.ServerConfig.Port), s.config.ServerConfig.CertificateFile, s.config.ServerConfig.CertificateKeyFile, nil)
 	if err != nil {
 		log.Fatal(err)
-	}
-	isnotset := checkAccessKey("")
-	if isnotset {
-		panic(fmt.Sprintf("%v is not set", ACCESS_KEY))
 	}
 
 }
