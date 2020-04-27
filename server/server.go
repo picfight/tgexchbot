@@ -5,6 +5,7 @@ import (
 	"fmt"
 	btccfg "github.com/btcsuite/btcd/chaincfg"
 	"github.com/picfight/pfcd/dcrutil"
+	"os"
 
 	"github.com/btcsuite/btcutil"
 	"github.com/jfixby/coin"
@@ -58,7 +59,6 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	//pin.D("header", r.Header)
 
 	access_key := r.Header.Get("Access_key")
-	pin.D("access_key", access_key)
 
 	responseString := s.processRequest(command, access_key, r.Header)
 
@@ -67,7 +67,12 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, responseString)
 }
 
-func (s *HttpsServer) processRequest(command string, key string, params http.Header) string {
+func (s *HttpsServer) processRequest(command string, access_key string, params http.Header) string {
+	valid := checkAccessKey(access_key)
+	if !valid {
+		return `{"error":"Access denied, invalid key"}`
+	}
+
 	if command == "rate" {
 		return s.processRate()
 	}
@@ -87,6 +92,11 @@ func (s *HttpsServer) processRequest(command string, key string, params http.Hea
 	}
 
 	return `{"status":"ok"}`
+}
+
+func checkAccessKey(received_key string) bool {
+	set := os.Getenv("TGEXCHBOTKEY")
+	return received_key == set
 }
 
 func (s *HttpsServer) processRate() string {
