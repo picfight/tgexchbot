@@ -185,7 +185,7 @@ func (s *HttpsServer) processRate() string {
 		pfcAmount := rate.CirculatingSupplyCoins
 		pin.D("total pfc amount", pfcAmount)
 
-		rate.BTCperPFC = btcAmount / pfcAmount
+		rate.BTCperPFC = btcAmount / pfcAmount.Value
 	}
 
 	{
