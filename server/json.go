@@ -1,7 +1,7 @@
 package server
 
 type Rate struct {
-	CirculatingSupplyCoins float64   `json: "CirculatingSupplyCoins"`
+	CirculatingSupplyCoins AmountPFC   `json: "CirculatingSupplyCoins"`
 	AvailablePFC           AmountPFC `json: "AvailablePFC"`
 	AvailableBTC           AmountBTC `json: "AvailableBTC"`
 	BTCperPFC              float64   `json: "BTCperPFC"`

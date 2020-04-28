@@ -139,7 +139,7 @@ func (s *HttpsServer) processRate() string {
 		blocks := float64(diff) * 1.0 / (5 * 60)
 		height := int64(blocks)
 		amount := coin.Amount{AtomsValue: s.EstimateSupply(height)}
-		rate.CirculatingSupplyCoins = amount.ToCoins()
+		rate.CirculatingSupplyCoins.Value = amount.ToCoins()
 	}
 	{
 		client, err := connect.PFCWallet(s.config)
