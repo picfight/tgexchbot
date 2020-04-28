@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.AvailableFunds;
@@ -142,8 +143,13 @@ public class TgBotMessageHandler implements Handler {
 		final StringBuilder b = new StringBuilder();
 		b.append("Order:");
 		b.append("\n");
+
 		b.append(searchterm);
 		b.append("\n");
+
+		b.append("Created: " + new Date(status.operation.timestamp));
+		b.append("\n");
+
 		b.append("\n");
 
 		b.append("Status: ");

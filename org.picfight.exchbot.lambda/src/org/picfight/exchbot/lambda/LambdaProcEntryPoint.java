@@ -93,6 +93,9 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		{
 			final FilesList taskFileList = rootFS.Newo.listAllChildren();
 			for (final File f : taskFileList) {
+				if (f.isFolder()) {
+					continue;
+				}
 				Transaction s = f.readJson(Transaction.class);
 				s = this.tryToExecute(s, rootFS, f);
 			}
@@ -100,6 +103,9 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		{
 			final FilesList taskFileList = rootFS.Processing.listAllChildren();
 			for (final File f : taskFileList) {
+				if (f.isFolder()) {
+					continue;
+				}
 				Transaction s = f.readJson(Transaction.class);
 				s = this.tryToExecute(s, rootFS, f);
 			}
