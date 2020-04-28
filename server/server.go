@@ -75,7 +75,7 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	//post := r.PostForm
 	//pin.D("post", post)
 
-	//pin.D("header", r.Header)
+	pin.D("header", r.Header)
 
 	access_key := r.Header.Get("Access_key")
 	pin.D("access_key", access_key)
@@ -98,12 +98,12 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	}
 
 	if command == "get_balance_btc" {
-		btc_address := params["btc_address"]
+		btc_address := params["Btc_address"]
 		return s.getBalanceBTC(btc_address[0])
 	}
 
 	if command == "get_balance_pfc" {
-		pfc_address := params["pfc_address"]
+		pfc_address := params["Pfc_address"]
 		return s.getBalancePFC(pfc_address[0])
 	}
 
