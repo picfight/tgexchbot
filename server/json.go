@@ -17,3 +17,8 @@ type AddressString struct {
 	AddressString string `json: "AddressString"`
 	Type          string `json: "Type"`
 }
+
+type Balance struct {
+	Amount float64 `json: "Amount"`
+	Type   string  `json: "Type"`
+}

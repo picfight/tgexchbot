@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/btcsuite/btcd/btcjson"
 	btccfg "github.com/btcsuite/btcd/chaincfg"
 	"github.com/picfight/pfcd/dcrutil"
 	"os"
@@ -94,6 +95,16 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 
 	if command == "rate" {
 		return s.processRate()
+	}
+
+	if command == "get_balance_btc" {
+		btc_address := params["btc_address"]
+		return s.getBalanceBTC(btc_address[0])
+	}
+
+	if command == "get_balance_pfc" {
+		pfc_address := params["pfc_address"]
+		return s.getBalancePFC(pfc_address[0])
 	}
 
 	if command == "new_pfc_address" {
@@ -236,6 +247,71 @@ func (s HttpsServer) AnalyzeString(hextext string) string {
 	}
 
 	return toJson(result)
+}
+
+func (s HttpsServer) getBalanceBTC(btc_address string) string {
+	result := &Balance{
+		Type: "BTC",
+	}
+	{
+		client, err := connect.BTCWallet(s.config)
+		lang.CheckErr(err)
+
+		r, err := client.ListUnspent()
+		lang.CheckErr(err)
+		client.Disconnect()
+
+		b := findBTCBalance(r, btc_address, "default")
+
+		result.Amount = b
+	}
+	return toJson(result)
+}
+
+func (s HttpsServer) getBalancePFC(pfc_address string) string {
+	result := &Balance{
+		Type: "PFC",
+	}
+	{
+		client, err := connect.PFCWallet(s.config)
+		lang.CheckErr(err)
+
+		r, err := client.ListUnspent()
+		lang.CheckErr(err)
+		client.Disconnect()
+
+		b := findPFCBalance(r, pfc_address, "default")
+		result.Amount = b
+	}
+	return toJson(result)
+}
+
+func findPFCBalance(r []dcrjson.ListUnspentResult, address string, acc string) float64 {
+	balance := float64(0)
+	minConf := int64(1)
+	for _, e := range r {
+		if e.Account == acc && //
+			e.Address == address && //
+			e.Spendable && //
+			e.Confirmations >= minConf {
+			balance = balance + e.Amount
+		}
+	}
+	return balance
+}
+
+func findBTCBalance(r []btcjson.ListUnspentResult, address string, acc string) float64 {
+	balance := float64(0)
+	minConf := int64(1)
+	for _, e := range r {
+		if e.Account == acc && //
+			e.Address == address && //
+			e.Spendable && //
+			e.Confirmations >= minConf {
+			balance = balance + e.Amount
+		}
+	}
+	return balance
 }
 
 func toJson(v interface{}) string {

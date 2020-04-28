@@ -109,8 +109,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 
 	}
 
-	private Transaction tryToExecute (final Transaction s, final FilesystemSetup fs, final File file)
-		throws IOException {
+	private Transaction tryToExecute (final Transaction s, final FilesystemSetup fs, final File file) throws IOException {
 		final long now = System.currentTimeMillis();
 		final Operation tr = s.operation;
 		final long deadline = tr.timestamp + (long)(expirationHours * 60 * 60 * 1000);
@@ -143,8 +142,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return null;
 	}
 
-	private Transaction processNoEnoughPFCReceived (final Transaction s, final FilesystemSetup fs,
-		final PFCBalance balance, final double minPFCOperation, final File ofile) throws IOException {
+	private Transaction processNoEnoughPFCReceived (final Transaction s, final FilesystemSetup fs, final PFCBalance balance,
+		final double minPFCOperation, final File ofile) throws IOException {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.NO_ENOUGH_PFC;
@@ -157,8 +156,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return s;
 	}
 
-	private Transaction processNoEnoughBTCReceived (final Transaction s, final FilesystemSetup fs,
-		final BTCBalance balance, final double minBTCOperation, final File ofile) throws IOException {
+	private Transaction processNoEnoughBTCReceived (final Transaction s, final FilesystemSetup fs, final BTCBalance balance,
+		final double minBTCOperation, final File ofile) throws IOException {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.NO_ENOUGH_BTC;
@@ -171,21 +170,21 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return s;
 	}
 
-	private Transaction processExpired (final Transaction s, final FilesystemSetup fs, final long deadline,
-		final File ofile) throws IOException {
+	private Transaction processExpired (final Transaction s, final FilesystemSetup fs, final long deadline, final File ofile)
+		throws IOException {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.ORDER_EXPIRED;
 		op.error_message = "Transaction expired at " + new Date(deadline);
 		final String file_name = TransactionBackEnd.file_name(s);
 		final File file = fs.Expired.child(file_name);
-		ofile.delete();
 		file.writeJson(s);
+		ofile.delete();
 		return s;
 	}
 
-	private Transaction reportSuccess (final Transaction s, final FilesystemSetup fs,
-		final Result transferResult, final File ofile) throws IOException {
+	private Transaction reportSuccess (final Transaction s, final FilesystemSetup fs, final Result transferResult,
+		final File ofile) throws IOException {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.EXECUTED;
@@ -197,8 +196,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return s;
 	}
 
-	private Transaction processSellPFC (final Transaction s, final FilesystemSetup fs, final PFCBalance balance,
-		final File ofile) throws IOException {
+	private Transaction processSellPFC (final Transaction s, final FilesystemSetup fs, final PFCBalance balance, final File ofile)
+		throws IOException {
 
 		final double pfcAmount = balance.amount.value;
 		final AvailableFunds funds = walletBackEnd.getFunds();
@@ -221,8 +220,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return this.reportBackendError(s, fs, transferResult, ofile);
 	}
 
-	private Transaction reportBackendError (final Transaction s, final FilesystemSetup fs,
-		final Result transferResult, final File ofile) throws IOException {
+	private Transaction reportBackendError (final Transaction s, final FilesystemSetup fs, final Result transferResult,
+		final File ofile) throws IOException {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.BACKEND_ERROR;
@@ -235,8 +234,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return s;
 	}
 
-	private Transaction reportWalletNoEnoughBTC (final Transaction s, final FilesystemSetup fs,
-		final AmountBTC btcAmount, final AvailableFunds balance, final File ofile) throws IOException {
+	private Transaction reportWalletNoEnoughBTC (final Transaction s, final FilesystemSetup fs, final AmountBTC btcAmount,
+		final AvailableFunds balance, final File ofile) throws IOException {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.BACKEND_ERROR;
@@ -248,8 +247,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return s;
 	}
 
-	private Transaction reportWalletNoEnoughPFC (final Transaction s, final FilesystemSetup fs,
-		final AmountPFC pfcAmount, final AvailableFunds balance, final File ofile) throws IOException {
+	private Transaction reportWalletNoEnoughPFC (final Transaction s, final FilesystemSetup fs, final AmountPFC pfcAmount,
+		final AvailableFunds balance, final File ofile) throws IOException {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.BACKEND_ERROR;
@@ -261,8 +260,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return s;
 	}
 
-	private Transaction processBuyPFC (final Transaction s, final FilesystemSetup fs, final BTCBalance balance,
-		final File ofile) throws IOException {
+	private Transaction processBuyPFC (final Transaction s, final FilesystemSetup fs, final BTCBalance balance, final File ofile)
+		throws IOException {
 		final AvailableFunds funds = walletBackEnd.getFunds();
 		final double priceBTC = Exchange.buyPriceBTC(funds);
 		final double pfcAmount = balance.amount.value / priceBTC;
