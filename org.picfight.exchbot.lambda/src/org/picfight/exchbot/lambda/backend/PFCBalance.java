@@ -3,7 +3,12 @@ package org.picfight.exchbot.lambda.backend;
 
 public class PFCBalance {
 
-	public AmountPFC amount;
-	public PFCAddress address;
+	@Override
+	public String toString () {
+		return "PFCBalance [amount=" + this.AmountPFC + ", address=" + this.PFCAddress + "]";
+	}
+
+	public AmountPFC AmountPFC;
+	public PFCAddress PFCAddress;
 
 }

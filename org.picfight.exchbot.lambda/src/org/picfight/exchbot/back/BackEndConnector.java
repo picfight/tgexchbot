@@ -151,7 +151,11 @@ public class BackEndConnector {
 		is.close();
 // L.d("data", data);
 
-		return Json.newJsonString(data);
+		final JsonString resultJson = Json.newJsonString(data);
+
+// L.d("resultJson", resultJson);
+
+		return resultJson;
 	}
 
 	static private String getQuery (final Map<String, String> params) throws UnsupportedEncodingException {
