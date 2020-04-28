@@ -3,10 +3,10 @@ package org.picfight.exchbot.lambda.backend;
 
 public class AmountBTC {
 
-	public double value;
+	public double Value;
 
 	public AmountBTC (final double btcAmount) {
-		this.value = btcAmount;
+		this.Value = btcAmount;
 	}
 
 	public AmountBTC () {
@@ -14,7 +14,7 @@ public class AmountBTC {
 
 	@Override
 	public String toString () {
-		return this.value + "";
+		return this.Value + "";
 	}
 
 }

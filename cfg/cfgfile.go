@@ -21,8 +21,9 @@ type ConfigJson struct {
 }
 
 type ExchangeSettings struct {
-	ExchangeRate   float64 `json: "ExchangeRate"`
-	ExchangeMargin float64 `json: "ExchangeMargin"`
+	ExchangeRate    float64 `json: "ExchangeRate"`
+	ExchangeMargin  float64 `json: "ExchangeMargin"`
+	MinBTCOperation float64 `json: "MinBTCOperation"`
 }
 
 type HttpsServerConfig struct {

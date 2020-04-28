@@ -1,12 +1,14 @@
 package server
 
 type Rate struct {
-	CirculatingSupplyCoins AmountPFC   `json: "CirculatingSupplyCoins"`
+	CirculatingSupplyCoins AmountPFC `json: "CirculatingSupplyCoins"`
 	AvailablePFC           AmountPFC `json: "AvailablePFC"`
 	AvailableBTC           AmountBTC `json: "AvailableBTC"`
-	BTCperPFC              float64   `json: "BTCperPFC"`
-	ExchangeRate           float64   `json: "ExchangeRate"`
-	ExchangeMargin         float64   `json: "ExchangeMargin"`
+
+	MinBTCOperation AmountBTC `json: "MinBTCOperation"`
+	BTCperPFC       float64   `json: "BTCperPFC"`
+	ExchangeRate    float64   `json: "ExchangeRate"`
+	ExchangeMargin  float64   `json: "ExchangeMargin"`
 }
 
 type StringAnalysis struct {

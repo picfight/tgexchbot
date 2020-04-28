@@ -191,6 +191,7 @@ func (s *HttpsServer) processRate() string {
 	{
 		rate.ExchangeRate = s.config.ExchangeSettings.ExchangeRate
 		rate.ExchangeMargin = s.config.ExchangeSettings.ExchangeMargin
+		rate.MinBTCOperation.Value = s.config.ExchangeSettings.MinBTCOperation
 	}
 
 	return toJson(rate)
