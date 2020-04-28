@@ -75,7 +75,7 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	//post := r.PostForm
 	//pin.D("post", post)
 
-	pin.D("header", r.Header)
+	//pin.D("header", r.Header)
 
 	access_key := r.Header.Get("Access_key")
 	pin.D("access_key", access_key)
