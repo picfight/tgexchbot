@@ -139,7 +139,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			final AmountPFC minPFCOperation = new AmountPFC();
 			minPFCOperation.Value = pfcAmount;
 
-			if (balance.AmountPFC.Value < minPFCOperation.Value && balance.AmountPFC.Value > 0) {
+			if (balance.AmountPFC.Value < minPFCOperation.Value) {
 				return this.processNoEnoughPFCReceived(s, fs, balance, minPFCOperation, file);
 			} else {
 				return this.processSellPFC(s, fs, balance, file);
