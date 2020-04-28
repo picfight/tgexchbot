@@ -117,7 +117,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final long now = System.currentTimeMillis();
 		final Operation tr = s.operation;
 		final long deadline = tr.timestamp + (long)(expirationHours * 60 * 60 * 1000);
-		if (deadline > now) {
+		if (deadline < now) {
 			return this.processExpired(s, fs, deadline, file);
 		}
 		if (tr.type.equalsIgnoreCase(Operation.BUY)) {
