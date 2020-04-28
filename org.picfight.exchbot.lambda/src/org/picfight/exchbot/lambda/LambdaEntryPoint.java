@@ -98,6 +98,7 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 		root.makeFolder();
 
 		final FilesystemSetup setup = new FilesystemSetup(root);
+		setup.deploy();
 
 		return setup;
 	}
