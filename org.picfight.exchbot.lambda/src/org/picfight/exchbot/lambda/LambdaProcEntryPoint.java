@@ -40,7 +40,6 @@ import com.jfixby.scarabei.red.desktop.ScarabeiDesktop;
 
 public class LambdaProcEntryPoint implements RequestStreamHandler {
 	private static FilesystemSetup rootFS;
-	private static double minBTCOperation;
 	private static double expirationHours;
 
 	static {
@@ -52,7 +51,6 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 	static public final WalletBackEnd walletBackEnd;
 	static public final TransactionBackEnd transactionsBackEnd;
 	static {
-		minBTCOperation = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("MIN_BTC_OPERATION")));
 		expirationHours = Double.parseDouble(SystemSettings.getRequiredStringParameter(Names.newID("EXPIRATION_TIMEOUT_HOURS")));
 
 		final WalletBackEndArgs walletArgs = new WalletBackEndArgs();

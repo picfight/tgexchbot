@@ -147,8 +147,19 @@ public class TgBotMessageHandler implements Handler {
 		b.append("\n");
 
 		b.append("Status: ");
-		b.append(status.states.get(status.states.size() - 1));
+		final Status state = status.states.get(status.states.size() - 1);
+		b.append(state.status);
 		b.append("\n");
+
+		if (state.error_message != null) {
+			b.append(state.error_message);
+			b.append("\n");
+		}
+
+// if (state.result != null) {
+// b.append(state.result);
+// b.append("\n");
+// }
 
 		b.append("Type: ");
 		b.append(status.operation.type);
