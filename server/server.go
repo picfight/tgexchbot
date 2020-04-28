@@ -259,11 +259,10 @@ func (s HttpsServer) AnalyzeString(hextext string) string {
 }
 
 func (s HttpsServer) getBalanceBTC(btc_address string) string {
-	result := &BTCBalance{}
+	result := BTCBalance{}
 	{
-		address := result.BTCAddress
-		address.Type = "BTC"
-		address.AddressString = btc_address
+		result.BTCAddress.Type = "BTC"
+		result.BTCAddress.AddressString = btc_address
 	}
 	{
 		client, err := connect.BTCWallet(s.config)
@@ -281,11 +280,10 @@ func (s HttpsServer) getBalanceBTC(btc_address string) string {
 }
 
 func (s HttpsServer) getBalancePFC(pfc_address string) string {
-	result := &PFCBalance{}
+	result := PFCBalance{}
 	{
-		address := result.PFCAddress
-		address.Type = "PFC"
-		address.AddressString = pfc_address
+		result.PFCAddress.Type = "PFC"
+		result.PFCAddress.AddressString = pfc_address
 	}
 	{
 		client, err := connect.PFCWallet(s.config)
