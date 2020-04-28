@@ -153,7 +153,20 @@ func (s *HttpsServer) processRate() string {
 		client.Disconnect()
 
 		accBalance := findAccount("default", balance)
-		rate.AvailablePFC = accBalance.Spendable
+		rate.AvailablePFC.Value = accBalance.Spendable
+	}
+	{
+		client, err := connect.BTCWallet(s.config)
+		lang.CheckErr(err)
+		br, err := client.GetBalance("default")
+		lang.CheckErr(err)
+		pin.D("BTC balance", br)
+
+		balance, err := client.GetBalance("default")
+		lang.CheckErr(err)
+		client.Disconnect()
+
+		rate.AvailablePFC.Value = balance.ToBTC()
 	}
 	{
 		client, err := connect.BTCWallet(s.config)
@@ -173,6 +186,11 @@ func (s *HttpsServer) processRate() string {
 		pin.D("total pfc amount", pfcAmount)
 
 		rate.BTCperPFC = btcAmount / pfcAmount
+	}
+
+	{
+		rate.ExchangeRate = s.config.ExchangeSettings.ExchangeRate
+		rate.ExchangeMargin = s.config.ExchangeSettings.ExchangeMargin
 	}
 
 	return toJson(rate)
@@ -213,16 +231,6 @@ func (s HttpsServer) obrtainBTCAddress() string {
 }
 
 func (s HttpsServer) AnalyzeString(hextext string) string {
-	//bytes, err := hex.DecodeString(hextext)
-	//if err != nil {
-	//	pin.D("AnalyzeString", err)
-	//	result := &StringAnalysis{
-	//		Error: fmt.Sprintf("%v", err),
-	//	}
-	//	return toJson(result)
-	//}
-	//text := string(bytes)
-
 	text := hextext
 
 	pin.D("text", text)
@@ -250,8 +258,11 @@ func (s HttpsServer) AnalyzeString(hextext string) string {
 }
 
 func (s HttpsServer) getBalanceBTC(btc_address string) string {
-	result := &Balance{
-		Type: "BTC",
+	result := &BTCBalance{}
+	{
+		address := result.BTCAddress
+		address.Type = "BTC"
+		address.AddressString = btc_address
 	}
 	{
 		client, err := connect.BTCWallet(s.config)
@@ -263,14 +274,17 @@ func (s HttpsServer) getBalanceBTC(btc_address string) string {
 
 		b := findBTCBalance(r, btc_address, "default")
 
-		result.Amount = b
+		result.AmountBTC.Value = b
 	}
 	return toJson(result)
 }
 
 func (s HttpsServer) getBalancePFC(pfc_address string) string {
-	result := &Balance{
-		Type: "PFC",
+	result := &PFCBalance{}
+	{
+		address := result.PFCAddress
+		address.Type = "PFC"
+		address.AddressString = pfc_address
 	}
 	{
 		client, err := connect.PFCWallet(s.config)
@@ -281,7 +295,7 @@ func (s HttpsServer) getBalancePFC(pfc_address string) string {
 		client.Disconnect()
 
 		b := findPFCBalance(r, pfc_address, "default")
-		result.Amount = b
+		result.AmountPFC.Value = b
 	}
 	return toJson(result)
 }

@@ -10,8 +10,4 @@ public class AvailableFunds {
 	public Double ExchangeRate;
 	public Double ExchangeMargin;
 
-	public AmountPFC availablePFC () {
-		return this.AvailablePFC;
-	}
-
 }

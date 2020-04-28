@@ -133,7 +133,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			final double pfcAmount = minBTCOperation / priceBTC;
 			final double minPFCOperation = pfcAmount;
 
-			if (balance.amount.value < minPFCOperation && balance.amount.value > 0) {
+			if (balance.amount.Value < minPFCOperation && balance.amount.Value > 0) {
 				return this.processNoEnoughPFCReceived(s, fs, balance, minBTCOperation, file);
 			} else {
 				return this.processSellPFC(s, fs, balance, file);
@@ -199,7 +199,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 	private Transaction processSellPFC (final Transaction s, final FilesystemSetup fs, final PFCBalance balance, final File ofile)
 		throws IOException {
 
-		final double pfcAmount = balance.amount.value;
+		final double pfcAmount = balance.amount.Value;
 		final AvailableFunds funds = walletBackEnd.getFunds();
 		final double priceBTC = Exchange.sellPriceBTC(funds);
 
@@ -268,7 +268,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final Operation tr = s.operation;
 		tr.pfcAmount = new AmountPFC(pfcAmount);
 
-		if (funds.AvailablePFC.value <= tr.pfcAmount.value) {
+		if (funds.AvailablePFC.Value <= tr.pfcAmount.Value) {
 			return this.reportWalletNoEnoughPFC(s, fs, tr.pfcAmount, funds, ofile);
 		}
 

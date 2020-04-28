@@ -270,7 +270,7 @@ public class TgBotMessageHandler implements Handler {
 		final StringBuilder b = new StringBuilder();
 		b.append("This bot sells and buys PicFight coins (PFC) for Bitcoins (BTC)");
 		b.append(N);
-		b.append("PFC available for sale: " + rate.availablePFC() + " PFC");
+		b.append("PFC available for sale: " + rate.AvailablePFC.Value + " PFC");
 		b.append(N);
 		b.append(N);
 		b.append("Exchange rate:");
@@ -315,7 +315,7 @@ public class TgBotMessageHandler implements Handler {
 		final StringBuilder b = new StringBuilder();
 		b.append("该机器人买卖比特币（BTC）的PicFight硬币（PFC）");
 		b.append(N);
-		b.append("PFC可供出售 " + rate.availablePFC() + "");
+		b.append("PFC可供出售 " + rate.AvailablePFC.Value + "");
 		b.append(N);
 		b.append(N);
 		b.append("汇率:");
