@@ -147,7 +147,7 @@ public class WalletBackEnd {
 	}
 
 	public Result transferPFC (final Operation t) throws IOException {
-		final String command = "transferPFC";
+		final String command = "transfer_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 
 		final Map<String, String> params = Collections.newMap();

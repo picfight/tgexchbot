@@ -112,7 +112,7 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		client_btc_wallet := params["Client_btc_wallet"][0]
 		btc_amount, err := strconv.ParseFloat(params["Btc_amount"][0], 64)
 		if err != nil {
-			return `{"status":"ok"}`
+			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
 		return s.TransferBTC(client_btc_wallet, btc_amount, err)
 	}
@@ -121,7 +121,7 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		client_pfc_wallet := params["Client_pfc_wallet"][0]
 		pfc_amount, err := strconv.ParseFloat(params["Pfc_amount"][0], 64)
 		if err != nil {
-			return `{"status":"ok"}`
+			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
 		return s.TransferPFC(client_pfc_wallet, pfc_amount, err)
 	}
