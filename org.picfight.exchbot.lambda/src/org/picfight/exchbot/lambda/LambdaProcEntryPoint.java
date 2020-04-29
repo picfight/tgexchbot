@@ -220,7 +220,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		}
 
 		final Result transferResult = walletBackEnd.transferBTC(tr);
-		if (transferResult.success == true) {
+		if (transferResult.Success == true) {
 			return this.reportSuccess(s, fs, transferResult, ofile);
 		}
 		return this.reportBackendError(s, fs, transferResult, ofile);
@@ -232,7 +232,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		s.states.add(op);
 		op.status = StateStrings.BACKEND_ERROR;
 		op.result = transferResult;
-		op.error_message = transferResult.error_message;
+		op.error_message = transferResult.Error_message;
 		final String file_name = TransactionBackEnd.file_name(s);
 		final File file = fs.Error.child(file_name);
 		ofile.delete();
@@ -279,7 +279,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		}
 
 		final Result transferResult = walletBackEnd.transferPFC(tr);
-		if (transferResult.success == true) {
+		if (transferResult.Success == true) {
 			return this.reportSuccess(s, fs, transferResult, ofile);
 		}
 		return this.reportBackendError(s, fs, transferResult, ofile);
