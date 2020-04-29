@@ -275,7 +275,7 @@ func (s HttpsServer) getBalanceBTC(btc_address string) string {
 		lang.CheckErr(err)
 		client.Disconnect()
 
-		b := findBTCBalance(r, btc_address, "default")
+		b := receivedBTCByAddress(r, btc_address, "default")
 
 		result.AmountBTC.Value = b
 	}
@@ -296,19 +296,19 @@ func (s HttpsServer) getBalancePFC(pfc_address string) string {
 		lang.CheckErr(err)
 		client.Disconnect()
 
-		b := findPFCBalance(r, pfc_address, "default")
+		b := receivedPFCByAddress(r, pfc_address, "default")
 		result.AmountPFC.Value = b
 	}
 	return toJson(result)
 }
 
-func findPFCBalance(r []dcrjson.ListUnspentResult, address string, acc string) float64 {
+func receivedPFCByAddress(r []dcrjson.ListUnspentResult, address string, acc string) float64 {
 	balance := float64(0)
 	minConf := int64(1)
 	for _, e := range r {
 		if e.Account == acc && //
 			e.Address == address && //
-			e.Spendable && //
+			//e.Spendable && //
 			e.Confirmations >= minConf {
 			balance = balance + e.Amount
 		}
@@ -316,13 +316,13 @@ func findPFCBalance(r []dcrjson.ListUnspentResult, address string, acc string) f
 	return balance
 }
 
-func findBTCBalance(r []btcjson.ListUnspentResult, address string, acc string) float64 {
+func receivedBTCByAddress(r []btcjson.ListUnspentResult, address string, acc string) float64 {
 	balance := float64(0)
 	minConf := int64(1)
 	for _, e := range r {
 		if e.Account == acc && //
 			e.Address == address && //
-			e.Spendable && //
+			//e.Spendable && //
 			e.Confirmations >= minConf {
 			balance = balance + e.Amount
 		}
