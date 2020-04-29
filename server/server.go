@@ -155,7 +155,7 @@ func (s *HttpsServer) processRate() string {
 		accBalance := findAccount("default", balance)
 
 		pin.D("PFC accBalance", accBalance)
-		
+
 		rate.AvailablePFC.Value = accBalance.Spendable
 	}
 	{
@@ -169,7 +169,7 @@ func (s *HttpsServer) processRate() string {
 		lang.CheckErr(err)
 		client.Disconnect()
 
-		rate.AvailablePFC.Value = balance.ToBTC()
+		rate.AvailableBTC.Value = balance.ToBTC()
 	}
 	{
 		client, err := connect.BTCWallet(s.config)
