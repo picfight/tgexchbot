@@ -39,3 +39,10 @@ type AmountPFC struct {
 type AmountBTC struct {
 	Value float64 `json: "Value"`
 }
+
+type Result struct {
+	Success                 bool   `json: "Success"`
+	Error_message           string `json: "Error_message"`
+	Btc_transaction_receipt string `json: "Btc_transaction_receipt"`
+	Pfc_transaction_receipt string `json: "Pfc_transaction_receipt"`
+}

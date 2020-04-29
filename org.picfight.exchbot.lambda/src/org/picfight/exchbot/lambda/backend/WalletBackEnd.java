@@ -163,7 +163,7 @@ public class WalletBackEnd {
 	}
 
 	public Result transferBTC (final Operation t) throws IOException {
-		final String command = "transferBTC";
+		final String command = "transfer_btc";
 		final HttpURL Url = this.commadToUrl(command);
 
 		final Map<String, String> params = Collections.newMap();

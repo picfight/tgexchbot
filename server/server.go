@@ -7,6 +7,7 @@ import (
 	btccfg "github.com/btcsuite/btcd/chaincfg"
 	"github.com/picfight/pfcd/dcrutil"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/btcsuite/btcutil"
@@ -105,6 +106,24 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	if command == "get_balance_pfc" {
 		pfc_address := params["Pfc_address"]
 		return s.getBalancePFC(pfc_address[0])
+	}
+
+	if command == "transfer_btc" {
+		client_btc_wallet := params["client_btc_wallet"][0]
+		btc_amount, err := strconv.ParseFloat(params["btc_amount"][0], 64)
+		if err != nil {
+			return `{"status":"ok"}`
+		}
+		return s.TransferBTC(client_btc_wallet, btc_amount, err)
+	}
+
+	if command == "transfer_pfc" {
+		client_pfc_wallet := params["client_pfc_wallet"][0]
+		pfc_amount, err := strconv.ParseFloat(params["pfc_amount"][0], 64)
+		if err != nil {
+			return `{"status":"ok"}`
+		}
+		return s.TransferPFC(client_pfc_wallet, pfc_amount, err)
 	}
 
 	if command == "new_pfc_address" {
@@ -299,6 +318,22 @@ func (s HttpsServer) getBalancePFC(pfc_address string) string {
 		b := receivedPFCByAddress(r, pfc_address, "default")
 		result.AmountPFC.Value = b
 	}
+	return toJson(result)
+}
+
+func (s HttpsServer) TransferBTC(client_btc_wallet string, btc_amount float64, err error) string {
+	result := Result{}
+	result.Success = false
+	result.Error_message = "TransferBTC is not implemented yet: client_btc_wallet=" + //
+		client_btc_wallet + " BTC amount=" + fmt.Sprintf("%f", btc_amount)
+	return toJson(result)
+}
+
+func (s HttpsServer) TransferPFC(client_pfc_wallet string, pfc_amount float64, err error) string {
+	result := Result{}
+	result.Success = false
+	result.Error_message = "TransferPFC is not implemented yet: client_pfc_wallet=" + //
+		client_pfc_wallet + " PFC amount=" + fmt.Sprintf("%f", pfc_amount)
 	return toJson(result)
 }
 
