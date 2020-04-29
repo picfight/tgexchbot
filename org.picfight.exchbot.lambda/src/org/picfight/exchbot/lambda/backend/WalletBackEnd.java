@@ -120,7 +120,7 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public BTCBalance getBalanceForBTCAddress (final BTCAddress address) throws IOException {
+	public BTCBalance totalBTCReceivedForAddress (final BTCAddress address) throws IOException {
 		final String command = "get_balance_btc";
 		final HttpURL Url = this.commadToUrl(command);
 
@@ -133,7 +133,7 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public PFCBalance getBalanceForPFCAddress (final PFCAddress address) throws IOException {
+	public PFCBalance totalPFCReceivedForAddress (final PFCAddress address) throws IOException {
 		final String command = "get_balance_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 

@@ -121,7 +121,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			return this.processExpired(s, fs, deadline, file);
 		}
 		if (tr.type.equalsIgnoreCase(Operation.BUY)) {
-			final BTCBalance balance = walletBackEnd.getBalanceForBTCAddress(tr.exchangeBTCWallet);
+			final BTCBalance balance = walletBackEnd.totalBTCReceivedForAddress(tr.exchangeBTCWallet);
 			final AvailableFunds funds = walletBackEnd.getFunds();
 			if (balance.AmountBTC.Value < funds.MinBTCOperation.Value && balance.AmountBTC.Value > 0) {
 				return this.processNoEnoughBTCReceived(s, fs, balance, funds.MinBTCOperation, file);
@@ -129,7 +129,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 				return this.processBuyPFC(s, fs, balance, file);
 			}
 		} else if (tr.type.equalsIgnoreCase(Operation.SELL)) {
-			final PFCBalance balance = walletBackEnd.getBalanceForPFCAddress(tr.exchangePFCWallet);
+			final PFCBalance balance = walletBackEnd.totalPFCReceivedForAddress(tr.exchangePFCWallet);
 			L.d("balance", balance);
 			final AvailableFunds funds = walletBackEnd.getFunds();
 
