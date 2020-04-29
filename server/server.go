@@ -153,6 +153,9 @@ func (s *HttpsServer) processRate() string {
 		client.Disconnect()
 
 		accBalance := findAccount("default", balance)
+
+		pin.D("PFC accBalance", accBalance)
+		
 		rate.AvailablePFC.Value = accBalance.Spendable
 	}
 	{
