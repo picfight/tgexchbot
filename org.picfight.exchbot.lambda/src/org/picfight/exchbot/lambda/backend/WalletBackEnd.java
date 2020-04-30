@@ -146,14 +146,14 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public Result transferPFC (final Operation t) throws IOException {
+	public Result transferPFC (final Operation t, final AmountPFC pfcAmount) throws IOException {
 		final String command = "transfer_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key + "");
 		params.put("client_pfc_wallet", t.clientPFCWallet.AddressString + "");
-		params.put("pfc_amount", t.pfcAmount + "");
+		params.put("pfc_amount", pfcAmount + "");
 
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 
@@ -162,14 +162,14 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public Result transferBTC (final Operation t) throws IOException {
+	public Result transferBTC (final Operation t, final AmountBTC btcAmount) throws IOException {
 		final String command = "transfer_btc";
 		final HttpURL Url = this.commadToUrl(command);
 
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key + "");
 		params.put("client_btc_wallet", t.clientPFCWallet.AddressString + "");
-		params.put("btc_amount", t.pfcAmount + "");
+		params.put("btc_amount", btcAmount.Value + "");
 
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 

@@ -195,6 +195,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		s.states.add(op);
 		op.status = StateStrings.EXECUTED;
 		op.result = transferResult;
+// op.pfcAmount = transferResult.PfcAmount;
+// op.btcAmount = transferResult.BtcAmount;
 		final String file_name = TransactionBackEnd.file_name(s);
 		final File file = fs.Executed.child(file_name);
 		ofile.delete();
@@ -209,17 +211,15 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final AvailableFunds funds = walletBackEnd.getFunds();
 		final double priceBTC = Exchange.sellPriceBTC(funds);
 
-		final double btcAmount = pfcAmount * priceBTC;
-
 		final Operation tr = s.operation;
 
-		tr.btcAmount = new AmountBTC(btcAmount);
+		final AmountBTC btcAmount = new AmountBTC(pfcAmount * priceBTC);
 
-		if (funds.AvailableBTC.Value <= tr.btcAmount.Value) {
-			return this.reportWalletNoEnoughBTC(s, fs, tr.btcAmount, funds, ofile);
+		if (funds.AvailableBTC.Value <= btcAmount.Value) {
+			return this.reportWalletNoEnoughBTC(s, fs, btcAmount, funds, ofile);
 		}
 
-		final Result transferResult = walletBackEnd.transferBTC(tr);
+		final Result transferResult = walletBackEnd.transferBTC(tr, btcAmount);
 		if (transferResult.Success == true) {
 			return this.reportSuccess(s, fs, transferResult, ofile);
 		}
@@ -232,6 +232,8 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		s.states.add(op);
 		op.status = StateStrings.BACKEND_ERROR;
 		op.result = transferResult;
+// op.pfcAmount = transferResult.PfcAmount;
+// op.btcAmount = transferResult.BtcAmount;
 		op.error_message = transferResult.Error_message;
 		final String file_name = TransactionBackEnd.file_name(s);
 		final File file = fs.Error.child(file_name);
@@ -245,6 +247,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.BACKEND_ERROR;
+		op.processingBtcAmount = btcAmount;
 		op.error_message = "Available " + balance.AvailableBTC + "BTC, required " + btcAmount + "BTC to execute operation.";
 		final String file_name = TransactionBackEnd.file_name(s);
 		final File file = fs.Error.child(file_name);
@@ -258,6 +261,7 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		final Status op = new Status();
 		s.states.add(op);
 		op.status = StateStrings.BACKEND_ERROR;
+		op.processingPfcAmount = pfcAmount;
 		op.error_message = "Available " + balance.AvailablePFC + "PFC, required " + pfcAmount + "PFC to execute operation.";
 		final String file_name = TransactionBackEnd.file_name(s);
 		final File file = fs.Error.child(file_name);
@@ -270,15 +274,14 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		throws IOException {
 		final AvailableFunds funds = walletBackEnd.getFunds();
 		final double priceBTC = Exchange.buyPriceBTC(funds);
-		final double pfcAmount = balance.AmountBTC.Value / priceBTC;
 		final Operation tr = s.operation;
-		tr.pfcAmount = new AmountPFC(pfcAmount);
+		final AmountPFC pfcAmount = new AmountPFC(balance.AmountBTC.Value / priceBTC);
 
-		if (funds.AvailablePFC.Value <= tr.pfcAmount.Value) {
-			return this.reportWalletNoEnoughPFC(s, fs, tr.pfcAmount, funds, ofile);
+		if (funds.AvailablePFC.Value <= pfcAmount.Value) {
+			return this.reportWalletNoEnoughPFC(s, fs, pfcAmount, funds, ofile);
 		}
 
-		final Result transferResult = walletBackEnd.transferPFC(tr);
+		final Result transferResult = walletBackEnd.transferPFC(tr, pfcAmount);
 		if (transferResult.Success == true) {
 			return this.reportSuccess(s, fs, transferResult, ofile);
 		}

@@ -99,13 +99,13 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	}
 
 	if command == "get_balance_btc" {
-		btc_address := params["Btc_address"]
-		return s.getBalanceBTC(btc_address[0])
+		btc_address := params["Btc_address"][0]
+		return s.getBalanceBTC(btc_address)
 	}
 
 	if command == "get_balance_pfc" {
-		pfc_address := params["Pfc_address"]
-		return s.getBalancePFC(pfc_address[0])
+		pfc_address := params["Pfc_address"][0]
+		return s.getBalancePFC(pfc_address)
 	}
 
 	if command == "transfer_btc" {
