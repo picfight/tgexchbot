@@ -122,22 +122,20 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		}
 		if (tr.type.equalsIgnoreCase(Operation.BUY)) {
 			final BTCBalance balance = walletBackEnd.totalBTCReceivedForAddress(tr.exchangeBTCWallet);
+			L.d("totalBTCReceivedForAddress", balance);
 			final AvailableFunds funds = walletBackEnd.getFunds();
-			if (balance.AmountBTC.Value < funds.MinBTCOperation.Value && balance.AmountBTC.Value > 0) {
+			if (balance.AmountBTC.Value < funds.MinBTCOperation.Value) {
 				return this.processNoEnoughBTCReceived(s, fs, balance, funds.MinBTCOperation, file);
 			} else {
 				return this.processBuyPFC(s, fs, balance, file);
 			}
 		} else if (tr.type.equalsIgnoreCase(Operation.SELL)) {
 			final PFCBalance balance = walletBackEnd.totalPFCReceivedForAddress(tr.exchangePFCWallet);
-			L.d("balance", balance);
+			L.d("totalPFCReceivedForAddress", balance);
 			final AvailableFunds funds = walletBackEnd.getFunds();
 
-			final double priceBTC = funds.ExchangeRate;
-			final double pfcAmount = funds.MinBTCOperation.Value / priceBTC;
-
 			final AmountPFC minPFCOperation = new AmountPFC();
-			minPFCOperation.Value = pfcAmount;
+			minPFCOperation.Value = funds.MinBTCOperation.Value / funds.ExchangeRate;
 
 			if (balance.AmountPFC.Value < minPFCOperation.Value) {
 				return this.processNoEnoughPFCReceived(s, fs, balance, minPFCOperation, file);
@@ -226,6 +224,24 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		return this.reportBackendError(s, fs, transferResult, ofile);
 	}
 
+	private Transaction processBuyPFC (final Transaction s, final FilesystemSetup fs, final BTCBalance balance, final File ofile)
+		throws IOException {
+		final AvailableFunds funds = walletBackEnd.getFunds();
+		final double priceBTC = Exchange.buyPriceBTC(funds);
+		final Operation tr = s.operation;
+		final AmountPFC pfcAmount = new AmountPFC(balance.AmountBTC.Value / priceBTC);
+
+		if (funds.AvailablePFC.Value <= pfcAmount.Value) {
+			return this.reportWalletNoEnoughPFC(s, fs, pfcAmount, funds, ofile);
+		}
+
+		final Result transferResult = walletBackEnd.transferPFC(tr, pfcAmount);
+		if (transferResult.Success == true) {
+			return this.reportSuccess(s, fs, transferResult, ofile);
+		}
+		return this.reportBackendError(s, fs, transferResult, ofile);
+	}
+
 	private Transaction reportBackendError (final Transaction s, final FilesystemSetup fs, final Result transferResult,
 		final File ofile) throws IOException {
 		final Status op = new Status();
@@ -268,24 +284,6 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 		ofile.delete();
 		file.writeJson(s);
 		return s;
-	}
-
-	private Transaction processBuyPFC (final Transaction s, final FilesystemSetup fs, final BTCBalance balance, final File ofile)
-		throws IOException {
-		final AvailableFunds funds = walletBackEnd.getFunds();
-		final double priceBTC = Exchange.buyPriceBTC(funds);
-		final Operation tr = s.operation;
-		final AmountPFC pfcAmount = new AmountPFC(balance.AmountBTC.Value / priceBTC);
-
-		if (funds.AvailablePFC.Value <= pfcAmount.Value) {
-			return this.reportWalletNoEnoughPFC(s, fs, pfcAmount, funds, ofile);
-		}
-
-		final Result transferResult = walletBackEnd.transferPFC(tr, pfcAmount);
-		if (transferResult.Success == true) {
-			return this.reportSuccess(s, fs, transferResult, ofile);
-		}
-		return this.reportBackendError(s, fs, transferResult, ofile);
 	}
 
 // ----------------------
