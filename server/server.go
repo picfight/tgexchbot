@@ -323,17 +323,51 @@ func (s HttpsServer) getBalancePFC(pfc_address string) string {
 
 func (s HttpsServer) TransferBTC(client_btc_wallet string, btc_amount float64, err error) string {
 	result := Result{}
-	result.Success = false
-	result.Error_message = "TransferBTC is not implemented yet: client_btc_wallet=" + //
-		client_btc_wallet + " BTC amount=" + fmt.Sprintf("%f", btc_amount)
+
+	client, err := connect.BTCWallet(s.config)
+	lang.CheckErr(err)
+	address, err := btcutil.DecodeAddress(client_btc_wallet, &btccfg.MainNetParams)
+	lang.CheckErr(err)
+
+	amount, err := btcutil.NewAmount(btc_amount)
+	lang.CheckErr(err)
+
+	sendResult, err := client.SendToAddress(address, amount)
+	client.Disconnect()
+
+	if err != nil {
+		result.Success = false
+		result.Error_message = err.Error()
+	} else {
+		result.Success = true
+		result.Btc_transaction_receipt = sendResult.String()
+	}
+
 	return toJson(result)
 }
 
 func (s HttpsServer) TransferPFC(client_pfc_wallet string, pfc_amount float64, err error) string {
 	result := Result{}
-	result.Success = false
-	result.Error_message = "TransferPFC is not implemented yet: client_pfc_wallet=" + //
-		client_pfc_wallet + " PFC amount=" + fmt.Sprintf("%f", pfc_amount)
+
+	client, err := connect.PFCWallet(s.config)
+	lang.CheckErr(err)
+	address, err := dcrutil.DecodeAddress(client_pfc_wallet)
+	lang.CheckErr(err)
+
+	amount, err := dcrutil.NewAmount(pfc_amount)
+	lang.CheckErr(err)
+
+	sendResult, err := client.SendToAddress(address, amount)
+	client.Disconnect()
+
+	if err != nil {
+		result.Success = false
+		result.Error_message = err.Error()
+	} else {
+		result.Success = true
+		result.Pfc_transaction_receipt = sendResult.String()
+	}
+
 	return toJson(result)
 }
 
