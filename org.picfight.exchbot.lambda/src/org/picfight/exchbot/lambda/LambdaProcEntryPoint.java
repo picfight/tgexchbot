@@ -116,14 +116,19 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 	private Transaction tryToExecute (final Transaction s, final FilesystemSetup fs, final File file) throws IOException {
 		final long now = System.currentTimeMillis();
 		final Operation tr = s.operation;
-		final long deadline = tr.timestamp + (long)(expirationHours * 60 * 60 * 1000);
-		if (deadline < now) {
-			return this.processExpired(s, fs, deadline, file);
-		}
+
 		if (tr.type.equalsIgnoreCase(Operation.BUY)) {
 			final BTCBalance balance = walletBackEnd.totalBTCReceivedForAddress(tr.exchangeBTCWallet);
 			L.d("totalBTCReceivedForAddress", balance);
 			final AvailableFunds funds = walletBackEnd.getFunds();
+
+			if (balance.AmountBTC.Value == 0) {
+				final long deadline = tr.timestamp + (long)(expirationHours * 60 * 60 * 1000);
+				if (deadline < now) {
+					return this.processExpired(s, fs, deadline, file);
+				}
+			}
+
 			if (balance.AmountBTC.Value < funds.MinBTCOperation.Value) {
 				return this.processNoEnoughBTCReceived(s, fs, balance, funds.MinBTCOperation, file);
 			} else {
@@ -133,6 +138,13 @@ public class LambdaProcEntryPoint implements RequestStreamHandler {
 			final PFCBalance balance = walletBackEnd.totalPFCReceivedForAddress(tr.exchangePFCWallet);
 			L.d("totalPFCReceivedForAddress", balance);
 			final AvailableFunds funds = walletBackEnd.getFunds();
+
+			if (balance.AmountPFC.Value == 0) {
+				final long deadline = tr.timestamp + (long)(expirationHours * 60 * 60 * 1000);
+				if (deadline < now) {
+					return this.processExpired(s, fs, deadline, file);
+				}
+			}
 
 			final AmountPFC minPFCOperation = new AmountPFC();
 			minPFCOperation.Value = funds.MinBTCOperation.Value / funds.ExchangeRate;
