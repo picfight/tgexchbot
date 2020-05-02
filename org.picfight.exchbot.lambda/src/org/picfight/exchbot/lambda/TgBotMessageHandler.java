@@ -10,8 +10,10 @@ import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.BTCAddress;
+import org.picfight.exchbot.lambda.backend.BTCBalance;
 import org.picfight.exchbot.lambda.backend.Operation;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
+import org.picfight.exchbot.lambda.backend.PFCBalance;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
 import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
@@ -212,6 +214,12 @@ public class TgBotMessageHandler implements Handler {
 		final BTCAddress btcAddress = this.walletBackEnd.obtainNewBTCAddress();
 		final Long chatid = args.update.message.chatID;
 
+		final BTCBalance balance = this.walletBackEnd.totalBTCReceivedForAddress(btcAddress);
+		if (balance.AmountBTC.Value > 0) {
+			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + btcAddress, false);
+			return;
+		}
+
 		final Operation transact = new Operation();
 		transact.chatID = chatid;
 		transact.timestamp = System.currentTimeMillis();
@@ -247,6 +255,12 @@ public class TgBotMessageHandler implements Handler {
 	private void processSell (final HandleArgs args, final BTCAddress btcAddress) throws IOException {
 		final PFCAddress pfcAddress = this.walletBackEnd.obtainNewPFCAddress();
 		final Long chatid = args.update.message.chatID;
+
+		final PFCBalance balance = this.walletBackEnd.totalPFCReceivedForAddress(pfcAddress);
+		if (balance.AmountPFC.Value > 0) {
+			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + pfcAddress, false);
+			return;
+		}
 
 		final Operation transact = new Operation();
 		transact.chatID = chatid;
