@@ -338,7 +338,7 @@ func (s HttpsServer) TransferBTC(client_btc_wallet string, btc_amount float64, e
 		result.Success = true
 		result.Btc_transaction_receipt = sendResult.String()
 	}
-
+	result.BtcAmount.Value = btc_amount
 	return toJson(result)
 }
 
@@ -363,7 +363,7 @@ func (s HttpsServer) TransferPFC(client_pfc_wallet string, pfc_amount float64, e
 		result.Success = true
 		result.Pfc_transaction_receipt = sendResult.String()
 	}
-
+	result.PfcAmount.Value = pfc_amount
 	return toJson(result)
 }
 

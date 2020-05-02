@@ -47,7 +47,6 @@ func main() {
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
 
-
 		client.Disconnect()
 	}
 
@@ -57,7 +56,6 @@ func main() {
 		br, err := client.GetBalance(conf.DCRWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		pin.D("DCR balance", br)
-
 
 		client.Disconnect()
 	}
