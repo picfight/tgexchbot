@@ -208,6 +208,8 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		Handlers.respond(args.bot, chatid, b.toString(), false);
+		Handlers.respond(args.bot, chatid, Json.serializeToString(status).toString(), false);
+
 	}
 
 	private void processBuy (final HandleArgs args, final PFCAddress pfcAddress) throws IOException {
