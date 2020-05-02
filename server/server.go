@@ -163,15 +163,15 @@ func (s *HttpsServer) processRate() string {
 	{
 		client, err := connect.PFCWallet(s.config)
 		lang.CheckErr(err)
-		br, err := client.GetBalance("default")
+		br, err := client.GetBalance(s.config.PFCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		pin.D("PFC balance", br)
 
-		balance, err := client.GetBalance("default")
+		balance, err := client.GetBalance(s.config.PFCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		client.Disconnect()
 
-		accBalance := findAccount("default", balance)
+		accBalance := findAccount(s.config.PFCWalletConfig.WalletAccountName, balance)
 
 		pin.D("PFC accBalance", accBalance)
 
@@ -180,11 +180,11 @@ func (s *HttpsServer) processRate() string {
 	{
 		client, err := connect.BTCWallet(s.config)
 		lang.CheckErr(err)
-		br, err := client.GetBalance("default")
+		br, err := client.GetBalance(s.config.BTCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
 
-		balance, err := client.GetBalance("default")
+		balance, err := client.GetBalance(s.config.BTCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		client.Disconnect()
 
@@ -193,11 +193,11 @@ func (s *HttpsServer) processRate() string {
 	{
 		client, err := connect.BTCWallet(s.config)
 		lang.CheckErr(err)
-		br, err := client.GetBalance("default")
+		br, err := client.GetBalance(s.config.BTCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
 
-		balance, err := client.GetBalance("default")
+		balance, err := client.GetBalance(s.config.BTCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		client.Disconnect()
 
@@ -227,7 +227,7 @@ func (s HttpsServer) obrtainPFCAddress() string {
 		client, err := connect.PFCWallet(s.config)
 		lang.CheckErr(err)
 
-		addressResult, err := client.GetNewAddress("default")
+		addressResult, err := client.GetNewAddress(s.config.PFCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		client.Disconnect()
 
@@ -244,7 +244,7 @@ func (s HttpsServer) obrtainBTCAddress() string {
 		client, err := connect.BTCWallet(s.config)
 		lang.CheckErr(err)
 
-		addressResult, err := client.GetNewAddress("default")
+		addressResult, err := client.GetNewAddress(s.config.BTCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		client.Disconnect()
 
@@ -282,22 +282,18 @@ func (s HttpsServer) AnalyzeString(hextext string) string {
 
 func (s HttpsServer) getBalanceBTC(btc_address string) string {
 	result := BTCBalance{}
-	{
-		result.BTCAddress.Type = "BTC"
-		result.BTCAddress.AddressString = btc_address
-	}
-	{
-		client, err := connect.BTCWallet(s.config)
-		lang.CheckErr(err)
+	result.BTCAddress.Type = "BTC"
+	result.BTCAddress.AddressString = btc_address
+	client, err := connect.BTCWallet(s.config)
+	lang.CheckErr(err)
 
-		r, err := client.ListUnspent()
-		lang.CheckErr(err)
-		client.Disconnect()
+	r, err := client.ListUnspent()
+	lang.CheckErr(err)
+	client.Disconnect()
 
-		b := receivedBTCByAddress(r, btc_address, "default")
+	b := receivedBTCByAddress(r, btc_address, s.config.BTCWalletConfig.WalletAccountName)
 
-		result.AmountBTC.Value = b
-	}
+	result.AmountBTC.Value = b
 	return toJson(result)
 }
 
@@ -315,7 +311,7 @@ func (s HttpsServer) getBalancePFC(pfc_address string) string {
 		lang.CheckErr(err)
 		client.Disconnect()
 
-		b := receivedPFCByAddress(r, pfc_address, "default")
+		b := receivedPFCByAddress(r, pfc_address, s.config.PFCWalletConfig.WalletAccountName)
 		result.AmountPFC.Value = b
 	}
 	return toJson(result)

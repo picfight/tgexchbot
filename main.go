@@ -43,13 +43,10 @@ func main() {
 	{
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
-		br, err := client.GetBalance("default")
+		br, err := client.GetBalance(conf.BTCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
 
-		//address, err := client.GetNewAddress("default")
-		//lang.CheckErr(err)
-		//pin.D("new address", address)
 
 		client.Disconnect()
 	}
@@ -57,26 +54,19 @@ func main() {
 	{
 		client, err := connect.DCRWallet(conf)
 		lang.CheckErr(err)
-		br, err := client.GetBalance("default")
+		br, err := client.GetBalance(conf.DCRWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		pin.D("DCR balance", br)
 
-		//address, err := client.GetNewAddress("default")
-		//lang.CheckErr(err)
-		//pin.D("new address", address)
 
 		client.Disconnect()
 	}
 	{
 		client, err := connect.PFCWallet(conf)
 		lang.CheckErr(err)
-		br, err := client.GetBalance("default")
+		br, err := client.GetBalance(conf.PFCWalletConfig.WalletAccountName)
 		lang.CheckErr(err)
 		pin.D("PFC balance", br)
-
-		//address, err := client.GetNewAddress("default")
-		//lang.CheckErr(err)
-		//pin.D("new address", address)
 
 		client.Disconnect()
 	}

@@ -38,18 +38,21 @@ func TestWriteCfgFile(t *testing.T) {
 		data.BTCWalletConfig.Host = "127.0.0.1:18332"
 		data.BTCWalletConfig.User = "u"
 		data.BTCWalletConfig.Pass = "p"
+		data.BTCWalletConfig.WalletAccountName = "default"
 		//data.BTCDConfig.CertificateFile = "~/.btcd/rpc.cert"
 	}
 	{
 		data.PFCWalletConfig.Host = "127.0.0.1:9710"
 		data.PFCWalletConfig.User = "u"
 		data.PFCWalletConfig.Pass = "p"
+		data.PFCWalletConfig.WalletAccountName = "default"
 		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
 	}
 	{
 		data.DCRWalletConfig.Host = "127.0.0.1:9110"
 		data.DCRWalletConfig.User = "u"
 		data.DCRWalletConfig.Pass = "p"
+		data.DCRWalletConfig.WalletAccountName = "default"
 		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
 	}
 	{

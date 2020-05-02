@@ -3,37 +3,43 @@
 		"Host": "127.0.0.1:18334",
 		"User": "u",
 		"Pass": "p",
-		"CertificateFile": ""
+		"CertificateFile": "",
+		"WalletAccountName": ""
 	},
 	"PFCDConfig": {
 		"Host": "127.0.0.1:9709",
 		"User": "u",
 		"Pass": "p",
-		"CertificateFile": ""
+		"CertificateFile": "",
+		"WalletAccountName": ""
 	},
 	"DCRDConfig": {
 		"Host": "127.0.0.1:9109",
 		"User": "u",
 		"Pass": "p",
-		"CertificateFile": ""
+		"CertificateFile": "",
+		"WalletAccountName": ""
 	},
 	"BTCWalletConfig": {
 		"Host": "127.0.0.1:18332",
 		"User": "u",
 		"Pass": "p",
-		"CertificateFile": ""
+		"CertificateFile": "",
+		"WalletAccountName": "default"
 	},
 	"PFCWalletConfig": {
 		"Host": "127.0.0.1:9710",
 		"User": "u",
 		"Pass": "p",
-		"CertificateFile": ""
+		"CertificateFile": "",
+		"WalletAccountName": "default"
 	},
 	"DCRWalletConfig": {
 		"Host": "127.0.0.1:9110",
 		"User": "u",
 		"Pass": "p",
-		"CertificateFile": ""
+		"CertificateFile": "",
+		"WalletAccountName": "default"
 	},
 	"ServerConfig": {
 		"Port": 8080,
