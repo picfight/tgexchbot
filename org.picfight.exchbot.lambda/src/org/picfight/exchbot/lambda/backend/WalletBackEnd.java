@@ -40,16 +40,6 @@ public class WalletBackEnd {
 		return url;
 	}
 
-	public BTCAddress obtainNewBTCAddress () throws IOException {
-		final String command = "new_btc_address";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
-		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
-		return r;
-	}
-
 	public StringAnalysis analyzeString (final String text) throws IOException {
 		final String command = "analyze_string";
 		final HttpURL Url = this.commadToUrl(command);
@@ -80,6 +70,16 @@ public class WalletBackEnd {
 		params.put("access_key", this.access_key);
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 		final PFCAddress r = Json.deserializeFromString(PFCAddress.class, resultJson);
+		return r;
+	}
+
+	public BTCAddress obtainNewBTCAddress () throws IOException {
+		final String command = "new_btc_address";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
 		return r;
 	}
 
