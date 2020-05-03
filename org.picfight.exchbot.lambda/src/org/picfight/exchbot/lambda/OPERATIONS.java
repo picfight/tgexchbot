@@ -18,4 +18,8 @@ public class OPERATIONS {
 	public static final String HELP = "/help";
 	public static final String STATUS = "/status";
 
+	public static final String SET_ENGLISH = "/set_eng";
+	public static final String SET_RUSSIAN = "/set_ru";
+	public static final String SET_CHINESE = "/set_ch";
+
 }

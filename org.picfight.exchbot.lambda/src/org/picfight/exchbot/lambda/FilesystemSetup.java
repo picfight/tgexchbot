@@ -10,6 +10,7 @@ public class FilesystemSetup {
 	public FilesystemSetup (final File root) {
 		final FilesystemSetup setup = this;
 		setup.Root = root;
+		setup.Users = setup.Root.child("users");
 		setup.Orders = setup.Root.child("orders");
 		setup.Newo = setup.Orders.child("new");
 		setup.Executed = setup.Orders.child("executed");
@@ -22,6 +23,7 @@ public class FilesystemSetup {
 
 	public File Root;
 	public File Orders;
+	public File Users;
 
 	public File Newo;
 	public File Executed;
@@ -35,6 +37,7 @@ public class FilesystemSetup {
 	public void deploy () throws IOException {
 		final FilesystemSetup setup = this;
 		setup.Newo.makeFolder();
+		setup.Users.makeFolder();
 		setup.Executed.makeFolder();
 		setup.Expired.makeFolder();
 		setup.Error.makeFolder();

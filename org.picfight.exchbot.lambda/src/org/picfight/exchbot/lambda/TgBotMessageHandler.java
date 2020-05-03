@@ -17,6 +17,7 @@ import org.picfight.exchbot.lambda.backend.PFCBalance;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
 import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
+import org.picfight.exchbot.lambda.backend.UserSettings;
 import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -53,13 +54,34 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
+		final UserSettings settings = this.transactionsBackEnd.getUserSettings(chatid, args.filesystem);
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SET_CHINESE)) {
+			settings.setLanguage(UserSettingsLanguage.CH);
+		}
+		if (args.command.equalsIgnoreCase(OPERATIONS.SET_RUSSIAN)) {
+			settings.setLanguage(UserSettingsLanguage.RU);
+		}
+		if (args.command.equalsIgnoreCase(OPERATIONS.SET_ENGLISH)) {
+			settings.setLanguage(UserSettingsLanguage.EN);
+		}
+
+		if (!settings.languageIsSet()) {
+			this.respondSettings(args.bot, chatid);
+			return true;
+		}
+
+		if (!settings.exchangeAddressIsSet()) {
+			settings.setupExchangeAddress(this.walletBackEnd);
+		}
+
 		if (false || //
 			args.command.equalsIgnoreCase(OPERATIONS.MENU) || //
 			args.command.equalsIgnoreCase(OPERATIONS.START) || //
 			args.command.equalsIgnoreCase(OPERATIONS.HELP) || //
 			false) {
-			this.respondMenu(args.bot, chatid);
-			this.respondMenuCH(args.bot, chatid);
+			this.respondMenu(args.bot, settings, chatid);
+// this.respondMenuCH(args.bot, settings, chatid);
 			return true;
 		}
 
@@ -68,7 +90,7 @@ public class TgBotMessageHandler implements Handler {
 				final String text = args.arguments.getElementAt(0);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
 				if (anal.PFCAddress != null) {
-					this.processBuy(args, anal.PFCAddress);
+					this.processBuy(args, settings, anal.PFCAddress);
 					return true;
 				}
 			}
@@ -84,7 +106,7 @@ public class TgBotMessageHandler implements Handler {
 				final String text = args.arguments.getElementAt(0);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
 				if (anal.BTCAddress != null) {
-					this.processSell(args, anal.BTCAddress);
+					this.processSell(args, settings, anal.BTCAddress);
 					return true;
 				}
 			}
@@ -115,22 +137,37 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
-			final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
-			Handlers.respond(args.bot, chatid, "Send BTC here:", false);
-			Handlers.respond(args.bot, chatid, address.AddressString(), false);
-			return true;
-		}
-		if (args.command.equalsIgnoreCase(OPERATIONS.NEW_PFC_ADDRESS)) {
-			final PFCAddress address = this.walletBackEnd.obtainNewPFCAddress();
-			Handlers.respond(args.bot, chatid, "Send PFC here:", false);
-			Handlers.respond(args.bot, chatid, address.AddressString(), false);
-			return true;
-		}
+// if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
+// final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
+// Handlers.respond(args.bot, chatid, "Send BTC here:", false);
+// Handlers.respond(args.bot, chatid, address.AddressString(), false);
+// return true;
+// }
+// if (args.command.equalsIgnoreCase(OPERATIONS.NEW_PFC_ADDRESS)) {
+// final PFCAddress address = this.walletBackEnd.obtainNewPFCAddress();
+// Handlers.respond(args.bot, chatid, "Send PFC here:", false);
+// Handlers.respond(args.bot, chatid, address.AddressString(), false);
+// return true;
+// }
 		L.e("Command not found", args.command);
-		this.respondMenu(args.bot, chatid);
+		this.respondMenu(args.bot, settings, chatid);
 		this.respondMenuCH(args.bot, chatid);
 		return true;
+	}
+
+	private void respondSettings (final AbsSender bot, final Long chatid) throws IOException {
+		final String N = "\n";
+		final StringBuilder b = new StringBuilder();
+		b.append("Choose language:");
+		b.append(N);
+		b.append(OPERATIONS.SET_ENGLISH + " - English 🇬🇧");
+		b.append(N);
+		b.append(OPERATIONS.SET_RUSSIAN + " - Русский 🇷🇺");
+		b.append(N);
+		b.append(OPERATIONS.SET_CHINESE + " - 中文 🇨🇳");
+		b.append(N);
+
+		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
 	private void processStatus (final HandleArgs args, final String searchterm) throws IOException {
@@ -212,13 +249,13 @@ public class TgBotMessageHandler implements Handler {
 
 	}
 
-	private void processBuy (final HandleArgs args, final PFCAddress pfcAddress) throws IOException {
-		final BTCAddress btcAddress = this.walletBackEnd.obtainNewBTCAddress();
+	private void processBuy (final HandleArgs args, final UserSettings settings, final PFCAddress pfcAddress) throws IOException {
+		final BTCAddress exchangeAddress = settings.getExchangeAddressBTC();
 		final Long chatid = args.update.message.chatID;
 
-		final BTCBalance balance = this.walletBackEnd.totalBTCReceivedForAddress(btcAddress);
+		final BTCBalance balance = this.walletBackEnd.totalBTCReceivedForAddress(exchangeAddress);
 		if (balance.AmountBTC.Value > 0) {
-			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + btcAddress, false);
+			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + exchangeAddress, false);
 			return;
 		}
 
@@ -231,7 +268,7 @@ public class TgBotMessageHandler implements Handler {
 
 		transact.type = Operation.BUY;
 		transact.clientPFCWallet = pfcAddress;
-		transact.exchangeBTCWallet = btcAddress;
+		transact.exchangeBTCWallet = exchangeAddress;
 
 		final Transaction s = new Transaction();
 		s.operation = transact;
@@ -244,7 +281,7 @@ public class TgBotMessageHandler implements Handler {
 		final File file = this.transactionsBackEnd.registerTransaction(s, args.filesystem);
 
 		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
-		Handlers.respond(args.bot, chatid, btcAddress.AddressString, false);
+		Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
 		Handlers.respond(args.bot, chatid, "PFC will be sent to the following address:", false);
 		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + pfcAddress.AddressString, true);
 		Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
@@ -254,8 +291,8 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(args.bot, chatid, "" + file.toString(), false);
 	}
 
-	private void processSell (final HandleArgs args, final BTCAddress btcAddress) throws IOException {
-		final PFCAddress pfcAddress = this.walletBackEnd.obtainNewPFCAddress();
+	private void processSell (final HandleArgs args, final UserSettings settings, final BTCAddress btcAddress) throws IOException {
+		final PFCAddress pfcAddress = settings.getExchangeAddressPFC();
 		final Long chatid = args.update.message.chatID;
 
 		final PFCBalance balance = this.walletBackEnd.totalPFCReceivedForAddress(pfcAddress);
@@ -296,7 +333,7 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(args.bot, chatid, "" + file.toString(), false);
 	}
 
-	private void respondMenu (final AbsSender bot, final Long chatid) throws IOException {
+	private void respondMenu (final AbsSender bot, final UserSettings settings, final Long chatid) throws IOException {
 		final AvailableFunds rate = this.walletBackEnd.getFunds();
 
 		final String N = "\n";
