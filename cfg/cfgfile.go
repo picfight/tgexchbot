@@ -34,11 +34,11 @@ type HttpsServerConfig struct {
 }
 
 type RPCConfig struct {
-	Host              string `json: "host"`
-	User              string `json: "user"`
-	Pass              string `json: "password"`
-	CertificateFile   string `json: "certfile"`
-	WalletAccountName string `json: "wallet_account_name"`
+	Host                    string `json: "host"`
+	User                    string `json: "user"`
+	Pass                    string `json: "password"`
+	CertificateFile         string `json: "certfile"`
+	OutputWalletAccountName string `json: "wallet_account_name"`
 }
 
 func ReadCfgFile(filePath string) (*ConfigJson, error) {

@@ -43,7 +43,7 @@ func main() {
 	{
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
-		br, err := client.GetBalance(conf.BTCWalletConfig.WalletAccountName)
+		br, err := client.GetBalance(conf.BTCWalletConfig.OutputWalletAccountName)
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
 
@@ -53,7 +53,7 @@ func main() {
 	{
 		client, err := connect.DCRWallet(conf)
 		lang.CheckErr(err)
-		br, err := client.GetBalance(conf.DCRWalletConfig.WalletAccountName)
+		br, err := client.GetBalance(conf.DCRWalletConfig.OutputWalletAccountName)
 		lang.CheckErr(err)
 		pin.D("DCR balance", br)
 
@@ -62,7 +62,7 @@ func main() {
 	{
 		client, err := connect.PFCWallet(conf)
 		lang.CheckErr(err)
-		br, err := client.GetBalance(conf.PFCWalletConfig.WalletAccountName)
+		br, err := client.GetBalance(conf.PFCWalletConfig.OutputWalletAccountName)
 		lang.CheckErr(err)
 		pin.D("PFC balance", br)
 
