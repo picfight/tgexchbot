@@ -8,6 +8,7 @@ import org.picfight.exchbot.lambda.Result;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.json.JsonString;
 import com.jfixby.scarabei.api.net.http.Http;
@@ -63,43 +64,25 @@ public class WalletBackEnd {
 		return new String(hexChars).toLowerCase();
 	}
 
-	public PFCAddress obtainNewPFCAddress () throws IOException {
-		final String command = "new_pfc_address";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
-		final PFCAddress r = Json.deserializeFromString(PFCAddress.class, resultJson);
-		return r;
-	}
-
-	public BTCAddress obtainNewBTCAddress () throws IOException {
-		final String command = "new_btc_address";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
-		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
-		return r;
-	}
-
-	public BTCBalance totalBTCReceivedForAddress (final BTCAddress address) throws IOException {
+	public BTCBalance totalBTCReceivedForAddress (final BTCAddress address, final String accountName) throws IOException {
 		final String command = "get_balance_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("btc_address", address.AddressString);
+		params.put("Account_name", accountName);
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 		final BTCBalance r = Json.deserializeFromString(BTCBalance.class, resultJson);
 		return r;
 	}
 
-	public PFCBalance totalPFCReceivedForAddress (final PFCAddress address) throws IOException {
+	public PFCBalance totalPFCReceivedForAddress (final PFCAddress address, final String accountName) throws IOException {
 		final String command = "get_balance_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("pfc_address", address.AddressString);
+		params.put("Account_name", accountName);
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 		final PFCBalance r = Json.deserializeFromString(PFCBalance.class, resultJson);
 		return r;
@@ -127,6 +110,78 @@ public class WalletBackEnd {
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 		final Result r = Json.deserializeFromString(Result.class, resultJson);
 		return r;
+	}
+
+	public BTCInputs listBTCInputs (final BTCAddress address, final String accountName) throws IOException {
+		final String command = "list_btc_inputs";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("Access_key", this.access_key + "");
+		params.put("Btc_address", address.AddressString + "");
+		params.put("Account_name", accountName);
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		final BTCInputs r = Json.deserializeFromString(BTCInputs.class, resultJson);
+		return r;
+	}
+
+	public PFCInputs listPFCInputs (final PFCAddress address, final String accountName) throws IOException {
+		final String command = "list_pfc_inputs";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("Access_key", this.access_key + "");
+		params.put("Pfc_address", address.AddressString + "");
+		params.put("Account_name", accountName);
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		final PFCInputs r = Json.deserializeFromString(PFCInputs.class, resultJson);
+		return r;
+	}
+
+	public BTCAddress getNewBTCAddress (final String accountName) throws IOException {
+		final String command = "new_btc_address";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("Access_key", this.access_key);
+		params.put("Account_name", accountName);
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
+		return r;
+	}
+
+	public PFCAddress getNewPFCAddress (final String accountName) throws IOException {
+		final String command = "new_pfc_address";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("Access_key", this.access_key);
+		params.put("Account_name", accountName);
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		final PFCAddress r = Json.deserializeFromString(PFCAddress.class, resultJson);
+		return r;
+	}
+
+	public BTCAddress obtainNewBTCAddress (final UserSettings settings) throws IOException {
+		final File folder = settings.userFolder();
+		final File poolFile = folder.child("btc.address.pool.json");
+		final BTCAddressPool pool = poolFile.readJson(BTCAddressPool.class);
+		while (true) {
+			final BTCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
+			final BTCInputs inputs = this.listBTCInputs(address, settings.getAccountName());
+			if (inputs.size() == 0) {
+				return address;
+			}
+		}
+	}
+
+	public PFCAddress obtainNewPFCAddress (final UserSettings settings) throws IOException {
+		final File folder = settings.userFolder();
+		final File poolFile = folder.child("pfc.address.pool.json");
+		final PFCAddressPool pool = poolFile.readJson(PFCAddressPool.class);
+		while (true) {
+			final PFCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
+			final PFCInputs inputs = this.listPFCInputs(address, settings.getAccountName());
+			if (inputs.size() == 0) {
+				return address;
+			}
+		}
 	}
 
 }

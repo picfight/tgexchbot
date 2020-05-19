@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.picfight.exchbot.lambda.FilesystemSetup;
 import org.picfight.exchbot.lambda.Transaction;
 
-import com.jfixby.scarabei.api.debug.Debug;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.FilesList;
 
@@ -80,8 +79,8 @@ public class TransactionBackEnd {
 		return null;
 	}
 
-	public UserSettings getUserSettings (final Long chatid, final FilesystemSetup filesystem) throws IOException {
-		final String filename = this.fileNameForTGChatID(chatid);
+	public UserSettings getUserSettings (final String userID, final FilesystemSetup filesystem) throws IOException {
+		final String filename = userID;
 
 		final File userFolder = filesystem.Users.child(filename);
 		if (!userFolder.exists()) {
@@ -90,13 +89,13 @@ public class TransactionBackEnd {
 
 		final File settingsFile = userFolder.child("settings.json");
 		final UserSettings s = new UserSettings(settingsFile);
-		s.readFromFile();
+		if (settingsFile.exists()) {
+			s.readFromFile();
+		} else {
+			s.data.accountName = userID;
+			s.writeFile();
+		}
 		return s;
-	}
-
-	private String fileNameForTGChatID (final Long chatid) {
-		Debug.checkNull("chatid", chatid);
-		return "tg-" + chatid;
 	}
 
 }

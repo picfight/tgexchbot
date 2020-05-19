@@ -54,7 +54,9 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-		final UserSettings settings = this.transactionsBackEnd.getUserSettings(chatid, args.filesystem);
+		final String userID = this.userID(chatid);
+
+		final UserSettings settings = this.transactionsBackEnd.getUserSettings(userID, args.filesystem);
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.SET_CHINESE)) {
 			settings.setLanguage(UserSettingsLanguage.CH);
@@ -69,10 +71,6 @@ public class TgBotMessageHandler implements Handler {
 		if (!settings.languageIsSet()) {
 			this.respondSettings(args.bot, chatid);
 			return true;
-		}
-
-		if (!settings.exchangeAddressIsSet()) {
-			settings.setupExchangeAddress(this.walletBackEnd);
 		}
 
 		if (false || //
@@ -153,6 +151,10 @@ public class TgBotMessageHandler implements Handler {
 		this.respondMenu(args.bot, settings, chatid);
 		this.respondMenuCH(args.bot, chatid);
 		return true;
+	}
+
+	private String userID (final Long chatid) {
+		return "tg-" + chatid;
 	}
 
 	private void respondSettings (final AbsSender bot, final Long chatid) throws IOException {
@@ -250,10 +252,10 @@ public class TgBotMessageHandler implements Handler {
 	}
 
 	private void processBuy (final HandleArgs args, final UserSettings settings, final PFCAddress pfcAddress) throws IOException {
-		final BTCAddress exchangeAddress = settings.getExchangeAddressBTC();
+		final BTCAddress exchangeAddress = this.walletBackEnd.obtainNewBTCAddress(settings);// settings.getExchangeAddressBTC();
 		final Long chatid = args.update.message.chatID;
 
-		final BTCBalance balance = this.walletBackEnd.totalBTCReceivedForAddress(exchangeAddress);
+		final BTCBalance balance = this.walletBackEnd.totalBTCReceivedForAddress(exchangeAddress, settings.getAccountName());
 		if (balance.AmountBTC.Value > 0) {
 			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + exchangeAddress, false);
 			return;
@@ -292,10 +294,10 @@ public class TgBotMessageHandler implements Handler {
 	}
 
 	private void processSell (final HandleArgs args, final UserSettings settings, final BTCAddress btcAddress) throws IOException {
-		final PFCAddress pfcAddress = settings.getExchangeAddressPFC();
+		final PFCAddress pfcAddress = this.walletBackEnd.obtainNewPFCAddress(settings);// settings.getExchangeAddressPFC();
 		final Long chatid = args.update.message.chatID;
 
-		final PFCBalance balance = this.walletBackEnd.totalPFCReceivedForAddress(pfcAddress);
+		final PFCBalance balance = this.walletBackEnd.totalPFCReceivedForAddress(pfcAddress, settings.getAccountName());
 		if (balance.AmountPFC.Value > 0) {
 			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + pfcAddress, false);
 			return;
