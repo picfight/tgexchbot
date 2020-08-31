@@ -47,8 +47,10 @@ func main() {
 
 		OutputWalletAccountName := conf.PFCWalletConfig.OutputWalletAccountName
 
+		pin.D("Checking account <%v>", OutputWalletAccountName)
 		_, err = client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
+			pin.D("Creating account <%v>", OutputWalletAccountName)
 			err := client.CreateNewAccount(OutputWalletAccountName)
 			lang.CheckErr(err)
 		}
@@ -65,8 +67,10 @@ func main() {
 
 		OutputWalletAccountName := conf.BTCWalletConfig.OutputWalletAccountName
 
+		pin.D("Checking account <%v>", OutputWalletAccountName)
 		_, err = client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
+			pin.D("Creating account <%v>", OutputWalletAccountName)
 			err := client.CreateNewAccount(OutputWalletAccountName)
 			lang.CheckErr(err)
 		}
@@ -84,8 +88,10 @@ func main() {
 
 		OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
 
+		pin.D("Checking account <%v>", OutputWalletAccountName)
 		_, err = client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
+			pin.D("Creating account <%v>", OutputWalletAccountName)
 			err := client.CreateNewAccount(OutputWalletAccountName)
 			lang.CheckErr(err)
 		}
