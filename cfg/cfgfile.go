@@ -28,7 +28,7 @@ type ExchangeSettings struct {
 
 type HttpsServerConfig struct {
 	Port               int    `json: "Port"`
-	AccessKey          string `json: "accessKey"`
+	// AccessKey          string `json: "accessKey"`
 	CertificateFile    string `json: "certfile"`
 	CertificateKeyFile string `json: "certfile_key"`
 }

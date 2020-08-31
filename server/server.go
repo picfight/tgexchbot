@@ -3,12 +3,19 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/btcsuite/btcd/btcjson"
-	btccfg "github.com/btcsuite/btcd/chaincfg"
-	"github.com/picfight/pfcd/dcrutil"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/btcsuite/btcd/btcjson"
+	btccfg "github.com/btcsuite/btcd/chaincfg"
+	"github.com/picfight/pfcd/dcrutil"
+
+	"io"
+	"log"
+	"net/http"
+	"path"
+	"time"
 
 	"github.com/btcsuite/btcutil"
 	"github.com/jfixby/coin"
@@ -18,11 +25,6 @@ import (
 	"github.com/picfight/picfightcoin"
 	"github.com/picfight/tgexchbot/cfg"
 	"github.com/picfight/tgexchbot/connect"
-	"io"
-	"log"
-	"net/http"
-	"path"
-	"time"
 )
 
 type HttpsServer struct {
@@ -247,6 +249,12 @@ func (s HttpsServer) obrtainBTCAddress(walletAccountName string) string {
 	{
 		client, err := connect.BTCWallet(s.config)
 		lang.CheckErr(err)
+
+		_, err = client.GetAccountAddress(walletAccountName)
+		if err != nil {
+			err := client.CreateNewAccount(walletAccountName)
+			lang.CheckErr(err)
+		}
 
 		addressResult, err := client.GetNewAddress(walletAccountName)
 		lang.CheckErr(err)
