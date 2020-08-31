@@ -33,6 +33,9 @@ type HttpsServer struct {
 }
 
 const ACCESS_KEY = "TGEXCHBOTKEY"
+const BTCWKEY = "BTCWKEY"
+const PFCWKEY = "PFCWKEY"
+const DCRWKEY = "DCRWKEY"
 
 func (s HttpsServer) Start() {
 	pin.D("Check access key...")
@@ -233,8 +236,13 @@ func (s HttpsServer) obrtainPFCAddress(walletAccountName string) string {
 		client, err := connect.PFCWallet(s.config)
 		lang.CheckErr(err)
 
+		pin.D("Checking PFC account", walletAccountName)
+		key := os.Getenv(PFCWKEY)
+		err = client.WalletPassphrase(key, 10000000)
+		lang.CheckErr(err)
 		_, err = client.GetAccountAddress(walletAccountName)
 		if err != nil {
+			pin.D("Creating PFC account", walletAccountName)
 			err := client.CreateNewAccount(walletAccountName)
 			lang.CheckErr(err)
 		}
@@ -256,8 +264,13 @@ func (s HttpsServer) obrtainBTCAddress(walletAccountName string) string {
 		client, err := connect.BTCWallet(s.config)
 		lang.CheckErr(err)
 
+		pin.D("Checking BTC account", walletAccountName)
+		key := os.Getenv(BTCWKEY)
+		err = client.WalletPassphrase(key, 10000000)
+		lang.CheckErr(err)
 		_, err = client.GetAccountAddress(walletAccountName)
 		if err != nil {
+			pin.D("Creating BTC account", walletAccountName)
 			err := client.CreateNewAccount(walletAccountName)
 			lang.CheckErr(err)
 		}
