@@ -8,7 +8,6 @@ import org.picfight.exchbot.lambda.Result;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
-import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.json.JsonString;
 import com.jfixby.scarabei.api.net.http.Http;
@@ -64,29 +63,37 @@ public class WalletBackEnd {
 		return new String(hexChars).toLowerCase();
 	}
 
-	public BTCBalance totalBTCReceivedForAddress (final BTCAddress address, final String accountName) throws IOException {
+	public PFCBalance getPFCBallance (final PFCAddress pfc_address, final String accountName) throws IOException {
+		final String command = "get_balance_pfc";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key);
+		params.put("pfc_address", pfc_address.AddressString);
+		params.put("Account_name", accountName);
+		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		final PFCBalance r = Json.deserializeFromString(PFCBalance.class, resultJson);
+		return r;
+	}
+
+	public BTCBalance getBTCBallance (final BTCAddress btc_address, final String accountName) throws IOException {
 		final String command = "get_balance_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
-		params.put("btc_address", address.AddressString);
+		params.put("btc_address", btc_address.AddressString);
 		params.put("Account_name", accountName);
 		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
 		final BTCBalance r = Json.deserializeFromString(BTCBalance.class, resultJson);
 		return r;
 	}
 
-	public PFCBalance totalPFCReceivedForAddress (final PFCAddress address, final String accountName) throws IOException {
-		final String command = "get_balance_pfc";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key);
-		params.put("pfc_address", address.AddressString);
-		params.put("Account_name", accountName);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
-		final PFCBalance r = Json.deserializeFromString(PFCBalance.class, resultJson);
-		return r;
-	}
+// public BTCBalance totalBTCReceivedForAddress (final BTCAddress address, final String accountName) throws IOException {
+
+// }
+//
+// public PFCBalance totalPFCReceivedForAddress (final PFCAddress address, final String accountName) throws IOException {
+
+// }
 
 	public Result transferPFC (final Operation t, final AmountPFC pfcAmount) throws IOException {
 		final String command = "transfer_pfc";
@@ -158,30 +165,30 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public BTCAddress obtainNewBTCAddress (final UserSettings settings) throws IOException {
-		final File folder = settings.userFolder();
-		final File poolFile = folder.child("btc.address.pool.json");
-		final BTCAddressPool pool = poolFile.readJson(BTCAddressPool.class);
-		while (true) {
-			final BTCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
-			final BTCInputs inputs = this.listBTCInputs(address, settings.getAccountName());
-			if (inputs.size() == 0) {
-				return address;
-			}
-		}
-	}
-
-	public PFCAddress obtainNewPFCAddress (final UserSettings settings) throws IOException {
-		final File folder = settings.userFolder();
-		final File poolFile = folder.child("pfc.address.pool.json");
-		final PFCAddressPool pool = poolFile.readJson(PFCAddressPool.class);
-		while (true) {
-			final PFCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
-			final PFCInputs inputs = this.listPFCInputs(address, settings.getAccountName());
-			if (inputs.size() == 0) {
-				return address;
-			}
-		}
-	}
+// public BTCAddress obtainNewBTCAddress (final UserSettings settings) throws IOException {
+// final File folder = settings.userFolder();
+// final File poolFile = folder.child("btc.address.pool.json");
+// final BTCAddressPool pool = poolFile.readJson(BTCAddressPool.class);
+// while (true) {
+// final BTCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
+// final BTCInputs inputs = this.listBTCInputs(address, settings.getAccountName());
+// if (inputs.size() == 0) {
+// return address;
+// }
+// }
+// }
+//
+// public PFCAddress obtainNewPFCAddress (final UserSettings settings) throws IOException {
+// final File folder = settings.userFolder();
+// final File poolFile = folder.child("pfc.address.pool.json");
+// final PFCAddressPool pool = poolFile.readJson(PFCAddressPool.class);
+// while (true) {
+// final PFCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
+// final PFCInputs inputs = this.listPFCInputs(address, settings.getAccountName());
+// if (inputs.size() == 0) {
+// return address;
+// }
+// }
+// }
 
 }
