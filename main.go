@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/jfixby/pin"
@@ -9,6 +10,10 @@ import (
 	"github.com/picfight/tgexchbot/connect"
 	"github.com/picfight/tgexchbot/server"
 )
+
+const BTCWKEY = "BTCWKEY"
+const PFCWKEY = "PFCWKEY"
+const DCRWKEY = "DCRWKEY"
 
 func main() {
 	filePath, err := filepath.Abs("tgexchbot.cfg")
@@ -48,6 +53,9 @@ func main() {
 		OutputWalletAccountName := conf.BTCWalletConfig.OutputWalletAccountName
 
 		pin.D("Checking BTC account", OutputWalletAccountName)
+		key := os.Getenv(BTCWKEY)
+		err = client.WalletPassphrase(key, 10)
+		lang.CheckErr(err)
 		_, err = client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
 			pin.D("Creating BTC account", OutputWalletAccountName)
@@ -69,6 +77,9 @@ func main() {
 		OutputWalletAccountName := conf.PFCWalletConfig.OutputWalletAccountName
 
 		pin.D("Checking PFC account", OutputWalletAccountName)
+		key := os.Getenv(PFCWKEY)
+		err = client.WalletPassphrase(key, 10)
+		lang.CheckErr(err)
 		_, err = client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
 			pin.D("Creating PFC account", OutputWalletAccountName)
@@ -90,6 +101,9 @@ func main() {
 		OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
 
 		pin.D("Checking DCR account", OutputWalletAccountName)
+		key := os.Getenv(DCRWKEY)
+		err = client.WalletPassphrase(key, 10)
+		lang.CheckErr(err)
 		_, err = client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
 			pin.D("Creating DCR account", OutputWalletAccountName)
