@@ -242,6 +242,7 @@ func (s HttpsServer) obrtainPFCAddress(walletAccountName string) string {
 		lang.CheckErr(err)
 		_, err = client.GetAccountAddress(walletAccountName)
 		if err != nil {
+			pin.D("Error", err)
 			pin.D("Creating PFC account", walletAccountName)
 			err := client.CreateNewAccount(walletAccountName)
 			lang.CheckErr(err)
@@ -270,6 +271,7 @@ func (s HttpsServer) obrtainBTCAddress(walletAccountName string) string {
 		lang.CheckErr(err)
 		_, err = client.GetAccountAddress(walletAccountName)
 		if err != nil {
+			pin.D("Error", err)
 			pin.D("Creating BTC account", walletAccountName)
 			err := client.CreateNewAccount(walletAccountName)
 			lang.CheckErr(err)
