@@ -42,6 +42,24 @@ func main() {
 	}
 	//-------------------------------------------
 	{
+		client, err := connect.PFCWallet(conf)
+		lang.CheckErr(err)
+
+		OutputWalletAccountName := conf.PFCWalletConfig.OutputWalletAccountName
+
+		_, err = client.GetAccountAddress(OutputWalletAccountName)
+		if err != nil {
+			err := client.CreateNewAccount(OutputWalletAccountName)
+			lang.CheckErr(err)
+		}
+
+		br, err := client.GetBalance(OutputWalletAccountName)
+		lang.CheckErr(err)
+		pin.D("PFC balance", br)
+
+		client.Disconnect()
+	}
+	{
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
 
@@ -75,24 +93,6 @@ func main() {
 		br, err := client.GetBalance(OutputWalletAccountName)
 		lang.CheckErr(err)
 		pin.D("DCR balance", br)
-
-		client.Disconnect()
-	}
-	{
-		client, err := connect.PFCWallet(conf)
-		lang.CheckErr(err)
-
-		OutputWalletAccountName := conf.PFCWalletConfig.OutputWalletAccountName
-
-		_, err = client.GetAccountAddress(OutputWalletAccountName)
-		if err != nil {
-			err := client.CreateNewAccount(OutputWalletAccountName)
-			lang.CheckErr(err)
-		}
-
-		br, err := client.GetBalance(OutputWalletAccountName)
-		lang.CheckErr(err)
-		pin.D("PFC balance", br)
 
 		client.Disconnect()
 	}
