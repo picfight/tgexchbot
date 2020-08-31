@@ -1,12 +1,13 @@
 package main
 
 import (
+	"path/filepath"
+
 	"github.com/jfixby/pin"
 	"github.com/jfixby/pin/lang"
 	"github.com/picfight/tgexchbot/cfg"
 	"github.com/picfight/tgexchbot/connect"
 	"github.com/picfight/tgexchbot/server"
-	"path/filepath"
 )
 
 func main() {
@@ -43,6 +44,13 @@ func main() {
 	{
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
+
+		_, err = client.GetAccountAddress(walletAccountName)
+		if err != nil {
+			err := client.CreateNewAccount(walletAccountName)
+			lang.CheckErr(err)
+		}
+
 		br, err := client.GetBalance(conf.BTCWalletConfig.OutputWalletAccountName)
 		lang.CheckErr(err)
 		pin.D("BTC balance", br)
@@ -53,6 +61,13 @@ func main() {
 	{
 		client, err := connect.DCRWallet(conf)
 		lang.CheckErr(err)
+
+		_, err = client.GetAccountAddress(walletAccountName)
+		if err != nil {
+			err := client.CreateNewAccount(walletAccountName)
+			lang.CheckErr(err)
+		}
+
 		br, err := client.GetBalance(conf.DCRWalletConfig.OutputWalletAccountName)
 		lang.CheckErr(err)
 		pin.D("DCR balance", br)
@@ -62,6 +77,13 @@ func main() {
 	{
 		client, err := connect.PFCWallet(conf)
 		lang.CheckErr(err)
+
+		_, err = client.GetAccountAddress(walletAccountName)
+		if err != nil {
+			err := client.CreateNewAccount(walletAccountName)
+			lang.CheckErr(err)
+		}
+
 		br, err := client.GetBalance(conf.PFCWalletConfig.OutputWalletAccountName)
 		lang.CheckErr(err)
 		pin.D("PFC balance", br)

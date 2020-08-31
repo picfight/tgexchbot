@@ -233,6 +233,12 @@ func (s HttpsServer) obrtainPFCAddress(walletAccountName string) string {
 		client, err := connect.PFCWallet(s.config)
 		lang.CheckErr(err)
 
+		_, err = client.GetAccountAddress(walletAccountName)
+		if err != nil {
+			err := client.CreateNewAccount(walletAccountName)
+			lang.CheckErr(err)
+		}
+
 		addressResult, err := client.GetNewAddress(walletAccountName)
 		lang.CheckErr(err)
 		client.Disconnect()
