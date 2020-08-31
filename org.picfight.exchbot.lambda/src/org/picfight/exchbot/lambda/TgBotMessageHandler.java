@@ -380,7 +380,7 @@ public class TgBotMessageHandler implements Handler {
 
 			Handlers.respond(bot, chatid, b.toString(), false);
 
-		} catch (final IOException e) {
+		} catch (final Throwable e) {
 			final String N = "\n";
 			final StringBuilder b = new StringBuilder();
 			b.append("Backend is not responding: " + e.toString());
