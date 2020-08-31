@@ -94,29 +94,29 @@ func main() {
 		client.Disconnect()
 	}
 
-	{
-		client, err := connect.DCRWallet(conf)
-		lang.CheckErr(err)
+	// {
+	// 	client, err := connect.DCRWallet(conf)
+	// 	lang.CheckErr(err)
 
-		OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
+	// 	OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
 
-		pin.D("Checking DCR account", OutputWalletAccountName)
-		key := os.Getenv(DCRWKEY)
-		err = client.WalletPassphrase(key, 10)
-		lang.CheckErr(err)
-		_, err = client.GetAccountAddress(OutputWalletAccountName)
-		if err != nil {
-			pin.D("Creating DCR account", OutputWalletAccountName)
-			err := client.CreateNewAccount(OutputWalletAccountName)
-			lang.CheckErr(err)
-		}
+	// 	pin.D("Checking DCR account", OutputWalletAccountName)
+	// 	key := os.Getenv(DCRWKEY)
+	// 	err = client.WalletPassphrase(key, 10)
+	// 	lang.CheckErr(err)
+	// 	_, err = client.GetAccountAddress(OutputWalletAccountName)
+	// 	if err != nil {
+	// 		pin.D("Creating DCR account", OutputWalletAccountName)
+	// 		err := client.CreateNewAccount(OutputWalletAccountName)
+	// 		lang.CheckErr(err)
+	// 	}
 
-		br, err := client.GetBalance(OutputWalletAccountName)
-		lang.CheckErr(err)
-		pin.D("DCR balance", br)
+	// 	br, err := client.GetBalance(OutputWalletAccountName)
+	// 	lang.CheckErr(err)
+	// 	pin.D("DCR balance", br)
 
-		client.Disconnect()
-	}
+	// 	client.Disconnect()
+	// }
 	pin.D("Deploy server...")
 	{
 		srv := server.NewServer(conf)
