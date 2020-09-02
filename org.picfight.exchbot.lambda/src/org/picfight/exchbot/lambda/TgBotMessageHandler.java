@@ -57,17 +57,18 @@ public class TgBotMessageHandler implements Handler {
 // if (args.command.equalsIgnoreCase(OPERATIONS.SET_CHINESE)) {
 // settings.setLanguage(UserSettingsLanguage.CH);
 // }
-		if (args.command.equalsIgnoreCase(OPERATIONS.SET_RUSSIAN) || true) {
-			settings.setLanguage(UserSettingsLanguage.RU);
-		}
+// if (args.command.equalsIgnoreCase(OPERATIONS.SET_RUSSIAN) || true) {
+// settings.setLanguage(UserSettingsLanguage.RU);
+// }
+		settings.setLanguage(UserSettingsLanguage.RU);
 // if (args.command.equalsIgnoreCase(OPERATIONS.SET_ENGLISH)) {
 // settings.setLanguage(UserSettingsLanguage.EN);
 // }
 
-		if (!settings.languageIsSet()) {
-			this.respondSettings(args.bot, chatid);
-			return true;
-		}
+// if (!settings.languageIsSet()) {
+// this.respondSettings(args.bot, chatid);
+// return true;
+// }
 
 		if (!settings.exchangeAddressIsSet()) {
 			settings.setupExchangeAddress(this.walletBackEnd, userID);
@@ -117,25 +118,25 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.STATUS)) {
-			if (args.arguments.size() != 0) {
-				final String text = args.arguments.getElementAt(0);
-				final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
-				if (anal.PFCAddress != null) {
-					this.processStatus(args, anal.PFCAddress.AddressString);
-					return true;
-				}
-				if (anal.BTCAddress != null) {
-					this.processStatus(args, anal.BTCAddress.AddressString);
-					return true;
-				}
-			}
-
-			Handlers.respond(args.bot, chatid, "Order status command usage:\n" + OPERATIONS.STATUS + " wallet_address\n\n Example:\n"
-				+ OPERATIONS.STATUS + " za0bBc1d2e3f4g5h6j7k8l9m0", false);
-
-			return true;
-		}
+// if (args.command.equalsIgnoreCase(OPERATIONS.STATUS)) {
+// if (args.arguments.size() != 0) {
+// final String text = args.arguments.getElementAt(0);
+// final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
+// if (anal.PFCAddress != null) {
+// this.processStatus(args, anal.PFCAddress.AddressString);
+// return true;
+// }
+// if (anal.BTCAddress != null) {
+// this.processStatus(args, anal.BTCAddress.AddressString);
+// return true;
+// }
+// }
+//
+// Handlers.respond(args.bot, chatid, "Order status command usage:\n" + OPERATIONS.STATUS + " wallet_address\n\n Example:\n"
+// + OPERATIONS.STATUS + " za0bBc1d2e3f4g5h6j7k8l9m0", false);
+//
+// return true;
+// }
 
 // if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
 // final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
@@ -159,20 +160,20 @@ public class TgBotMessageHandler implements Handler {
 		return "tg-" + chatid;
 	}
 
-	private void respondSettings (final AbsSender bot, final Long chatid) throws IOException {
-		final String N = "\n";
-		final StringBuilder b = new StringBuilder();
-		b.append("Choose language:");
-		b.append(N);
-		b.append(OPERATIONS.SET_ENGLISH + " - English 🇬🇧");
-		b.append(N);
-		b.append(OPERATIONS.SET_RUSSIAN + " - Русский 🇷🇺");
-		b.append(N);
-		b.append(OPERATIONS.SET_CHINESE + " - 中文 🇨🇳");
-		b.append(N);
-
-		Handlers.respond(bot, chatid, b.toString(), false);
-	}
+// private void respondSettings (final AbsSender bot, final Long chatid) throws IOException {
+// final String N = "\n";
+// final StringBuilder b = new StringBuilder();
+// b.append("Choose language:");
+// b.append(N);
+// b.append(OPERATIONS.SET_ENGLISH + " - English 🇬🇧");
+// b.append(N);
+// b.append(OPERATIONS.SET_RUSSIAN + " - Русский 🇷🇺");
+// b.append(N);
+// b.append(OPERATIONS.SET_CHINESE + " - 中文 🇨🇳");
+// b.append(N);
+//
+// Handlers.respond(bot, chatid, b.toString(), false);
+// }
 
 	private void processStatus (final HandleArgs args, final String searchterm) throws IOException {
 		final Transaction status = this.transactionsBackEnd.findTransaction(searchterm, args.filesystem);
@@ -288,6 +289,12 @@ public class TgBotMessageHandler implements Handler {
 		try {
 			final AvailableFunds rate = this.walletBackEnd.getFunds();
 
+			final MarketPair pair = MarketPair.newMarketPair(CoinSign.TETHER, CoinSign.BITCOIN);
+			final Ticker ticker = GetTicker.get(pair);
+			final double usd_per_btc = ticker.result.Last;
+			final double btc_per_pfc = Exchange.sellPriceBTC(rate);
+			final double usd_per_pfc = usd_per_btc * btc_per_pfc;
+
 			final String N = "\n";
 			final StringBuilder b = new StringBuilder();
 			b.append("This bot sells and buys PicFight coins (PFC) for Bitcoins (BTC)");
@@ -296,6 +303,8 @@ public class TgBotMessageHandler implements Handler {
 			b.append(N);
 			b.append(N);
 			b.append("Exchange rate:");
+			b.append(N);
+			b.append("1 PFC = $" + this.formatFloat(usd_per_pfc, UP) + "");
 			b.append(N);
 			b.append("Buy 100 PFC for " + this.formatFloat(Exchange.buyPriceBTC(rate) * 100, UP) + " BTC");
 			b.append(N);
@@ -306,8 +315,8 @@ public class TgBotMessageHandler implements Handler {
 			b.append(N);
 			b.append(OPERATIONS.SELL_PFC + " to sell PFC");
 			b.append(N);
-			b.append(OPERATIONS.STATUS + " to check your order status");
-			b.append(N);
+// b.append(OPERATIONS.STATUS + " to check your order status");
+// b.append(N);
 			b.append(N);
 			b.append("Your exchange BTC address is:");
 			b.append(N);
@@ -324,7 +333,7 @@ public class TgBotMessageHandler implements Handler {
 			if (settings.privateBTCAddressIsSet()) {
 				b.append("" + settings.getPrivateAddressBTC().toString());
 			} else {
-				b.append("<not set>");
+				b.append("-not set-");
 			}
 			b.append(N);
 			b.append(N);
@@ -333,12 +342,12 @@ public class TgBotMessageHandler implements Handler {
 			if (settings.privatePFCAddressIsSet()) {
 				b.append("" + settings.getPrivateAddressPFC().toString());
 			} else {
-				b.append("<not set>");
+				b.append("-not set-");
 			}
 			b.append(N);
 			b.append(N);
-			b.append(OPERATIONS.STATUS + " to check your order status");
-			b.append(N);
+// b.append(OPERATIONS.STATUS + " to check your order status");
+// b.append(N);
 			b.append(N);
 			b.append("You can download PFC wallet here: https://github.com/picfight/pfcredit");
 
@@ -391,8 +400,8 @@ public class TgBotMessageHandler implements Handler {
 		b.append(N);
 		b.append(OPERATIONS.SELL_PFC + " 出售 PFC");
 		b.append(N);
-		b.append(OPERATIONS.STATUS + " 查看订单状态");
-		b.append(N);
+// b.append(OPERATIONS.STATUS + " 查看订单状态");
+// b.append(N);
 		b.append(N);
 		b.append("您可以在这里下载PFC钱包: https://github.com/picfight/pfcredit");
 
