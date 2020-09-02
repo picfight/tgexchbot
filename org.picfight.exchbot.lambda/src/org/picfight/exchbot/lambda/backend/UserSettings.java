@@ -127,7 +127,7 @@ public class UserSettings {
 	}
 
 	public boolean privateBTCAddressIsSet () {
-		if (this.data.exchangeAddress.get("btc") == null) {
+		if (this.data.privateAddress.get("btc") == null) {
 			return false;
 		}
 // if (this.data.exchangeAddress.get("pfc") == null) {
@@ -137,7 +137,7 @@ public class UserSettings {
 	}
 
 	public boolean privatePFCAddressIsSet () {
-		if (this.data.exchangeAddress.get("pfc") == null) {
+		if (this.data.privateAddress.get("pfc") == null) {
 			return false;
 		}
 // if (this.data.exchangeAddress.get("pfc") == null) {
