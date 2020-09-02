@@ -10,10 +10,7 @@ import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.BTCAddress;
-import org.picfight.exchbot.lambda.backend.BTCBalance;
-import org.picfight.exchbot.lambda.backend.Operation;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
-import org.picfight.exchbot.lambda.backend.PFCBalance;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
 import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
@@ -22,7 +19,6 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
@@ -258,91 +254,34 @@ public class TgBotMessageHandler implements Handler {
 	}
 
 	private void processBuy (final HandleArgs args, final UserSettings settings, final PFCAddress pfcAddress) throws IOException {
-		final BTCAddress exchangeAddress =
-// this.walletBackEnd.obtainNewBTCAddress(settings);
-			settings.getExchangeAddressBTC();
 		final Long chatid = args.update.message.chatID;
 
-		final BTCBalance balance = this.walletBackEnd.getBTCBallance(exchangeAddress, settings.getAccountName());
-		if (balance.AmountBTC.Value > 0) {
-			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + exchangeAddress, false);
-			return;
-		}
+		final BTCAddress exchangeAddress = settings.getExchangeAddressBTC();
 
-		final Operation transact = new Operation();
-		transact.chatID = chatid;
-		transact.timestamp = System.currentTimeMillis();
-		transact.userName = args.update.message.from.userName;
-		transact.firstName = args.update.message.from.firstName;
-		transact.lastName = args.update.message.from.lastName;
-
-		transact.type = Operation.BUY;
-		transact.clientPFCWallet = pfcAddress;
-		transact.exchangeBTCWallet = exchangeAddress;
-
-		final Transaction s = new Transaction();
-		s.operation = transact;
-		{
-			final Status oper = new Status();
-			s.states.add(oper);
-			oper.status = StateStrings.ORDER_REGISTERED;
-		}
-
-		final File file = this.transactionsBackEnd.registerTransaction(s, args.filesystem);
+		settings.setupPrivateAddressPFC(pfcAddress);
 
 		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
 		Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
 		Handlers.respond(args.bot, chatid, "PFC will be sent to the following address:", false);
-		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + pfcAddress.AddressString, true);
+		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + settings.getPrivateAddressPFC(), true);
 		Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
 		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
 
-		Handlers.respond(args.bot, chatid, "" + Json.serializeToString(transact), false);
-		Handlers.respond(args.bot, chatid, "" + file.toString(), false);
 	}
 
 	private void processSell (final HandleArgs args, final UserSettings settings, final BTCAddress btcAddress) throws IOException {
-		final PFCAddress pfcAddress =
-			// this.walletBackEnd.obtainNewPFCAddress(settings);
-			settings.getExchangeAddressPFC();
 		final Long chatid = args.update.message.chatID;
 
-		final PFCBalance balance = this.walletBackEnd.getPFCBallance(pfcAddress, settings.getAccountName());
-		if (balance.AmountPFC.Value > 0) {
-			Handlers.respond(args.bot, chatid, "Invalid exchange address: " + pfcAddress, false);
-			return;
-		}
+		final PFCAddress exchangeAddress = settings.getExchangeAddressPFC();
 
-		final Operation transact = new Operation();
-		transact.chatID = chatid;
-		transact.timestamp = System.currentTimeMillis();
-		transact.userName = args.update.message.from.userName;
-		transact.firstName = args.update.message.from.firstName;
-		transact.lastName = args.update.message.from.lastName;
-
-		transact.type = Operation.SELL;
-		transact.exchangePFCWallet = pfcAddress;
-		transact.clientBTCWallet = btcAddress;
-
-		final Transaction s = new Transaction();
-		s.operation = transact;
-		{
-			final Status oper = new Status();
-			s.states.add(oper);
-			oper.status = StateStrings.ORDER_REGISTERED;
-		}
-
-		final File file = this.transactionsBackEnd.registerTransaction(s, args.filesystem);
+		settings.setupPrivateAddressBTC(btcAddress);
 
 		Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
-		Handlers.respond(args.bot, chatid, pfcAddress.AddressString, false);
-		Handlers.respond(args.bot, chatid, "BTC will be sent to the following address:", false);
-		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + btcAddress.AddressString, true);
+		Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
+		Handlers.respond(args.bot, chatid, "PFC will be sent to the following address:", false);
+		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + settings.getPrivateAddressBTC(), true);
 		Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
 		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
-
-		Handlers.respond(args.bot, chatid, "" + Json.serializeToString(transact), false);
-		Handlers.respond(args.bot, chatid, "" + file.toString(), false);
 	}
 
 	private void respondMenu (final AbsSender bot, final UserSettings settings, final Long chatid) throws IOException {
