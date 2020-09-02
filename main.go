@@ -56,11 +56,13 @@ func main() {
 		key := os.Getenv(BTCWKEY)
 		err = client.WalletPassphrase(key, 10)
 		lang.CheckErr(err)
-		_, err = client.GetAccountAddress(OutputWalletAccountName)
+		addr, err := client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
 			pin.D("Creating BTC account", OutputWalletAccountName)
 			err := client.CreateNewAccount(OutputWalletAccountName)
 			lang.CheckErr(err)
+		} else {
+			pin.D("BTC exchange address", addr)
 		}
 
 		br, err := client.GetBalance(OutputWalletAccountName)
@@ -80,11 +82,13 @@ func main() {
 		key := os.Getenv(PFCWKEY)
 		err = client.WalletPassphrase(key, 10)
 		lang.CheckErr(err)
-		_, err = client.GetAccountAddress(OutputWalletAccountName)
+		addr, err := client.GetAccountAddress(OutputWalletAccountName)
 		if err != nil {
 			pin.D("Creating PFC account", OutputWalletAccountName)
 			err := client.CreateNewAccount(OutputWalletAccountName)
 			lang.CheckErr(err)
+		} else {
+			pin.D("BTC exchange address", addr)
 		}
 
 		br, err := client.GetBalance(OutputWalletAccountName)
