@@ -88,7 +88,7 @@ func main() {
 			err := client.CreateNewAccount(OutputWalletAccountName)
 			lang.CheckErr(err)
 		} else {
-			pin.D("BTC exchange address", addr)
+			pin.D("PFC exchange address", addr)
 		}
 
 		br, err := client.GetBalance(OutputWalletAccountName)
