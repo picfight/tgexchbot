@@ -92,4 +92,58 @@ public class UserSettings {
 		return a;
 	}
 
+	public BTCAddress getPrivateAddressBTC () {
+		final String string = this.data.privateAddress.get("btc");
+		Debug.checkNull("AddressString", string);
+		Debug.checkEmpty("AddressString", string);
+		final BTCAddress a = new BTCAddress();
+		a.AddressString = string;
+		a.Type = "BTC";
+		return a;
+	}
+
+	public PFCAddress getPrivateAddressPFC () {
+		final String string = this.data.privateAddress.get("pfc");
+		Debug.checkNull("AddressString", string);
+		Debug.checkEmpty("AddressString", string);
+		final PFCAddress a = new PFCAddress();
+		a.AddressString = string;
+		a.Type = "PFC";
+		return a;
+	}
+
+	public void setupPrivateAddressBTC (final BTCAddress address) throws IOException {
+		if (this.data.privateAddress.get("btc") == null) {
+			this.data.privateAddress.put("btc", address.AddressString);
+		}
+		this.settingsFile.writeJson(this.data);
+	}
+
+	public void setupPrivateAddressPFC (final PFCAddress address) throws IOException {
+		if (this.data.privateAddress.get("pfc") == null) {
+			this.data.privateAddress.put("pfc", address.AddressString);
+		}
+		this.settingsFile.writeJson(this.data);
+	}
+
+	public boolean privateBTCAddressIsSet () {
+		if (this.data.exchangeAddress.get("btc") == null) {
+			return false;
+		}
+// if (this.data.exchangeAddress.get("pfc") == null) {
+// return false;
+// }
+		return true;
+	}
+
+	public boolean privatePFCAddressIsSet () {
+		if (this.data.exchangeAddress.get("pfc") == null) {
+			return false;
+		}
+// if (this.data.exchangeAddress.get("pfc") == null) {
+// return false;
+// }
+		return true;
+	}
+
 }

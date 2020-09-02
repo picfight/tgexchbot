@@ -369,9 +369,34 @@ public class TgBotMessageHandler implements Handler {
 			b.append(N);
 			b.append(OPERATIONS.STATUS + " to check your order status");
 			b.append(N);
-			b.append("Your exchange BTC address is: " + settings.getExchangeAddressBTC().toString());
 			b.append(N);
-			b.append("Your exchange PFC address is: " + settings.getExchangeAddressPFC().toString());
+			b.append("Your exchange BTC address is:");
+			b.append(N);
+			b.append("" + settings.getExchangeAddressBTC().toString());
+			b.append(N);
+			b.append(N);
+			b.append("Your exchange PFC address is:");
+			b.append(N);
+			b.append("" + settings.getExchangeAddressPFC().toString());
+			b.append(N);
+			b.append(N);
+			b.append("Your private BTC address is:");
+			b.append(N);
+			if (settings.privateBTCAddressIsSet()) {
+				b.append("" + settings.getPrivateAddressBTC().toString());
+			} else {
+				b.append("<not set>");
+			}
+			b.append(N);
+			b.append(N);
+			b.append("Your private PFC address is:");
+			b.append(N);
+			if (settings.privatePFCAddressIsSet()) {
+				b.append("" + settings.getPrivateAddressPFC().toString());
+			} else {
+				b.append("<not set>");
+			}
+			b.append(N);
 			b.append(N);
 			b.append(OPERATIONS.STATUS + " to check your order status");
 			b.append(N);
