@@ -263,7 +263,7 @@ public class TgBotMessageHandler implements Handler {
 
 		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
 		Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
-		Handlers.respond(args.bot, chatid, "PFC will be sent to the following address:", false);
+		Handlers.respond(args.bot, chatid, "Your PFC will be sent to the following address:", false);
 		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + settings.getPrivateAddressPFC(), true);
 		Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
 		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
@@ -279,7 +279,7 @@ public class TgBotMessageHandler implements Handler {
 
 		Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
 		Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
-		Handlers.respond(args.bot, chatid, "PFC will be sent to the following address:", false);
+		Handlers.respond(args.bot, chatid, "Your BTC will be sent to the following address:", false);
 		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + settings.getPrivateAddressBTC(), true);
 		Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
 		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
@@ -299,7 +299,7 @@ public class TgBotMessageHandler implements Handler {
 			final StringBuilder b = new StringBuilder();
 			b.append("This bot sells and buys PicFight coins (PFC) for Bitcoins (BTC)");
 			b.append(N);
-			b.append("PFC available for sale: " + rate.AvailablePFC.Value + " PFC");
+			b.append("PFC available for exchange: " + rate.AvailablePFC.Value + " PFC");
 			b.append(N);
 			b.append(N);
 			b.append("Exchange rate:");
