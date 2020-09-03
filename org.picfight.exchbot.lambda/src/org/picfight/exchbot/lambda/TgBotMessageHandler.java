@@ -133,14 +133,16 @@ public class TgBotMessageHandler implements Handler {
 		b.append(N);
 		b.append(N);
 
-		b.append("Status: ");
-		final Status state = status.states.get(status.states.size() - 1);
-		b.append(state.status);
-		b.append(N);
-
-		if (state.error_message != null) {
-			b.append(state.error_message);
+		if (status.states.size() > 0) {
+			b.append("Status: ");
+			final Status state = status.states.get(status.states.size() - 1);
+			b.append(state.status);
 			b.append(N);
+
+			if (state.error_message != null) {
+				b.append(state.error_message);
+				b.append(N);
+			}
 		}
 
 		b.append("Type: ");
@@ -249,6 +251,7 @@ public class TgBotMessageHandler implements Handler {
 				op.exchangePFCWallet = pfc_address;
 				op.timestamp = System.currentTimeMillis();
 				op.userName = args.update.message.from.userName;
+				op.pendingPFC = pfc.AmountPFC.Value;
 			}
 			transactions.add(t);
 		}
@@ -274,6 +277,7 @@ public class TgBotMessageHandler implements Handler {
 				op.exchangeBTCWallet = btc_address;
 				op.timestamp = System.currentTimeMillis();
 				op.userName = args.update.message.from.userName;
+				op.pendingBTC = btc.AmountBTC.Value;
 			}
 			transactions.add(t);
 		}

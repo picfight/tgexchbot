@@ -26,4 +26,7 @@ public class Operation {
 	public String firstName;
 	public String lastName;
 
+	public Double pendingBTC;
+	public Double pendingPFC;
+
 }

@@ -119,16 +119,12 @@ public class UserSettings {
 	}
 
 	public void setupPrivateAddressBTC (final BTCAddress address) throws IOException {
-		if (this.data.privateAddress.get("btc") == null) {
-			this.data.privateAddress.put("btc", address.AddressString);
-		}
+		this.data.privateAddress.put("btc", address.AddressString);
 		this.settingsFile.writeJson(this.data);
 	}
 
 	public void setupPrivateAddressPFC (final PFCAddress address) throws IOException {
-		if (this.data.privateAddress.get("pfc") == null) {
-			this.data.privateAddress.put("pfc", address.AddressString);
-		}
+		this.data.privateAddress.put("pfc", address.AddressString);
 		this.settingsFile.writeJson(this.data);
 	}
 
@@ -136,9 +132,6 @@ public class UserSettings {
 		if (this.data.privateAddress.get("btc") == null) {
 			return false;
 		}
-// if (this.data.exchangeAddress.get("pfc") == null) {
-// return false;
-// }
 		return true;
 	}
 
@@ -146,9 +139,6 @@ public class UserSettings {
 		if (this.data.privateAddress.get("pfc") == null) {
 			return false;
 		}
-// if (this.data.exchangeAddress.get("pfc") == null) {
-// return false;
-// }
 		return true;
 	}
 
