@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Date;
 import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.AvailableFunds;
 import org.picfight.exchbot.lambda.backend.BTCAddress;
+import org.picfight.exchbot.lambda.backend.BTCBalance;
+import org.picfight.exchbot.lambda.backend.Operation;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
+import org.picfight.exchbot.lambda.backend.PFCBalance;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
 import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
@@ -19,6 +21,8 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.List;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
@@ -52,27 +56,14 @@ public class TgBotMessageHandler implements Handler {
 
 		final String userID = this.userID(chatid);
 
+		args.userID = userID;
+
 		final UserSettings settings = this.transactionsBackEnd.getUserSettings(userID, args.filesystem);
 
-// if (args.command.equalsIgnoreCase(OPERATIONS.SET_CHINESE)) {
-// settings.setLanguage(UserSettingsLanguage.CH);
-// }
-// if (args.command.equalsIgnoreCase(OPERATIONS.SET_RUSSIAN) || true) {
-// settings.setLanguage(UserSettingsLanguage.RU);
-// }
 		settings.setLanguage(UserSettingsLanguage.RU);
-// if (args.command.equalsIgnoreCase(OPERATIONS.SET_ENGLISH)) {
-// settings.setLanguage(UserSettingsLanguage.EN);
-// }
-
-// if (!settings.languageIsSet()) {
-// this.respondSettings(args.bot, chatid);
-// return true;
-// }
 
 		if (!settings.exchangeAddressIsSet()) {
 			settings.setupExchangeAddress(this.walletBackEnd, userID);
-// this.respondSettings(args.bot, chatid);
 			return true;
 		}
 
@@ -82,7 +73,6 @@ public class TgBotMessageHandler implements Handler {
 			args.command.equalsIgnoreCase(OPERATIONS.HELP) || //
 			false) {
 			this.respondMenu(args.bot, settings, chatid);
-// this.respondMenuCH(args.bot, settings, chatid);
 			return true;
 		}
 
@@ -118,140 +108,86 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-// if (args.command.equalsIgnoreCase(OPERATIONS.STATUS)) {
-// if (args.arguments.size() != 0) {
-// final String text = args.arguments.getElementAt(0);
-// final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
-// if (anal.PFCAddress != null) {
-// this.processStatus(args, anal.PFCAddress.AddressString);
-// return true;
-// }
-// if (anal.BTCAddress != null) {
-// this.processStatus(args, anal.BTCAddress.AddressString);
-// return true;
-// }
-// }
-//
-// Handlers.respond(args.bot, chatid, "Order status command usage:\n" + OPERATIONS.STATUS + " wallet_address\n\n Example:\n"
-// + OPERATIONS.STATUS + " za0bBc1d2e3f4g5h6j7k8l9m0", false);
-//
-// return true;
-// }
+		if (args.command.equalsIgnoreCase(OPERATIONS.STATUS)) {
+			final List<Transaction> transactions = this.checkStatus(args, settings);
+			if (transactions.size() == 0) {
+				Handlers.respond(args.bot, chatid, "No processing orders.", false);
+			} else {
+				for (final Transaction t : transactions) {
+					this.printTransaction(args, t);
+				}
+			}
+			return true;
+		}
 
-// if (args.command.equalsIgnoreCase(OPERATIONS.NEW_BTC_ADDRESS)) {
-// final BTCAddress address = this.walletBackEnd.obtainNewBTCAddress();
-// Handlers.respond(args.bot, chatid, "Send BTC here:", false);
-// Handlers.respond(args.bot, chatid, address.AddressString(), false);
-// return true;
-// }
-// if (args.command.equalsIgnoreCase(OPERATIONS.NEW_PFC_ADDRESS)) {
-// final PFCAddress address = this.walletBackEnd.obtainNewPFCAddress();
-// Handlers.respond(args.bot, chatid, "Send PFC here:", false);
-// Handlers.respond(args.bot, chatid, address.AddressString(), false);
-// return true;
-// }
 		L.e("Command not found", args.command);
 		this.respondMenu(args.bot, settings, chatid);
-// this.respondMenuCH(args.bot, chatid);
 		return true;
 	}
 
-	private String userID (final Long chatid) {
-		return "tg-" + chatid;
-	}
-
-// private void respondSettings (final AbsSender bot, final Long chatid) throws IOException {
-// final String N = "\n";
-// final StringBuilder b = new StringBuilder();
-// b.append("Choose language:");
-// b.append(N);
-// b.append(OPERATIONS.SET_ENGLISH + " - English 🇬🇧");
-// b.append(N);
-// b.append(OPERATIONS.SET_RUSSIAN + " - Русский 🇷🇺");
-// b.append(N);
-// b.append(OPERATIONS.SET_CHINESE + " - 中文 🇨🇳");
-// b.append(N);
-//
-// Handlers.respond(bot, chatid, b.toString(), false);
-// }
-
-	private void processStatus (final HandleArgs args, final String searchterm) throws IOException {
-		final Transaction status = this.transactionsBackEnd.findTransaction(searchterm, args.filesystem);
-
+	private void printTransaction (final HandleArgs args, final Transaction status) throws IOException {
 		final Long chatid = args.update.message.chatID;
-		if (status == null) {
-			Handlers.respond(args.bot, chatid, "Order not found: " + searchterm, false);
-			return;
-		}
 
 		final StringBuilder b = new StringBuilder();
 		b.append("Order:");
-		b.append("\n");
-
-		b.append(searchterm);
-		b.append("\n");
-
-		b.append("Created: " + new Date(status.operation.timestamp));
-		b.append("\n");
-
-		b.append("\n");
+		b.append(N);
+		b.append(N);
 
 		b.append("Status: ");
 		final Status state = status.states.get(status.states.size() - 1);
 		b.append(state.status);
-		b.append("\n");
+		b.append(N);
 
 		if (state.error_message != null) {
 			b.append(state.error_message);
-			b.append("\n");
+			b.append(N);
 		}
-
-// if (state.result != null) {
-// b.append(state.result);
-// b.append("\n");
-// }
 
 		b.append("Type: ");
 		b.append(status.operation.type);
-		b.append("\n");
+		b.append(N);
 
-		b.append("\n");
+		b.append(N);
 
 		if (status.operation.exchangeBTCWallet != null) {
 			b.append("Exchange BTC wallet:");
-			b.append("\n");
+			b.append(N);
 			b.append(status.operation.exchangeBTCWallet.AddressString);
-			b.append("\n");
-			b.append("\n");
+			b.append(N);
+			b.append(N);
 		}
 
 		if (status.operation.exchangePFCWallet != null) {
 			b.append("Exchange PFC wallet:");
-			b.append("\n");
+			b.append(N);
 			b.append(status.operation.exchangePFCWallet.AddressString);
-			b.append("\n");
-			b.append("\n");
+			b.append(N);
+			b.append(N);
 		}
 
 		if (status.operation.clientBTCWallet != null) {
 			b.append("Client BTC wallet:");
-			b.append("\n");
+			b.append(N);
 			b.append(status.operation.clientBTCWallet.AddressString);
-			b.append("\n");
-			b.append("\n");
+			b.append(N);
+			b.append(N);
 		}
 
 		if (status.operation.clientPFCWallet != null) {
 			b.append("Client PFC wallet:");
-			b.append("\n");
+			b.append(N);
 			b.append(status.operation.clientPFCWallet.AddressString);
-			b.append("\n");
-			b.append("\n");
+			b.append(N);
+			b.append(N);
 		}
 
 		Handlers.respond(args.bot, chatid, b.toString(), false);
 		Handlers.respond(args.bot, chatid, Json.serializeToString(status).toString(), false);
 
+	}
+
+	private String userID (final Long chatid) {
+		return "tg-" + chatid;
 	}
 
 	private void processBuy (final HandleArgs args, final UserSettings settings, final PFCAddress pfcAddress) throws IOException {
@@ -266,7 +202,7 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(args.bot, chatid, "Your PFC will be sent to the following address:", false);
 		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + settings.getPrivateAddressPFC(), true);
 		Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
-		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
+// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
 
 	}
 
@@ -282,8 +218,68 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(args.bot, chatid, "Your BTC will be sent to the following address:", false);
 		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + settings.getPrivateAddressBTC(), true);
 		Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
-		Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
+// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
+
 	}
+
+	private List<Transaction> checkStatus (final HandleArgs args, final UserSettings settings) throws IOException {
+		final List<Transaction> transactions = Collections.newList();
+		this.checkBuyStatus(transactions, args, settings);
+		this.checkSellStatus(transactions, args, settings);
+		return transactions;
+	}
+
+	private void checkSellStatus (final List<Transaction> transactions, final HandleArgs args, final UserSettings settings)
+		throws IOException {
+		final String accountName = args.userID;
+		final Long chatid = args.update.message.chatID;
+
+		final PFCAddress pfc_address = settings.getExchangeAddressPFC();
+		final PFCBalance pfc = this.walletBackEnd.getPFCBallance(pfc_address, accountName);
+		if (pfc.AmountPFC.Value > 0) {
+			final Transaction t = new Transaction();
+			t.operation = new Operation();
+			{
+				final Operation op = t.operation;
+				op.chatID = chatid;
+				op.type = Operation.SELL;
+				op.firstName = args.update.message.from.firstName;
+				op.lastName = args.update.message.from.lastName;
+				op.clientBTCWallet = settings.getPrivateAddressBTC();
+				op.exchangePFCWallet = pfc_address;
+				op.timestamp = System.currentTimeMillis();
+				op.userName = args.update.message.from.userName;
+			}
+			transactions.add(t);
+		}
+	}
+
+	private void checkBuyStatus (final List<Transaction> transactions, final HandleArgs args, final UserSettings settings)
+		throws IOException {
+		final String accountName = args.userID;
+		final Long chatid = args.update.message.chatID;
+
+		final BTCAddress btc_address = settings.getExchangeAddressBTC();
+		final BTCBalance btc = this.walletBackEnd.getBTCBallance(btc_address, accountName);
+		if (btc.AmountBTC.Value > 0) {
+			final Transaction t = new Transaction();
+			t.operation = new Operation();
+			{
+				final Operation op = t.operation;
+				op.type = Operation.BUY;
+				op.chatID = chatid;
+				op.firstName = args.update.message.from.firstName;
+				op.lastName = args.update.message.from.lastName;
+				op.clientPFCWallet = settings.getPrivateAddressPFC();
+				op.exchangeBTCWallet = btc_address;
+				op.timestamp = System.currentTimeMillis();
+				op.userName = args.update.message.from.userName;
+			}
+			transactions.add(t);
+		}
+	}
+
+	public static final String N = "\n";
 
 	private void respondMenu (final AbsSender bot, final UserSettings settings, final Long chatid) throws IOException {
 		try {
@@ -295,7 +291,6 @@ public class TgBotMessageHandler implements Handler {
 			final double btc_per_pfc = Exchange.sellPriceBTC(rate);
 			final double usd_per_pfc = usd_per_btc * btc_per_pfc;
 
-			final String N = "\n";
 			final StringBuilder b = new StringBuilder();
 			b.append("This bot sells and buys PicFight coins (PFC) for Bitcoins (BTC)");
 			b.append(N);
@@ -346,15 +341,14 @@ public class TgBotMessageHandler implements Handler {
 			}
 			b.append(N);
 			b.append(N);
-// b.append(OPERATIONS.STATUS + " to check your order status");
-// b.append(N);
+			b.append(OPERATIONS.STATUS + " to check your order status");
+			b.append(N);
 			b.append(N);
 			b.append("You can download PFC wallet here: https://github.com/picfight/pfcredit");
 
 			Handlers.respond(bot, chatid, b.toString(), false);
 
 		} catch (final Throwable e) {
-			final String N = "\n";
 			final StringBuilder b = new StringBuilder();
 			b.append("Backend is not responding: " + e.toString());
 			b.append(N);
@@ -378,35 +372,5 @@ public class TgBotMessageHandler implements Handler {
 
 	static boolean UP = true;
 	static boolean DOWN = !UP;
-
-	private void respondMenuCH (final AbsSender bot, final Long chatid) throws IOException {
-		final AvailableFunds rate = this.walletBackEnd.getFunds();
-
-		final String N = "\n";
-		final StringBuilder b = new StringBuilder();
-		b.append("该机器人买卖比特币（BTC）的PicFight硬币（PFC）");
-		b.append(N);
-		b.append("PFC可供出售 " + rate.AvailablePFC.Value + "");
-		b.append(N);
-		b.append(N);
-		b.append("汇率:");
-		b.append(N);
-		b.append("为BTC购买100个PFC " + this.formatFloat(Exchange.buyPriceBTC(rate) * 100, UP) + "");
-		b.append(N);
-		b.append("为BTC出售100个PFC " + this.formatFloat(Exchange.sellPriceBTC(rate) * 100, DOWN) + "");
-		b.append(N);
-		b.append(N);
-		b.append(OPERATIONS.BUY_PFC + " 购买 PFC");
-		b.append(N);
-		b.append(OPERATIONS.SELL_PFC + " 出售 PFC");
-		b.append(N);
-// b.append(OPERATIONS.STATUS + " 查看订单状态");
-// b.append(N);
-		b.append(N);
-		b.append("您可以在这里下载PFC钱包: https://github.com/picfight/pfcredit");
-
-		Handlers.respond(bot, chatid, b.toString(), false);
-
-	}
 
 }

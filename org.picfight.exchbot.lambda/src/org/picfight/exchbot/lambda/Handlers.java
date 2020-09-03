@@ -96,11 +96,12 @@ class HandleArgs {
 	public TelegramUpdate update;
 	public String command;
 	public List<String> arguments;
+	public String userID;
 
 	@Override
 	public String toString () {
-		return "HandleArgs [inputRaw=" + this.inputRaw + ", bot=" + this.bot + ", update=" + this.update + ", command="
-			+ this.command + ", arguments=" + this.arguments + "]";
+		return "HandleArgs [filesystem=" + this.filesystem + ", inputRaw=" + this.inputRaw + ", bot=" + this.bot + ", update="
+			+ this.update + ", command=" + this.command + ", arguments=" + this.arguments + ", userID=" + this.userID + "]";
 	}
 
 }

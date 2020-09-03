@@ -94,8 +94,11 @@ public class UserSettings {
 
 	public BTCAddress getPrivateAddressBTC () {
 		final String string = this.data.privateAddress.get("btc");
-		Debug.checkNull("AddressString", string);
-		Debug.checkEmpty("AddressString", string);
+		if (string == null) {
+			return null;
+		}
+// Debug.checkNull("AddressString", string);
+// Debug.checkEmpty("AddressString", string);
 		final BTCAddress a = new BTCAddress();
 		a.AddressString = string;
 		a.Type = "BTC";
@@ -104,8 +107,11 @@ public class UserSettings {
 
 	public PFCAddress getPrivateAddressPFC () {
 		final String string = this.data.privateAddress.get("pfc");
-		Debug.checkNull("AddressString", string);
-		Debug.checkEmpty("AddressString", string);
+		if (string == null) {
+			return null;
+		}
+// Debug.checkNull("AddressString", string);
+// Debug.checkEmpty("AddressString", string);
 		final PFCAddress a = new PFCAddress();
 		a.AddressString = string;
 		a.Type = "PFC";
