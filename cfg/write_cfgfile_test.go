@@ -56,7 +56,7 @@ func TestWriteCfgFile(t *testing.T) {
 		//data.PFCDConfig.CertificateFile = "~/.pfcd/rpc.cert"
 	}
 	{
-		data.ServerConfig.Port = 8080
+		data.ServerConfig.Port = 8000
 		data.ServerConfig.CertificateFile = "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.crt"
 		data.ServerConfig.CertificateKeyFile = "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.key"
 	}
