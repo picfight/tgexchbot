@@ -57,7 +57,6 @@ func TestWriteCfgFile(t *testing.T) {
 	}
 	{
 		data.ServerConfig.Port = 8080
-		data.ServerConfig.AccessKey = ""
 		data.ServerConfig.CertificateFile = "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.crt"
 		data.ServerConfig.CertificateKeyFile = "/home/ec2-user/go/src/github.com/picfight/tgexchbot/https-server.key"
 	}
