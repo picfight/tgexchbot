@@ -1,6 +1,8 @@
 package main
 
 import (
+	btcclient "github.com/btcsuite/btcd/rpcclient"
+	pfcclient "github.com/picfight/pfcd/rpcclient"
 	"os"
 	"path/filepath"
 
@@ -50,24 +52,9 @@ func main() {
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
 
-		OutputWalletAccountName :="*"
-
-		pin.D("Checking BTC account", OutputWalletAccountName)
-		key := os.Getenv(BTCWKEY)
-		err = client.WalletPassphrase(key, 10)
-		lang.CheckErr(err)
-		addr, err := client.GetAccountAddress(OutputWalletAccountName)
-		if err != nil {
-			pin.D("Creating BTC account", OutputWalletAccountName)
-			err := client.CreateNewAccount(OutputWalletAccountName)
-			lang.CheckErr(err)
-		} else {
-			pin.D("BTC exchange address", addr)
-		}
-
-		br, err := client.GetBalance(OutputWalletAccountName)
-		lang.CheckErr(err)
-		pin.D("BTC balance", br)
+		OutputWalletAccountName := conf.BTCWalletConfig.OutputWalletAccountName
+		printBTCBalance(client, "*", false)
+		printBTCBalance(client, OutputWalletAccountName, true)
 
 		client.Disconnect()
 	}
@@ -76,24 +63,9 @@ func main() {
 		client, err := connect.PFCWallet(conf)
 		lang.CheckErr(err)
 
-		OutputWalletAccountName := "*"
-
-		pin.D("Checking PFC account", OutputWalletAccountName)
-		key := os.Getenv(PFCWKEY)
-		err = client.WalletPassphrase(key, 10)
-		lang.CheckErr(err)
-		addr, err := client.GetAccountAddress(OutputWalletAccountName)
-		if err != nil {
-			pin.D("Creating PFC account", OutputWalletAccountName)
-			err := client.CreateNewAccount(OutputWalletAccountName)
-			lang.CheckErr(err)
-		} else {
-			pin.D("PFC exchange address", addr)
-		}
-
-		br, err := client.GetBalance(OutputWalletAccountName)
-		lang.CheckErr(err)
-		pin.D("PFC balance", br)
+		OutputWalletAccountName := conf.PFCWalletConfig.OutputWalletAccountName
+		printPFCBallance(client, "*", false)
+		printPFCBallance(client, OutputWalletAccountName, true)
 
 		client.Disconnect()
 	}
@@ -127,4 +99,44 @@ func main() {
 		srv.Start()
 	}
 
+}
+
+func printPFCBallance(client *pfcclient.Client, s string, getAddress bool) {
+	pin.D("Checking PFC account", s)
+	key := os.Getenv(PFCWKEY)
+	err := client.WalletPassphrase(key, 10)
+	lang.CheckErr(err)
+	if getAddress {
+		addr, err := client.GetAccountAddress(s)
+		if err != nil {
+			pin.D("Creating PFC account", s)
+			err := client.CreateNewAccount(s)
+			lang.CheckErr(err)
+		} else {
+			pin.D("PFC exchange address", addr)
+		}
+	}
+	br, err := client.GetBalance(s)
+	lang.CheckErr(err)
+	pin.D("PFC balance", br)
+}
+
+func printBTCBalance(client *btcclient.Client, s string, getAddress bool) {
+	pin.D("Checking BTC account", s)
+	key := os.Getenv(BTCWKEY)
+	err := client.WalletPassphrase(key, 10)
+	lang.CheckErr(err)
+	if getAddress {
+		addr, err := client.GetAccountAddress(s)
+		if err != nil {
+			pin.D("Creating BTC account", s)
+			err := client.CreateNewAccount(s)
+			lang.CheckErr(err)
+		} else {
+			pin.D("BTC exchange address", addr)
+		}
+	}
+	br, err := client.GetBalance(s)
+	lang.CheckErr(err)
+	pin.D("BTC balance", br)
 }
