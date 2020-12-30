@@ -58,6 +58,7 @@ public class TgBotMessageHandler implements Handler {
 
 		settings.setLanguage(UserSettingsLanguage.RU);
 		args.settings = settings;
+		L.d("L1");
 
 		if (false || //
 			args.command.equalsIgnoreCase(OPERATIONS.MENU) || //
@@ -67,7 +68,7 @@ public class TgBotMessageHandler implements Handler {
 			this.respondMenu(args.bot, settings, chatid);
 			return true;
 		}
-
+		L.d("L2");
 		try {
 			final boolean result = this.processWithBackend(args);
 			if (result) {
@@ -141,6 +142,7 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.BALANCE)) {
+			L.d("L3");
 			final String accountName = args.accountName;
 			final Long chatid = args.update.message.chatID;
 
@@ -158,7 +160,7 @@ public class TgBotMessageHandler implements Handler {
 			b.append(N);
 			b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
 			b.append("Вывести монеты с биржи - " + OPERATIONS.WITHDRAW).append(N);
-
+			L.d("L4");
 			Handlers.respond(bot, chatid, b.toString(), false);
 			return true;
 		}
