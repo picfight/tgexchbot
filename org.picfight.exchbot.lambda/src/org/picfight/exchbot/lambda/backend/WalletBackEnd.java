@@ -82,7 +82,7 @@ public class WalletBackEnd {
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("pfc_address", pfc_address.AddressString);
-		params.put("confirmations", confirmations + "");
+		params.put("min_confirmations", confirmations + "");
 		params.put("Account_name", accountName);
 		JsonString resultJson;
 		try {
@@ -102,7 +102,7 @@ public class WalletBackEnd {
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("btc_address", btc_address.AddressString);
-		params.put("confirmations", confirmations + "");
+		params.put("min_confirmations", confirmations + "");
 		params.put("Account_name", accountName);
 		JsonString resultJson;
 		try {
