@@ -29,14 +29,14 @@ func main() {
 		pin.D("best BTC block", hash, height)
 		client.Disconnect()
 	}
-	{
-		client, err := connect.DCRD(conf)
-		lang.CheckErr(err)
-		hash, height, err := client.GetBestBlock()
-		lang.CheckErr(err)
-		pin.D("best DCR block", hash, height)
-		client.Disconnect()
-	}
+	//{
+	//	client, err := connect.DCRD(conf)
+	//	lang.CheckErr(err)
+	//	hash, height, err := client.GetBestBlock()
+	//	lang.CheckErr(err)
+	//	pin.D("best DCR block", hash, height)
+	//	client.Disconnect()
+	//}
 	{
 		client, err := connect.PFCD(conf)
 		lang.CheckErr(err)
