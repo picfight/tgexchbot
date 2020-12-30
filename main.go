@@ -50,7 +50,7 @@ func main() {
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
 
-		OutputWalletAccountName := conf.BTCWalletConfig.OutputWalletAccountName
+		OutputWalletAccountName :="*"
 
 		pin.D("Checking BTC account", OutputWalletAccountName)
 		key := os.Getenv(BTCWKEY)
@@ -76,7 +76,7 @@ func main() {
 		client, err := connect.PFCWallet(conf)
 		lang.CheckErr(err)
 
-		OutputWalletAccountName := conf.PFCWalletConfig.OutputWalletAccountName
+		OutputWalletAccountName := "*"
 
 		pin.D("Checking PFC account", OutputWalletAccountName)
 		key := os.Getenv(PFCWKEY)

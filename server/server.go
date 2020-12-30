@@ -110,7 +110,7 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		min_confirmations, err := strconv.ParseInt(min_confirmations_string, 10, 64)
 		lang.CheckErr(err)
 
-		return s.getBalanceBTC(btc_address, account_name, min_confirmations)
+		return s.getBalanceBTC(btc_address, account_name, int(min_confirmations))
 	}
 
 	if command == "get_balance_pfc" {
@@ -119,7 +119,7 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		min_confirmations_string := params["min_confirmations"][0]
 		min_confirmations, err := strconv.ParseInt(min_confirmations_string, 10, 64)
 		lang.CheckErr(err)
-		return s.getBalancePFC(pfc_address, account_name, min_confirmations)
+		return s.getBalancePFC(pfc_address, account_name, int(min_confirmations))
 	}
 
 	if command == "transfer_btc" {
@@ -320,7 +320,7 @@ func (s HttpsServer) AnalyzeString(hextext string) string {
 	return toJson(result)
 }
 
-func (s HttpsServer) getBalanceBTC(btc_address string, walletAccountName string, min_confirmations int64) string {
+func (s HttpsServer) getBalanceBTC(btc_address string, walletAccountName string, min_confirmations int) string {
 	result := BTCBalance{}
 	{
 		result.BTCAddress.Type = "BTC"
@@ -329,7 +329,7 @@ func (s HttpsServer) getBalanceBTC(btc_address string, walletAccountName string,
 	{
 		client, err := connect.BTCWallet(s.config)
 		lang.CheckErr(err)
-		balance, err := client.GetBalance(walletAccountName)
+		balance, err := client.GetBalanceMinConf(walletAccountName,min_confirmations)
 		lang.CheckErr(err)
 		pin.D("balance "+walletAccountName, balance)
 		result.AmountBTC.Value = balance.ToBTC()
@@ -337,7 +337,7 @@ func (s HttpsServer) getBalanceBTC(btc_address string, walletAccountName string,
 	return toJson(result)
 }
 
-func (s HttpsServer) getBalancePFC(pfc_address string, walletAccountName string, min_confirmations int64) string {
+func (s HttpsServer) getBalancePFC(pfc_address string, walletAccountName string, min_confirmations int) string {
 	result := PFCBalance{}
 	{
 		result.PFCAddress.Type = "PFC"
@@ -346,7 +346,7 @@ func (s HttpsServer) getBalancePFC(pfc_address string, walletAccountName string,
 	{
 		client, err := connect.PFCWallet(s.config)
 		lang.CheckErr(err)
-		balance, err := client.GetBalance(walletAccountName)
+		balance, err := client.GetBalanceMinConf(walletAccountName,min_confirmations)
 		lang.CheckErr(err)
 		pin.D("balance "+walletAccountName, balance)
 		result.AmountPFC.Value = balance.TotalSpendable
