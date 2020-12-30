@@ -14,7 +14,7 @@ public class AmountBTC {
 
 	@Override
 	public String toString () {
-		return this.Value + "";
+		return this.Value + " BTC";
 	}
 
 }

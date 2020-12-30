@@ -17,6 +17,10 @@ public class OPERATIONS {
 	public static final String START = "/start";
 	public static final String HELP = "/help";
 	public static final String STATUS = "/status";
+	public static final String BALANCE = "/balance";
+	public static final String DEPOSIT = "/deposit";
+	public static final String WITHDRAW = "/withdraw";
+	public static final String MARKET = "/market";
 
 // public static final String SET_ENGLISH = "/set_eng";
 // public static final String SET_RUSSIAN = "/set_ru";

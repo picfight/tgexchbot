@@ -25,12 +25,18 @@ public class WalletBackEnd {
 		this.access_key = args.access_key;
 	}
 
-	public AvailableFunds getFunds () throws IOException {
+	public AvailableFunds getFunds () throws BackendException {
 		final String command = "rate";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final AvailableFunds r = Json.deserializeFromString(AvailableFunds.class, resultJson);
 		return r;
 	}
@@ -40,13 +46,19 @@ public class WalletBackEnd {
 		return url;
 	}
 
-	public StringAnalysis analyzeString (final String text) throws IOException {
+	public StringAnalysis analyzeString (final String text) throws BackendException {
 		final String command = "analyze_string";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("raw_text", text);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final StringAnalysis r = Json.deserializeFromString(StringAnalysis.class, resultJson);
 		return r;
 	}
@@ -63,26 +75,42 @@ public class WalletBackEnd {
 		return new String(hexChars).toLowerCase();
 	}
 
-	public PFCBalance getPFCBallance (final PFCAddress pfc_address, final String accountName) throws IOException {
+	public PFCBalance getPFCBallance (final PFCAddress pfc_address, final String accountName, final int confirmations)
+		throws BackendException {
 		final String command = "get_balance_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("pfc_address", pfc_address.AddressString);
+		params.put("confirmations", confirmations + "");
 		params.put("Account_name", accountName);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final PFCBalance r = Json.deserializeFromString(PFCBalance.class, resultJson);
 		return r;
 	}
 
-	public BTCBalance getBTCBallance (final BTCAddress btc_address, final String accountName) throws IOException {
+	public BTCBalance getBTCBallance (final BTCAddress btc_address, final String accountName, final int confirmations)
+		throws BackendException {
 		final String command = "get_balance_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("btc_address", btc_address.AddressString);
+		params.put("confirmations", confirmations + "");
 		params.put("Account_name", accountName);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final BTCBalance r = Json.deserializeFromString(BTCBalance.class, resultJson);
 		return r;
 	}
@@ -95,100 +123,110 @@ public class WalletBackEnd {
 
 // }
 
-	public Result transferPFC (final Operation t, final AmountPFC pfcAmount) throws IOException {
+	public Result transferPFC (final Operation t, final AmountPFC pfcAmount) throws BackendException {
 		final String command = "transfer_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key + "");
 		params.put("client_pfc_wallet", t.clientPFCWallet.AddressString + "");
 		params.put("pfc_amount", pfcAmount + "");
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final Result r = Json.deserializeFromString(Result.class, resultJson);
 		return r;
 	}
 
-	public Result transferBTC (final Operation t, final AmountBTC btcAmount) throws IOException {
+	public Result transferBTC (final Operation t, final AmountBTC btcAmount) throws BackendException {
 		final String command = "transfer_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key + "");
 		params.put("client_btc_wallet", t.clientPFCWallet.AddressString + "");
 		params.put("btc_amount", btcAmount.Value + "");
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final Result r = Json.deserializeFromString(Result.class, resultJson);
 		return r;
 	}
 
-	public BTCInputs listBTCInputs (final BTCAddress address, final String accountName) throws IOException {
+	public BTCInputs listBTCInputs (final BTCAddress address, final String accountName) throws BackendException {
 		final String command = "list_btc_inputs";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
 		params.put("Btc_address", address.AddressString + "");
 		params.put("Account_name", accountName);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final BTCInputs r = Json.deserializeFromString(BTCInputs.class, resultJson);
 		return r;
 	}
 
-	public PFCInputs listPFCInputs (final PFCAddress address, final String accountName) throws IOException {
+	public PFCInputs listPFCInputs (final PFCAddress address, final String accountName) throws BackendException {
 		final String command = "list_pfc_inputs";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
 		params.put("Pfc_address", address.AddressString + "");
 		params.put("Account_name", accountName);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final PFCInputs r = Json.deserializeFromString(PFCInputs.class, resultJson);
 		return r;
 	}
 
-	public BTCAddress getNewBTCAddress (final String accountName) throws IOException {
+	public BTCAddress getNewBTCAddress (final String accountName) throws BackendException {
 		final String command = "new_btc_address";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
 		params.put("Account_name", accountName);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
 		return r;
 	}
 
-	public PFCAddress getNewPFCAddress (final String accountName) throws IOException {
+	public PFCAddress getNewPFCAddress (final String accountName) throws BackendException {
 		final String command = "new_pfc_address";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
 		params.put("Account_name", accountName);
-		final JsonString resultJson = BackEndConnector.retrieve(Url, params);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
 		final PFCAddress r = Json.deserializeFromString(PFCAddress.class, resultJson);
 		return r;
 	}
-
-// public BTCAddress obtainNewBTCAddress (final UserSettings settings) throws IOException {
-// final File folder = settings.userFolder();
-// final File poolFile = folder.child("btc.address.pool.json");
-// final BTCAddressPool pool = poolFile.readJson(BTCAddressPool.class);
-// while (true) {
-// final BTCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
-// final BTCInputs inputs = this.listBTCInputs(address, settings.getAccountName());
-// if (inputs.size() == 0) {
-// return address;
-// }
-// }
-// }
-//
-// public PFCAddress obtainNewPFCAddress (final UserSettings settings) throws IOException {
-// final File folder = settings.userFolder();
-// final File poolFile = folder.child("pfc.address.pool.json");
-// final PFCAddressPool pool = poolFile.readJson(PFCAddressPool.class);
-// while (true) {
-// final PFCAddress address = pool.obtainNewAddress(this, settings.getAccountName());
-// final PFCInputs inputs = this.listPFCInputs(address, settings.getAccountName());
-// if (inputs.size() == 0) {
-// return address;
-// }
-// }
-// }
 
 }

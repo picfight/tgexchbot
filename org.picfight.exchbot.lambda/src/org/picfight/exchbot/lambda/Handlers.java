@@ -3,6 +3,7 @@ package org.picfight.exchbot.lambda;
 
 import java.io.IOException;
 
+import org.picfight.exchbot.lambda.backend.UserSettings;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -96,12 +97,14 @@ class HandleArgs {
 	public TelegramUpdate update;
 	public String command;
 	public List<String> arguments;
-	public String userID;
+	public String accountName;
+	public UserSettings settings;
 
 	@Override
 	public String toString () {
 		return "HandleArgs [filesystem=" + this.filesystem + ", inputRaw=" + this.inputRaw + ", bot=" + this.bot + ", update="
-			+ this.update + ", command=" + this.command + ", arguments=" + this.arguments + ", userID=" + this.userID + "]";
+			+ this.update + ", command=" + this.command + ", arguments=" + this.arguments + ", accountName=" + this.accountName
+			+ "]";
 	}
 
 }
