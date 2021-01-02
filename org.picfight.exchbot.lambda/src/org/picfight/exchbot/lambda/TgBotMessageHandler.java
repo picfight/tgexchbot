@@ -231,7 +231,7 @@ public class TgBotMessageHandler implements Handler {
 					}
 				}
 
-				final String address_text = args.arguments.getElementAt(2).toLowerCase();
+				final String address_text = args.arguments.getElementAt(2);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
 				if (anal.BTCAddress == null && anal.PFCAddress == null) {
 					Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
