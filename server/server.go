@@ -354,8 +354,9 @@ func (s HttpsServer) getBalancePFC(pfc_address string, walletAccountName string,
 		balance, err := client.GetBalanceMinConf(walletAccountName, min_confirmations)
 		lang.CheckErr(err)
 		pin.D("balance "+walletAccountName, balance)
-		pin.D(" balance.TotalSpendable ", balance.TotalSpendable)
-		result.AmountPFC.Value = balance.TotalSpendable
+			
+		pin.D("balance.Balances[0].Spendable ", balance.Balances[0].Spendable)
+		result.AmountPFC.Value = balance.Balances[0].Spendable
 	}
 	js := toJson(result)
 	pin.D("json ", js)
