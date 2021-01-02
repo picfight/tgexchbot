@@ -7,11 +7,15 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import org.picfight.exchbot.lambda.backend.AmountBTC;
+import org.picfight.exchbot.lambda.backend.AmountPFC;
 import org.picfight.exchbot.lambda.backend.BTCAddress;
 import org.picfight.exchbot.lambda.backend.BTCBalance;
 import org.picfight.exchbot.lambda.backend.BackendException;
+import org.picfight.exchbot.lambda.backend.Operation;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
+import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
 import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
 import org.picfight.exchbot.lambda.backend.UserSettings;
@@ -19,7 +23,6 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
@@ -184,78 +187,188 @@ public class TgBotMessageHandler implements Handler {
 			}
 			{
 				final StringBuilder b = new StringBuilder();
-				b.append("Команды для заисления средств на биржу:").append(N);
+				b.append("Команды для зачисления средств на биржу:").append(N);
 				b.append("пополнить BTC: " + OPERATIONS.DEPOSIT + " btc").append(N);
 				b.append("пополнить PFC: " + OPERATIONS.DEPOSIT + " pfc").append(N);
 				Handlers.respond(bot, chatid, b.toString(), false);
+				return true;
+			}
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW)) {
+			if (args.arguments.size() != 0) {
+				if (args.arguments.size() != 3) {
+					this.withdrawHelp(bot, chatid);
+					return true;
+				}
+				final String cointext = args.arguments.getElementAt(0).toLowerCase();
+				String coin = null;
+				if (cointext.equals("btc")) {
+					coin = "btc";
+				}
+				if (cointext.equals("pfc")) {
+					coin = "pfc";
+				}
+				if (coin == null) {
+					Handlers.respond(bot, chatid, "Монета указана неправильно: " + cointext, false);
+					this.withdrawHelp(bot, chatid);
+					return true;
+				}
+				Double amount = null;
+				final String amount_text = args.arguments.getElementAt(1).toLowerCase();
+				if (amount_text.equals("all")) {
+					amount = null;
+				} else {
+					try {
+						amount = Double.parseDouble(amount_text);
+					} catch (final Throwable e) {
+						e.printStackTrace();
+
+						Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+						this.withdrawHelp(bot, chatid);
+						return true;
+
+					}
+				}
+
+				final String address_text = args.arguments.getElementAt(2).toLowerCase();
+				final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
+				if (anal.BTCAddress == null && anal.PFCAddress == null) {
+					Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
+					Handlers.respond(bot, chatid, anal.Error, false);
+					this.withdrawHelp(bot, chatid);
+					return true;
+				}
+
+				if (coin.equals("pfc")) {
+					final Operation t = new Operation();
+					if (amount == null) {
+						t.allFunds = true;
+					} else {
+						t.pfcAmount = new AmountPFC(amount);
+					}
+
+					t.pfcAddress = anal.PFCAddress;
+					if (t.pfcAddress == null) {
+						Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
+						Handlers.respond(bot, chatid, anal.Error, false);
+						this.withdrawHelp(bot, chatid);
+						return true;
+					}
+
+					final Result result = this.walletBackEnd.transferPFC(t);
+					Handlers.respond(bot, chatid, result.toString(), false);
+					return true;
+				}
+
+				if (coin.equals("btc")) {
+					final Operation t = new Operation();
+					if (amount == null) {
+						t.allFunds = true;
+					} else {
+						t.btcAmount = new AmountBTC(amount);
+					}
+
+					t.btcAddress = anal.BTCAddress;
+					if (t.btcAddress == null) {
+						Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
+						Handlers.respond(bot, chatid, anal.Error, false);
+						this.withdrawHelp(bot, chatid);
+						return true;
+					}
+
+					final Result result = this.walletBackEnd.transferBTC(t);
+					Handlers.respond(bot, chatid, result.toString(), false);
+					return true;
+				}
+
+			}
+			{
+				this.withdrawHelp(bot, chatid);
+				return true;
 			}
 		}
 
 		return false;
 	}
 
-	private void printTransaction (final HandleArgs args, final Transaction status) throws IOException {
-		final Long chatid = args.update.message.chatID;
-
+	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {
 		final StringBuilder b = new StringBuilder();
-		b.append("Order:");
+		b.append("Команды для вывода монет с биржи:").append(N);
+		b.append("Вывести BTC: " + OPERATIONS.WITHDRAW + " btc %количество% %адрес%").append(N);
+		b.append("Вывести PFC: " + OPERATIONS.WITHDRAW + " pfc %количество% %адрес%").append(N);
 		b.append(N);
+		b.append("Примеры:").append(N);
+		b.append(OPERATIONS.WITHDRAW + " btc 0.02 1aBcDeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW + " pfc 120 JabcgeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW + " btc all 1aBcDeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW + " pfc all J431aBcDeFg123456789H").append(N);
 		b.append(N);
-
-		if (status.states.size() > 0) {
-			b.append("Status: ");
-			final Status state = status.states.get(status.states.size() - 1);
-			b.append(state.status);
-			b.append(N);
-
-			if (state.error_message != null) {
-				b.append(state.error_message);
-				b.append(N);
-			}
-		}
-
-		b.append("Type: ");
-		b.append(status.operation.type);
-		b.append(N);
-
-		b.append(N);
-
-		if (status.operation.exchangeBTCWallet != null) {
-			b.append("Exchange BTC wallet:");
-			b.append(N);
-			b.append(status.operation.exchangeBTCWallet.AddressString);
-			b.append(N);
-			b.append(N);
-		}
-
-		if (status.operation.exchangePFCWallet != null) {
-			b.append("Exchange PFC wallet:");
-			b.append(N);
-			b.append(status.operation.exchangePFCWallet.AddressString);
-			b.append(N);
-			b.append(N);
-		}
-
-		if (status.operation.clientBTCWallet != null) {
-			b.append("Client BTC wallet:");
-			b.append(N);
-			b.append(status.operation.clientBTCWallet.AddressString);
-			b.append(N);
-			b.append(N);
-		}
-
-		if (status.operation.clientPFCWallet != null) {
-			b.append("Client PFC wallet:");
-			b.append(N);
-			b.append(status.operation.clientPFCWallet.AddressString);
-			b.append(N);
-			b.append(N);
-		}
-
-		Handlers.respond(args.bot, chatid, b.toString(), false);
-		Handlers.respond(args.bot, chatid, Json.serializeToString(status).toString(), false);
-
+		Handlers.respond(bot, chatid, b.toString(), false);
 	}
+
+// private void printTransaction (final HandleArgs args, final Transaction status) throws IOException {
+// final Long chatid = args.update.message.chatID;
+//
+// final StringBuilder b = new StringBuilder();
+// b.append("Order:");
+// b.append(N);
+// b.append(N);
+//
+// if (status.states.size() > 0) {
+// b.append("Status: ");
+// final Status state = status.states.get(status.states.size() - 1);
+// b.append(state.status);
+// b.append(N);
+//
+// if (state.error_message != null) {
+// b.append(state.error_message);
+// b.append(N);
+// }
+// }
+//
+// b.append("Type: ");
+// b.append(status.operation.type);
+// b.append(N);
+//
+// b.append(N);
+//
+// if (status.operation.exchangeBTCWallet != null) {
+// b.append("Exchange BTC wallet:");
+// b.append(N);
+// b.append(status.operation.exchangeBTCWallet.AddressString);
+// b.append(N);
+// b.append(N);
+// }
+//
+// if (status.operation.exchangePFCWallet != null) {
+// b.append("Exchange PFC wallet:");
+// b.append(N);
+// b.append(status.operation.exchangePFCWallet.AddressString);
+// b.append(N);
+// b.append(N);
+// }
+//
+// if (status.operation.clientBTCWallet != null) {
+// b.append("Client BTC wallet:");
+// b.append(N);
+// b.append(status.operation.clientBTCWallet.AddressString);
+// b.append(N);
+// b.append(N);
+// }
+//
+// if (status.operation.clientPFCWallet != null) {
+// b.append("Client PFC wallet:");
+// b.append(N);
+// b.append(status.operation.clientPFCWallet.AddressString);
+// b.append(N);
+// b.append(N);
+// }
+//
+// Handlers.respond(args.bot, chatid, b.toString(), false);
+// Handlers.respond(args.bot, chatid, Json.serializeToString(status).toString(), false);
+//
+// }
 
 	private String userID (final Long chatid) {
 		return "tg-" + chatid;

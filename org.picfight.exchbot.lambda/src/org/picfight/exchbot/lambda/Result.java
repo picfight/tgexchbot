@@ -14,4 +14,11 @@ public class Result {
 	public AmountBTC BtcAmount;
 	public AmountPFC PfcAmount;
 
+	@Override
+	public String toString () {
+		return "Result [Success=" + this.Success + ", Error_message=" + this.Error_message + ", Btc_transaction_receipt="
+			+ this.Btc_transaction_receipt + ", Pfc_transaction_receipt=" + this.Pfc_transaction_receipt + ", BtcAmount="
+			+ this.BtcAmount + ", PfcAmount=" + this.PfcAmount + "]";
+	}
+
 }

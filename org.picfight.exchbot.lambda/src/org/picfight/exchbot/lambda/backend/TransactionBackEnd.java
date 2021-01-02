@@ -22,15 +22,15 @@ public class TransactionBackEnd {
 	}
 
 	public static String file_name (final Transaction s) {
-		final Operation transact = s.operation;
-		if (transact.type.equals(Operation.BUY)) {
-			return transact.type + " " + transact.clientPFCWallet.AddressString + " " + transact.exchangeBTCWallet.AddressString
-				+ " " + transact.timestamp + ".json";
-		}
-		if (transact.type.equals(Operation.SELL)) {
-			return transact.type + " " + transact.clientBTCWallet.AddressString + " " + transact.exchangePFCWallet.AddressString
-				+ " " + transact.timestamp + ".json";
-		}
+// final Operation transact = s.operation;
+// if (transact.type.equals(Operation.BUY)) {
+// return transact.type + " " + transact.clientPFCWallet.AddressString + " " + transact.exchangeBTCWallet.AddressString
+// + " " + transact.timestamp + ".json";
+// }
+// if (transact.type.equals(Operation.SELL)) {
+// return transact.type + " " + transact.clientBTCWallet.AddressString + " " + transact.exchangePFCWallet.AddressString
+// + " " + transact.timestamp + ".json";
+// }
 		throw new Error();
 	}
 

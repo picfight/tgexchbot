@@ -123,13 +123,17 @@ public class WalletBackEnd {
 
 // }
 
-	public Result transferPFC (final Operation t, final AmountPFC pfcAmount) throws BackendException {
+	public Result transferPFC (final Operation t) throws BackendException {
 		final String command = "transfer_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key + "");
-		params.put("client_pfc_wallet", t.clientPFCWallet.AddressString + "");
-		params.put("pfc_amount", pfcAmount + "");
+		params.put("target_pfc_address", t.pfcAddress.AddressString + "");
+		params.put("pfc_amount", t.pfcAmount + "");
+		if (t.allFunds) {
+			params.put("pfc_amount", "all");
+		}
+
 		JsonString resultJson;
 		try {
 			resultJson = BackEndConnector.retrieve(Url, params);
@@ -141,13 +145,17 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public Result transferBTC (final Operation t, final AmountBTC btcAmount) throws BackendException {
+	public Result transferBTC (final Operation t) throws BackendException {
 		final String command = "transfer_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key + "");
-		params.put("client_btc_wallet", t.clientPFCWallet.AddressString + "");
-		params.put("btc_amount", btcAmount.Value + "");
+		params.put("target_btc_address", t.btcAddress.AddressString + "");
+		params.put("btc_amount", t.btcAmount + "");
+		if (t.allFunds) {
+			params.put("btc_amount", "all");
+		}
+
 		JsonString resultJson;
 		try {
 			resultJson = BackEndConnector.retrieve(Url, params);
