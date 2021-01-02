@@ -14,7 +14,7 @@ public class AmountPFC {
 
 	@Override
 	public String toString () {
-		return this.Value + "";
+		return this.Value + " PFC";
 	}
 
 }
