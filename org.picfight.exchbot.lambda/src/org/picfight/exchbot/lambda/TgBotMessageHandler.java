@@ -135,16 +135,15 @@ public class TgBotMessageHandler implements Handler {
 		final UserSettings settings = args.settings;
 		final String userID = args.accountName;
 		final AbsSender bot = args.bot;
+		final String accountName = args.accountName;
 
 		if (!settings.exchangeAddressIsSet()) {
 			settings.setupExchangeAddress(this.walletBackEnd, userID);
 // return true;
 		}
-
+		final Long chatid = args.update.message.chatID;
 		if (args.command.equalsIgnoreCase(OPERATIONS.BALANCE)) {
 			L.d("L3");
-			final String accountName = args.accountName;
-			final Long chatid = args.update.message.chatID;
 
 			final BTCAddress btc_address = settings.getExchangeAddressBTC();
 			final BTCBalance btc = this.walletBackEnd.getBTCBallance(btc_address, accountName, 3);
@@ -164,6 +163,34 @@ public class TgBotMessageHandler implements Handler {
 			Handlers.respond(bot, chatid, b.toString(), false);
 			return true;
 		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT)) {
+			if (args.arguments.size() != 0) {
+				final String text = args.arguments.getElementAt(0).toLowerCase();
+
+				final BTCAddress btc_address = settings.getExchangeAddressBTC();
+
+				final PFCAddress pfc_address = settings.getExchangeAddressPFC();
+				if (text.equals("btc")) {
+					Handlers.respond(bot, chatid, "Засылай BTC на следующий адрес:", false);
+					Handlers.respond(bot, chatid, btc_address.toString(), false);
+					return true;
+				}
+				if (text.equals("pfc")) {
+					Handlers.respond(bot, chatid, "Засылай PFC на следующий адрес:", false);
+					Handlers.respond(bot, chatid, pfc_address.toString(), false);
+					return true;
+				}
+			}
+			{
+				final StringBuilder b = new StringBuilder();
+				b.append("Команды для заисления средств на биржу:").append(N);
+				b.append("пополнить BTC: " + OPERATIONS.DEPOSIT + " btc").append(N);
+				b.append("пополнить PFC: " + OPERATIONS.DEPOSIT + " pfc").append(N);
+				Handlers.respond(bot, chatid, b.toString(), false);
+			}
+		}
+
 		return false;
 	}
 
