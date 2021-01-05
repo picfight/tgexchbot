@@ -540,8 +540,8 @@ public class TgBotMessageHandler implements Handler {
 // b.append(OPERATIONS.STATUS + " to check your order status");
 // b.append(N);
 // b.append(N);
-			b.append("PFC-кошелёк можно скачать тут: https://github.com/picfight/pfcredit");
-			b.append("DCR можно купить и продать на Бинансе: https://www.binance.com/en/trade/DCR_BTC");
+			b.append("PFC-кошелёк можно скачать тут: https://github.com/picfight/pfcredit").append(N);
+			b.append("DCR можно купить и продать на Бинансе: https://www.binance.com/en/trade/DCR_BTC").append(N);
 
 			Handlers.respond(bot, chatid, b.toString(), false);
 
