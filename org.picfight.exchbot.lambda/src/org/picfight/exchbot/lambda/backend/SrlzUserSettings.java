@@ -9,6 +9,6 @@ public class SrlzUserSettings {
 	public String accountName = null;
 
 	public HashMap<String, String> exchangeAddress = new HashMap<>();
-	public HashMap<String, String> privateAddress = new HashMap<>();
+// public HashMap<String, String> privateAddress = new HashMap<>();
 
 }

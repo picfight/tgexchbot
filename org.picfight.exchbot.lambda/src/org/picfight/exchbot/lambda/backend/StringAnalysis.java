@@ -7,6 +7,7 @@ public class StringAnalysis {
 
 	public BTCAddress BTCAddress = null;
 	public PFCAddress PFCAddress = null;
+	public DCRAddress DCRAddress = null;
 	public String Error = null;
 
 	@Override

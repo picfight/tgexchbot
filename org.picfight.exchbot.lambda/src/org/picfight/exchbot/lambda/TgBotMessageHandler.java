@@ -7,11 +7,11 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.picfight.exchbot.lambda.backend.AmountBTC;
+import org.picfight.exchbot.lambda.backend.AmountDCR;
 import org.picfight.exchbot.lambda.backend.AmountPFC;
-import org.picfight.exchbot.lambda.backend.BTCAddress;
-import org.picfight.exchbot.lambda.backend.BTCBalance;
 import org.picfight.exchbot.lambda.backend.BackendException;
+import org.picfight.exchbot.lambda.backend.DCRAddress;
+import org.picfight.exchbot.lambda.backend.DCRBalance;
 import org.picfight.exchbot.lambda.backend.Operation;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
@@ -148,8 +148,8 @@ public class TgBotMessageHandler implements Handler {
 		if (args.command.equalsIgnoreCase(OPERATIONS.BALANCE)) {
 			L.d("L3");
 
-			final BTCAddress btc_address = settings.getExchangeAddressBTC();
-			final BTCBalance btc = this.walletBackEnd.getBTCBallance(btc_address, accountName, 3);
+			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
+			final DCRBalance dcr = this.walletBackEnd.getDCRBallance(dcr_address, accountName, 3);
 
 			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
 			final PFCBalance pfc = this.walletBackEnd.getPFCBallance(pfc_address, accountName, 3);
@@ -157,7 +157,7 @@ public class TgBotMessageHandler implements Handler {
 			final StringBuilder b = new StringBuilder();
 			b.append("Твои балансы:").append(N);
 			b.append(N);
-			b.append(btc.AmountBTC.toString()).append(N);
+			b.append(dcr.AmountDCR.toString()).append(N);
 			b.append(pfc.AmountPFC.toString()).append(N);
 			b.append(N);
 			b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
@@ -171,12 +171,12 @@ public class TgBotMessageHandler implements Handler {
 			if (args.arguments.size() != 0) {
 				final String text = args.arguments.getElementAt(0).toLowerCase();
 
-				final BTCAddress btc_address = settings.getExchangeAddressBTC();
+				final DCRAddress dcr_address = settings.getExchangeAddressDCR();
 
 				final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-				if (text.equals("btc")) {
-					Handlers.respond(bot, chatid, "Засылай BTC на следующий адрес:", false);
-					Handlers.respond(bot, chatid, btc_address.toString(), false);
+				if (text.equals("dcr")) {
+					Handlers.respond(bot, chatid, "Засылай DCR на следующий адрес:", false);
+					Handlers.respond(bot, chatid, dcr_address.toString(), false);
 					return true;
 				}
 				if (text.equals("pfc")) {
@@ -188,8 +188,8 @@ public class TgBotMessageHandler implements Handler {
 			{
 				final StringBuilder b = new StringBuilder();
 				b.append("Команды для зачисления средств на биржу:").append(N);
-				b.append("пополнить BTC: " + OPERATIONS.DEPOSIT + " btc").append(N);
-				b.append("пополнить PFC: " + OPERATIONS.DEPOSIT + " pfc").append(N);
+				b.append("пополнить DCR: " + OPERATIONS.DEPOSIT + " dcr").append(N);
+				b.append("пополнить DCR: " + OPERATIONS.DEPOSIT + " dcr").append(N);
 				Handlers.respond(bot, chatid, b.toString(), false);
 				return true;
 			}
@@ -203,8 +203,8 @@ public class TgBotMessageHandler implements Handler {
 				}
 				final String cointext = args.arguments.getElementAt(0).toLowerCase();
 				String coin = null;
-				if (cointext.equals("btc")) {
-					coin = "btc";
+				if (cointext.equals("dcr")) {
+					coin = "dcr";
 				}
 				if (cointext.equals("pfc")) {
 					coin = "pfc";
@@ -233,7 +233,7 @@ public class TgBotMessageHandler implements Handler {
 
 				final String address_text = args.arguments.getElementAt(2);
 				final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
-				if (anal.BTCAddress == null && anal.PFCAddress == null) {
+				if (anal.DCRAddress == null && anal.PFCAddress == null) {
 					Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
 					Handlers.respond(bot, chatid, anal.Error, false);
 					this.withdrawHelp(bot, chatid);
@@ -261,23 +261,23 @@ public class TgBotMessageHandler implements Handler {
 					return true;
 				}
 
-				if (coin.equals("btc")) {
+				if (coin.equals("dcr")) {
 					final Operation t = new Operation();
 					if (amount == null) {
 						t.allFunds = true;
 					} else {
-						t.btcAmount = new AmountBTC(amount);
+						t.dcrAmount = new AmountDCR(amount);
 					}
 
-					t.btcAddress = anal.BTCAddress;
-					if (t.btcAddress == null) {
+					t.dcrAddress = anal.DCRAddress;
+					if (t.dcrAddress == null) {
 						Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
 						Handlers.respond(bot, chatid, anal.Error, false);
 						this.withdrawHelp(bot, chatid);
 						return true;
 					}
 
-					final Result result = this.walletBackEnd.transferBTC(t);
+					final Result result = this.walletBackEnd.transferDCR(t);
 					Handlers.respond(bot, chatid, result.toString(), false);
 					return true;
 				}
@@ -295,13 +295,13 @@ public class TgBotMessageHandler implements Handler {
 	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {
 		final StringBuilder b = new StringBuilder();
 		b.append("Команды для вывода монет с биржи:").append(N);
-		b.append("Вывести BTC: " + OPERATIONS.WITHDRAW + " btc %количество% %адрес%").append(N);
+		b.append("Вывести DCR: " + OPERATIONS.WITHDRAW + " dcr %количество% %адрес%").append(N);
 		b.append("Вывести PFC: " + OPERATIONS.WITHDRAW + " pfc %количество% %адрес%").append(N);
 		b.append(N);
 		b.append("Примеры:").append(N);
-		b.append(OPERATIONS.WITHDRAW + " btc 0.02 1aBcDeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW + " dcr 0.02 D1aBcDeFg123456789H").append(N);
 		b.append(OPERATIONS.WITHDRAW + " pfc 120 JabcgeFg123456789H").append(N);
-		b.append(OPERATIONS.WITHDRAW + " btc all 1aBcDeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW + " dcr all DaBcDeFg123456789H").append(N);
 		b.append(OPERATIONS.WITHDRAW + " pfc all J431aBcDeFg123456789H").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
@@ -374,37 +374,37 @@ public class TgBotMessageHandler implements Handler {
 		return "tg-" + chatid;
 	}
 
-	private void processBuy (final HandleArgs args, final UserSettings settings, final PFCAddress pfcAddress) throws IOException {
-		final Long chatid = args.update.message.chatID;
-
-		final BTCAddress exchangeAddress = settings.getExchangeAddressBTC();
-
-		settings.setupPrivateAddressPFC(pfcAddress);
-
-		Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
-		Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
-		Handlers.respond(args.bot, chatid, "Your PFC will be sent to the following address:", false);
-		Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + settings.getPrivateAddressPFC(), true);
-		Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
-// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
-
-	}
-
-	private void processSell (final HandleArgs args, final UserSettings settings, final BTCAddress btcAddress) throws IOException {
-		final Long chatid = args.update.message.chatID;
-
-		final PFCAddress exchangeAddress = settings.getExchangeAddressPFC();
-
-		settings.setupPrivateAddressBTC(btcAddress);
-
-		Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
-		Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
-		Handlers.respond(args.bot, chatid, "Your BTC will be sent to the following address:", false);
-		Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + settings.getPrivateAddressBTC(), true);
-		Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
-// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
-
-	}
+// private void processBuy (final HandleArgs args, final UserSettings settings, final PFCAddress pfcAddress) throws IOException {
+// final Long chatid = args.update.message.chatID;
+//
+// final BTCAddress exchangeAddress = settings.getExchangeAddressBTC();
+//
+//// settings.setupPrivateAddressPFC(pfcAddress);
+//
+// Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
+// Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
+// Handlers.respond(args.bot, chatid, "Your PFC will be sent to the following address:", false);
+// Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + settings.getPrivateAddressPFC(), true);
+// Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
+//// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
+//
+// }
+//
+// private void processSell (final HandleArgs args, final UserSettings settings, final BTCAddress btcAddress) throws IOException {
+// final Long chatid = args.update.message.chatID;
+//
+// final PFCAddress exchangeAddress = settings.getExchangeAddressPFC();
+//
+//// settings.setupPrivateAddressBTC(btcAddress);
+//
+// Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
+// Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
+// Handlers.respond(args.bot, chatid, "Your BTC will be sent to the following address:", false);
+// Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + settings.getPrivateAddressBTC(), true);
+// Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
+//// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
+//
+// }
 
 // private List<Transaction> checkStatus (final HandleArgs args, final UserSettings settings) throws IOException {
 // final List<Transaction> transactions = Collections.newList();
@@ -478,7 +478,7 @@ public class TgBotMessageHandler implements Handler {
 // final double usd_per_pfc = usd_per_btc * btc_per_pfc;
 
 			final StringBuilder b = new StringBuilder();
-			b.append("Этот бот-биржа продаёт и покупает пикфайт-коины (PFC) за биткоины (BTC)").append(N);
+			b.append("Этот бот-биржа продаёт и покупает пикфайт-коины (PFC) за декреды (DCR)").append(N);
 			b.append(N);
 
 			b.append("Команды для бота:").append(N);
@@ -541,6 +541,7 @@ public class TgBotMessageHandler implements Handler {
 // b.append(N);
 // b.append(N);
 			b.append("PFC-кошелёк можно скачать тут: https://github.com/picfight/pfcredit");
+			b.append("DCR можно купить и продать на Бинансе: https://www.binance.com/en/trade/DCR_BTC");
 
 			Handlers.respond(bot, chatid, b.toString(), false);
 

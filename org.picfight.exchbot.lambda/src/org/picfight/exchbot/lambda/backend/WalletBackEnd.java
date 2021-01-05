@@ -95,6 +95,26 @@ public class WalletBackEnd {
 		return r;
 	}
 
+	public DCRBalance getDCRBallance (final DCRAddress dcr_address, final String accountName, final int confirmations)
+		throws BackendException {
+		final String command = "get_balance_dcr";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("Access_key", this.access_key);
+		params.put("Dcr_address", dcr_address.AddressString);
+		params.put("Min_confirmations", confirmations + "");
+		params.put("Account_name", accountName);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
+		final DCRBalance r = Json.deserializeFromString(DCRBalance.class, resultJson);
+		return r;
+	}
+
 	public BTCBalance getBTCBallance (final BTCAddress btc_address, final String accountName, final int confirmations)
 		throws BackendException {
 		final String command = "get_balance_btc";
@@ -143,6 +163,29 @@ public class WalletBackEnd {
 		}
 		final Result r = Json.deserializeFromString(Result.class, resultJson);
 		return r;
+	}
+
+	public Result transferDCR (final Operation t) throws BackendException {
+		final String command = "transfer_dcr";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("access_key", this.access_key + "");
+		params.put("target_dcr_address", t.dcrAddress.AddressString + "");
+		params.put("dcr_amount", t.dcrAmount + "");
+		if (t.allFunds) {
+			params.put("dcr_amount", "all");
+		}
+
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
+		final Result r = Json.deserializeFromString(Result.class, resultJson);
+		return r;
+
 	}
 
 	public Result transferBTC (final Operation t) throws BackendException {
@@ -234,6 +277,23 @@ public class WalletBackEnd {
 			throw new BackendException(e);
 		}
 		final PFCAddress r = Json.deserializeFromString(PFCAddress.class, resultJson);
+		return r;
+	}
+
+	public DCRAddress getNewDCRAddress (final String accountName) throws BackendException {
+		final String command = "new_dcr_address";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("Access_key", this.access_key);
+		params.put("Account_name", accountName);
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
+		final DCRAddress r = Json.deserializeFromString(DCRAddress.class, resultJson);
 		return r;
 	}
 
