@@ -423,7 +423,7 @@ func (s HttpsServer) getBalancePFC(pfc_address string, walletAccountName string,
 		result.AmountPFC.Value = balance.Balances[0].Spendable
 	}
 	js := toJson(result)
-	pin.D("json ", js)
+	//pin.D("json ", js)
 	return js
 }
 
@@ -449,7 +449,7 @@ func (s HttpsServer) getBalanceDCR(dcr_address string, walletAccountName string,
 		result.AmountDCR.Value = balance.Balances[0].Spendable
 	}
 	js := toJson(result)
-	pin.D("json ", js)
+	//pin.D("json ", js)
 	return js
 }
 
