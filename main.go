@@ -2,6 +2,7 @@ package main
 
 import (
 	btcclient "github.com/btcsuite/btcd/rpcclient"
+	dcrclient "github.com/decred/dcrd/rpcclient"
 	pfcclient "github.com/picfight/pfcd/rpcclient"
 	"os"
 	"path/filepath"
@@ -31,14 +32,14 @@ func main() {
 		pin.D("best BTC block", hash, height)
 		client.Disconnect()
 	}
-	//{
-	//	client, err := connect.DCRD(conf)
-	//	lang.CheckErr(err)
-	//	hash, height, err := client.GetBestBlock()
-	//	lang.CheckErr(err)
-	//	pin.D("best DCR block", hash, height)
-	//	client.Disconnect()
-	//}
+	{
+		client, err := connect.DCRD(conf)
+		lang.CheckErr(err)
+		hash, height, err := client.GetBestBlock()
+		lang.CheckErr(err)
+		pin.D("best DCR block", hash, height)
+		client.Disconnect()
+	}
 	{
 		client, err := connect.PFCD(conf)
 		lang.CheckErr(err)
@@ -70,29 +71,16 @@ func main() {
 		client.Disconnect()
 	}
 
-	// {
-	// 	client, err := connect.DCRWallet(conf)
-	// 	lang.CheckErr(err)
+	{
+		client, err := connect.DCRWallet(conf)
+		lang.CheckErr(err)
 
-	// 	OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
+		OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
+		printDCRBallance(client, "*", false)
+		printDCRBallance(client, OutputWalletAccountName, true)
 
-	// 	pin.D("Checking DCR account", OutputWalletAccountName)
-	// 	key := os.Getenv(DCRWKEY)
-	// 	err = client.WalletPassphrase(key, 10)
-	// 	lang.CheckErr(err)
-	// 	_, err = client.GetAccountAddress(OutputWalletAccountName)
-	// 	if err != nil {
-	// 		pin.D("Creating DCR account", OutputWalletAccountName)
-	// 		err := client.CreateNewAccount(OutputWalletAccountName)
-	// 		lang.CheckErr(err)
-	// 	}
-
-	// 	br, err := client.GetBalance(OutputWalletAccountName)
-	// 	lang.CheckErr(err)
-	// 	pin.D("DCR balance", br)
-
-	// 	client.Disconnect()
-	// }
+		client.Disconnect()
+	}
 	pin.D("Deploy server...")
 	{
 		srv := server.NewServer(conf)
@@ -119,6 +107,27 @@ func printPFCBallance(client *pfcclient.Client, s string, getAddress bool) {
 	br, err := client.GetBalance(s)
 	lang.CheckErr(err)
 	pin.D("PFC balance", br)
+}
+
+
+func printDCRBallance(client *dcrclient.Client, s string, getAddress bool) {
+	pin.D("Checking DCR account", s)
+	key := os.Getenv(DCRWKEY)
+	err := client.WalletPassphrase(key, 10)
+	lang.CheckErr(err)
+	if getAddress {
+		addr, err := client.GetAccountAddress(s)
+		if err != nil {
+			pin.D("Creating DCR account", s)
+			err := client.CreateNewAccount(s)
+			lang.CheckErr(err)
+		} else {
+			pin.D("DCR exchange address", addr)
+		}
+	}
+	br, err := client.GetBalance(s)
+	lang.CheckErr(err)
+	pin.D("DCR balance", br)
 }
 
 func printBTCBalance(client *btcclient.Client, s string, getAddress bool) {
