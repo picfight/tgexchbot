@@ -189,7 +189,7 @@ public class TgBotMessageHandler implements Handler {
 				final StringBuilder b = new StringBuilder();
 				b.append("Команды для зачисления средств на биржу:").append(N);
 				b.append("пополнить DCR: " + OPERATIONS.DEPOSIT + " dcr").append(N);
-				b.append("пополнить DCR: " + OPERATIONS.DEPOSIT + " dcr").append(N);
+				b.append("пополнить PFC: " + OPERATIONS.DEPOSIT + " pfc").append(N);
 				Handlers.respond(bot, chatid, b.toString(), false);
 				return true;
 			}
