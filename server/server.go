@@ -76,8 +76,8 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	_, command := path.Split(uri)
 	//pin.D("dir", dir)
 	pin.D("command", command)
-	params := r.URL.Query()
-	pin.D("params", params)
+	//params := r.URL.Query()
+	//pin.D("params", params)
 
 	//post := r.PostForm
 	//pin.D("post", post)
@@ -130,13 +130,13 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	}
 
 	if command == "transfer_pfc" {
-		PFC_FromAccountAddress := params["PFC_FromAccountAddress"][0]
-		PFC_Amount_string := params["PFC_Amount"][0]
+		PFC_FromAccountAddress := params["Pfc_fromaccountaddress"][0]
+		PFC_Amount_string := params["Pfc_amount"][0]
 		PFC_Amount, err := strconv.ParseFloat(PFC_Amount_string, 64)
 		if err != nil {
 			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
-		PFC_ToAddress := params["PFC_ToAddress"][0]
+		PFC_ToAddress := params["Pfc_toaddress"][0]
 		return s.TransferPFC(PFC_FromAccountAddress, PFC_ToAddress, PFC_Amount)
 	}
 
