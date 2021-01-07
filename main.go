@@ -24,14 +24,14 @@ func main() {
 	conf, err := cfg.ReadCfgFile(filePath)
 	lang.CheckErr(err)
 	pin.S("conf", conf)
-	{
-		client, err := connect.BTCD(conf)
-		lang.CheckErr(err)
-		hash, height, err := client.GetBestBlock()
-		lang.CheckErr(err)
-		pin.D("best BTC block", hash, height)
-		client.Disconnect()
-	}
+	//{
+	//	client, err := connect.BTCD(conf)
+	//	lang.CheckErr(err)
+	//	hash, height, err := client.GetBestBlock()
+	//	lang.CheckErr(err)
+	//	pin.D("best BTC block", hash, height)
+	//	client.Disconnect()
+	//}
 	{
 		client, err := connect.DCRD(conf)
 		lang.CheckErr(err)
@@ -49,16 +49,16 @@ func main() {
 		client.Disconnect()
 	}
 	//-------------------------------------------
-	{
-		client, err := connect.BTCWallet(conf)
-		lang.CheckErr(err)
-
-		OutputWalletAccountName := conf.BTCWalletConfig.OutputWalletAccountName
-		printBTCBalance(client, "*", false)
-		printBTCBalance(client, OutputWalletAccountName, true)
-
-		client.Disconnect()
-	}
+	//{
+	//	client, err := connect.BTCWallet(conf)
+	//	lang.CheckErr(err)
+	//
+	//	OutputWalletAccountName := conf.BTCWalletConfig.OutputWalletAccountName
+	//	printBTCBalance(client, "*", false)
+	//	printBTCBalance(client, OutputWalletAccountName, true)
+	//
+	//	client.Disconnect()
+	//}
 
 	{
 		client, err := connect.PFCWallet(conf)
