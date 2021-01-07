@@ -130,20 +130,15 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public Result transferPFC (final PFCAddress fromAccountAddress, final PFCAddress toAddress, final AmountPFC amount,
-		final boolean all) throws BackendException {
+	public Result transferPFC (final PFCAddress fromAccountAddress, final PFCAddress toAddress, final AmountPFC amount)
+		throws BackendException {
 		final String command = "transfer_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
-		params.put("From_Account(Address)", fromAccountAddress + "");
-		params.put("To_PFC_Address", toAddress + "");
-
-		if (all) {
-			params.put("PFC_Amount", "all");
-		} else {
-			params.put("PFC_Amount", amount.Value + "");
-		}
+		params.put("PFC_FromAccountAddress", fromAccountAddress + "");
+		params.put("PFC_ToAddress", toAddress + "");
+		params.put("PFC_Amount", amount.Value + "");
 
 		JsonString resultJson;
 		try {
@@ -157,20 +152,15 @@ public class WalletBackEnd {
 
 	}
 
-	public Result transferDCR (final DCRAddress fromAccountAddress, final DCRAddress toAddress, final AmountDCR amount,
-		final boolean all) throws BackendException {
+	public Result transferDCR (final DCRAddress fromAccountAddress, final DCRAddress toAddress, final AmountDCR amount)
+		throws BackendException {
 		final String command = "transfer_dcr";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
-		params.put("From_Account(Address)", fromAccountAddress + "");
-		params.put("To_DCR_Address", toAddress + "");
-
-		if (all) {
-			params.put("DCR_Amount", "all");
-		} else {
-			params.put("DCR_Amount", amount.Value + "");
-		}
+		params.put("DCR_FromAccountAddress", fromAccountAddress + "");
+		params.put("DCR_ToAddress", toAddress + "");
+		params.put("DCR_Amount", amount.Value + "");
 
 		JsonString resultJson;
 		try {

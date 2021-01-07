@@ -198,20 +198,16 @@ public class TgBotMessageHandler implements Handler {
 			Double amountFloat = null;
 			AmountPFC amount = null;
 			final String amount_text = args.arguments.getElementAt(0).toLowerCase();
-			if (amount_text.equals("all")) {
-				amountFloat = null;
-			} else {
-				try {
-					amountFloat = Double.parseDouble(amount_text);
-					amount = new AmountPFC(amountFloat);
-				} catch (final Throwable e) {
-					e.printStackTrace();
+			try {
+				amountFloat = Double.parseDouble(amount_text);
+				amount = new AmountPFC(amountFloat);
+			} catch (final Throwable e) {
+				e.printStackTrace();
 
-					Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
-					this.withdrawHelp(bot, chatid);
-					return true;
+				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+				this.withdrawHelp(bot, chatid);
+				return true;
 
-				}
 			}
 
 			final String address_text = args.arguments.getElementAt(1);
@@ -225,7 +221,7 @@ public class TgBotMessageHandler implements Handler {
 
 			{
 				final PFCAddress exch_address = settings.getExchangeAddressPFC();
-				final Result result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount, amount == null);
+				final Result result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount);
 				Handlers.respond(bot, chatid, result.toString(), false);
 				return true;
 			}
@@ -240,20 +236,16 @@ public class TgBotMessageHandler implements Handler {
 			Double amountFloat = null;
 			AmountDCR amount = null;
 			final String amount_text = args.arguments.getElementAt(0).toLowerCase();
-			if (amount_text.equals("all")) {
-				amountFloat = null;
-			} else {
-				try {
-					amountFloat = Double.parseDouble(amount_text);
-					amount = new AmountDCR(amountFloat);
-				} catch (final Throwable e) {
-					e.printStackTrace();
+			try {
+				amountFloat = Double.parseDouble(amount_text);
+				amount = new AmountDCR(amountFloat);
+			} catch (final Throwable e) {
+				e.printStackTrace();
 
-					Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
-					this.withdrawHelp(bot, chatid);
-					return true;
+				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+				this.withdrawHelp(bot, chatid);
+				return true;
 
-				}
 			}
 
 			final String address_text = args.arguments.getElementAt(1);
@@ -267,7 +259,7 @@ public class TgBotMessageHandler implements Handler {
 
 			{
 				final DCRAddress exch_address = settings.getExchangeAddressDCR();
-				final Result result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount, amount == null);
+				final Result result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount);
 				Handlers.respond(bot, chatid, result.toString(), false);
 				return true;
 			}
@@ -285,8 +277,6 @@ public class TgBotMessageHandler implements Handler {
 		b.append("Примеры:").append(N);
 		b.append(OPERATIONS.WITHDRAW_DCR + " 0.02 D1aBcDeFg123456789H").append(N);
 		b.append(OPERATIONS.WITHDRAW_PFC + " 120 JabcgeFg123456789H").append(N);
-		b.append(OPERATIONS.WITHDRAW_DCR + " all DaBcDeFg123456789H").append(N);
-		b.append(OPERATIONS.WITHDRAW_PFC + " all J431aBcDeFg123456789H").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
