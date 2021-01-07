@@ -76,8 +76,8 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	_, command := path.Split(uri)
 	//pin.D("dir", dir)
 	pin.D("command", command)
-	//params := r.URL.Query()
-	//pin.D("params", params)
+	params := r.URL.Query()
+	pin.D("params", params)
 
 	//post := r.PostForm
 	//pin.D("post", post)
@@ -85,7 +85,7 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	//pin.D("header", r.Header)
 
 	access_key := r.Header.Get("Access_key")
-	pin.D("access_key", access_key)
+	//pin.D("access_key", access_key)
 
 	responseString := s.processRequest(command, access_key, r.Header)
 
