@@ -450,6 +450,9 @@ func (s HttpsServer) getBalanceDCR(dcr_address string, walletAccountName string,
 			pin.S("validation", validation)
 			result.accountError = err.Error()
 			result.resolvedAccountName = validation.Account
+
+			balance, err = client.GetBalanceMinConf(result.resolvedAccountName, min_confirmations)
+			walletAccountName = result.resolvedAccountName
 		}
 
 		lang.CheckErr(err)
