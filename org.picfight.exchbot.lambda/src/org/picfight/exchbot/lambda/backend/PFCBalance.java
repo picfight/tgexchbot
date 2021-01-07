@@ -10,5 +10,6 @@ public class PFCBalance {
 
 	public AmountPFC AmountPFC;
 	public PFCAddress PFCAddress;
+	public String ResolvedAccountName;
 
 }

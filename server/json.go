@@ -54,12 +54,18 @@ type AmountBTC struct {
 }
 
 type Result struct {
-	Success                 bool      `json: "Success"`
-	Error_message           string    `json: "Error_message"`
-	Btc_transaction_receipt string    `json: "Btc_transaction_receipt"`
-	Pfc_transaction_receipt string    `json: "Pfc_transaction_receipt"`
-	Dcr_transaction_receipt string    `json: "Dcr_transaction_receipt"`
-	BtcAmount               AmountBTC `json: "BtcAmount"`
-	PfcAmount               AmountPFC `json: "PfcAmount"`
-	DcrAmount               AmountDCR `json: "DcrAmount"`
+	Success      bool   `json: "Success"`
+	ErrorMessage string `json: "ErrorMessage"`
+
+	DCR_FromAccountAddress  string    `json: "DCR_FromAccountAddress"`
+	DCR_ResolvedAccountName string    `json: "DCR_ResolvedAccountName"`
+	DCR_Amount              AmountDCR `json: "DCR_Amount"`
+	DCR_ToAddress           string    `json: "DCR_ToAddress"`
+	DCR_TransactionReceipt  string    `json: "DCR_TransactionReceipt"`
+
+	PFC_FromAccountAddress  string    `json: "PFC_FromAccountAddress"`
+	PFC_ResolvedAccountName string    `json: "PFC_ResolvedAccountName"`
+	PFC_Amount              AmountPFC `json: "PFC_Amount"`
+	PFC_ToAddress           string    `json: "PFC_ToAddress"`
+	PFC_TransactionReceipt  string    `json: "PFC_TransactionReceipt"`
 }

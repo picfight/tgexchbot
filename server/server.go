@@ -130,21 +130,25 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	}
 
 	if command == "transfer_pfc" {
-		client_pfc_wallet := params["Client_pfc_wallet"][0]
-		pfc_amount, err := strconv.ParseFloat(params["Pfc_amount"][0], 64)
+		PFC_FromAccountAddress := params["PFC_FromAccountAddress"][0]
+		PFC_Amount_string := params["PFC_Amount"][0]
+		PFC_Amount, err := strconv.ParseFloat(PFC_Amount_string, 64)
 		if err != nil {
 			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
-		return s.TransferPFC(client_pfc_wallet, pfc_amount, err)
+		PFC_ToAddress := params["PFC_ToAddress"][0]
+		return s.TransferPFC(PFC_FromAccountAddress, PFC_ToAddress, PFC_Amount)
 	}
 
 	if command == "transfer_dcr" {
-		client_pfc_wallet := params["Client_dcr_wallet"][0]
-		pfc_amount, err := strconv.ParseFloat(params["Dcr_amount"][0], 64)
+		DCR_FromAccountAddress := params["DCR_FromAccountAddress"][0]
+		DCR_Amount_string := params["DCR_Amount"][0]
+		DCR_Amount, err := strconv.ParseFloat(DCR_Amount_string, 64)
 		if err != nil {
 			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
-		return s.TransferDCR(client_pfc_wallet, pfc_amount, err)
+		DCR_ToAddress := params["DCR_ToAddress"][0]
+		return s.TransferDCR(DCR_FromAccountAddress, DCR_ToAddress, DCR_Amount)
 	}
 
 	if command == "new_pfc_address" {
@@ -414,6 +418,8 @@ func (s HttpsServer) getBalancePFC(address string, min_confirmations int) string
 		balance, err := client.GetBalanceMinConf(resolvedAccountName, min_confirmations)
 		lang.CheckErr(err)
 
+		client.Disconnect()
+
 		result.AmountPFC.Value = balance.Balances[0].Spendable
 		result.ResolvedAccountName = resolvedAccountName
 	}
@@ -445,6 +451,8 @@ func (s HttpsServer) getBalanceDCR(address string, min_confirmations int) string
 		balance, err := client.GetBalanceMinConf(resolvedAccountName, min_confirmations)
 		lang.CheckErr(err)
 
+		client.Disconnect()
+
 		result.AmountDCR.Value = balance.Balances[0].Spendable
 		result.ResolvedAccountName = resolvedAccountName
 	}
@@ -454,77 +462,80 @@ func (s HttpsServer) getBalanceDCR(address string, min_confirmations int) string
 }
 
 func (s HttpsServer) TransferBTC(client_btc_wallet string, btc_amount float64, err error) string {
-	result := Result{}
-
-	client, err := connect.BTCWallet(s.config)
-	lang.CheckErr(err)
-	address, err := btcutil.DecodeAddress(client_btc_wallet, &btccfg.MainNetParams)
-	lang.CheckErr(err)
-
-	amount, err := btcutil.NewAmount(btc_amount)
-	lang.CheckErr(err)
-
-	sendResult, err := client.SendToAddress(address, amount)
-	client.Disconnect()
-
-	if err != nil {
-		result.Success = false
-		result.Error_message = err.Error()
-	} else {
-		result.Success = true
-		result.Btc_transaction_receipt = sendResult.String()
-	}
-	result.BtcAmount.Value = btc_amount
-	return toJson(result)
+	return ""
 }
 
-func (s HttpsServer) TransferPFC(client_pfc_wallet string, pfc_amount float64, err error) string {
+func (s HttpsServer) TransferPFC(PFC_FromAccountAddress string, PFC_ToAddress string, amountFloat float64) string {
 	result := Result{}
 
 	client, err := connect.PFCWallet(s.config)
 	lang.CheckErr(err)
-	address, err := pfcutil.DecodeAddress(client_pfc_wallet)
-	lang.CheckErr(err)
+	{
+		addr, e := pfcutil.DecodeAddress(PFC_FromAccountAddress)
+		lang.CheckErr(e)
+		result.PFC_FromAccountAddress = PFC_FromAccountAddress
 
-	amount, err := pfcutil.NewAmount(pfc_amount)
-	lang.CheckErr(err)
+		validation, e := client.ValidateAddress(addr)
+		lang.CheckErr(e)
+		result.PFC_ResolvedAccountName = validation.Account
+	}
+	toAddr, e := pfcutil.DecodeAddress(PFC_ToAddress)
+	lang.CheckErr(e)
+	result.PFC_ToAddress = PFC_ToAddress
 
-	sendResult, err := client.SendToAddress(address, amount)
+	amount := pfcutil.Amount(amountFloat)
+	result.PFC_Amount = AmountPFC{
+		Value: amountFloat,
+	}
+
+	hash, err := client.SendFrom(result.PFC_ResolvedAccountName, toAddr, amount)
 	client.Disconnect()
 
 	if err != nil {
 		result.Success = false
-		result.Error_message = err.Error()
+		result.ErrorMessage = err.Error()
 	} else {
 		result.Success = true
-		result.Pfc_transaction_receipt = sendResult.String()
+		result.PFC_TransactionReceipt = hash.String()
 	}
-	result.PfcAmount.Value = pfc_amount
+
 	return toJson(result)
 }
 
-func (s HttpsServer) TransferDCR(client_dcr_wallet string, dcr_amount float64, err error) string {
+func (s HttpsServer) TransferDCR(DCR_FromAccountAddress string, DCR_ToAddress string, amountFloat float64) string {
 	result := Result{}
 
 	client, err := connect.DCRWallet(s.config)
 	lang.CheckErr(err)
-	address, err := dcrutil.DecodeAddress(client_dcr_wallet)
-	lang.CheckErr(err)
+	{
+		addr, e := dcrutil.DecodeAddress(DCR_FromAccountAddress)
+		lang.CheckErr(e)
+		result.DCR_FromAccountAddress = DCR_FromAccountAddress
 
-	amount, err := dcrutil.NewAmount(dcr_amount)
-	lang.CheckErr(err)
+		validation, e := client.ValidateAddress(addr)
+		lang.CheckErr(e)
+		result.DCR_ResolvedAccountName = validation.Account
+	}
+	toAddr, e := dcrutil.DecodeAddress(DCR_ToAddress)
+	lang.CheckErr(e)
+	result.DCR_ToAddress = DCR_ToAddress
 
-	sendResult, err := client.SendToAddress(address, amount)
+	amount := dcrutil.Amount(amountFloat)
+	result.DCR_Amount = AmountDCR{
+		Value: amountFloat,
+	}
+
+	hash, err := client.SendFrom(result.DCR_ResolvedAccountName, toAddr, amount)
 	client.Disconnect()
 
 	if err != nil {
 		result.Success = false
-		result.Error_message = err.Error()
+		result.ErrorMessage = err.Error()
 	} else {
 		result.Success = true
-		result.Dcr_transaction_receipt = sendResult.String()
+		result.DCR_TransactionReceipt = hash.String()
 	}
-	result.DcrAmount.Value = dcr_amount
+
 	return toJson(result)
 }
 

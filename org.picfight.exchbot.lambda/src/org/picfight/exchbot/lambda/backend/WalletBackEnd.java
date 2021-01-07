@@ -8,6 +8,7 @@ import org.picfight.exchbot.lambda.Result;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.json.JsonString;
 import com.jfixby.scarabei.api.net.http.Http;
@@ -129,23 +130,19 @@ public class WalletBackEnd {
 		return r;
 	}
 
-// public BTCBalance totalBTCReceivedForAddress (final BTCAddress address, final String accountName) throws IOException {
-
-// }
-//
-// public PFCBalance totalPFCReceivedForAddress (final PFCAddress address, final String accountName) throws IOException {
-
-// }
-
-	public Result transferPFC (final Operation t) throws BackendException {
+	public Result transferPFC (final PFCAddress fromAccountAddress, final PFCAddress toAddress, final AmountPFC amount,
+		final boolean all) throws BackendException {
 		final String command = "transfer_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key + "");
-		params.put("target_pfc_address", t.pfcAddress.AddressString + "");
-		params.put("pfc_amount", t.pfcAmount + "");
-		if (t.allFunds) {
-			params.put("pfc_amount", "all");
+		params.put("Access_key", this.access_key + "");
+		params.put("From_Account(Address)", fromAccountAddress + "");
+		params.put("To_PFC_Address", toAddress + "");
+
+		if (all) {
+			params.put("PFC_Amount", "all");
+		} else {
+			params.put("PFC_Amount", amount.Value + "");
 		}
 
 		JsonString resultJson;
@@ -157,17 +154,22 @@ public class WalletBackEnd {
 		}
 		final Result r = Json.deserializeFromString(Result.class, resultJson);
 		return r;
+
 	}
 
-	public Result transferDCR (final Operation t) throws BackendException {
+	public Result transferDCR (final DCRAddress fromAccountAddress, final DCRAddress toAddress, final AmountDCR amount,
+		final boolean all) throws BackendException {
 		final String command = "transfer_dcr";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key + "");
-		params.put("target_dcr_address", t.dcrAddress.AddressString + "");
-		params.put("dcr_amount", t.dcrAmount + "");
-		if (t.allFunds) {
-			params.put("dcr_amount", "all");
+		params.put("Access_key", this.access_key + "");
+		params.put("From_Account(Address)", fromAccountAddress + "");
+		params.put("To_DCR_Address", toAddress + "");
+
+		if (all) {
+			params.put("DCR_Amount", "all");
+		} else {
+			params.put("DCR_Amount", amount.Value + "");
 		}
 
 		JsonString resultJson;
@@ -183,25 +185,8 @@ public class WalletBackEnd {
 	}
 
 	public Result transferBTC (final Operation t) throws BackendException {
-		final String command = "transfer_btc";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key + "");
-		params.put("target_btc_address", t.btcAddress.AddressString + "");
-		params.put("btc_amount", t.btcAmount + "");
-		if (t.allFunds) {
-			params.put("btc_amount", "all");
-		}
-
-		JsonString resultJson;
-		try {
-			resultJson = BackEndConnector.retrieve(Url, params);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new BackendException(e);
-		}
-		final Result r = Json.deserializeFromString(Result.class, resultJson);
-		return r;
+		Err.throwNotImplementedYet();
+		return null;
 	}
 
 	public BTCInputs listBTCInputs (final BTCAddress address, final String accountName) throws BackendException {

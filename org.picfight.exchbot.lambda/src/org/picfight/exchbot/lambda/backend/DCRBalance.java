@@ -10,5 +10,6 @@ public class DCRBalance {
 
 	public AmountDCR AmountDCR;
 	public DCRAddress DCRAddress;
+	public String ResolvedAccountName;
 
 }

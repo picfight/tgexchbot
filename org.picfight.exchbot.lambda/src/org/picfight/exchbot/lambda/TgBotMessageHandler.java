@@ -12,7 +12,6 @@ import org.picfight.exchbot.lambda.backend.AmountPFC;
 import org.picfight.exchbot.lambda.backend.BackendException;
 import org.picfight.exchbot.lambda.backend.DCRAddress;
 import org.picfight.exchbot.lambda.backend.DCRBalance;
-import org.picfight.exchbot.lambda.backend.Operation;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
@@ -164,123 +163,112 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT)) {
-			if (args.arguments.size() != 0) {
-				final String text = args.arguments.getElementAt(0).toLowerCase();
+			final StringBuilder b = new StringBuilder();
+			b.append("Команды для зачисления средств на биржу:").append(N);
+			b.append("пополнить DCR: " + OPERATIONS.DEPOSIT_DCR).append(N);
+			b.append("пополнить PFC: " + OPERATIONS.DEPOSIT_PFC).append(N);
+			Handlers.respond(bot, chatid, b.toString(), false);
+			return true;
+		}
 
-				final DCRAddress dcr_address = settings.getExchangeAddressDCR();
+		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT_DCR)) {
+			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
+			Handlers.respond(bot, chatid, "Засылай DCR на следующий адрес:", false);
+			Handlers.respond(bot, chatid, dcr_address.toString(), false);
+			return true;
+		}
 
-				final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-				if (text.equals("dcr")) {
-					Handlers.respond(bot, chatid, "Засылай DCR на следующий адрес:", false);
-					Handlers.respond(bot, chatid, dcr_address.toString(), false);
+		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT_PFC)) {
+			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
+			Handlers.respond(bot, chatid, "Засылай PFC на следующий адрес:", false);
+			Handlers.respond(bot, chatid, pfc_address.toString(), false);
+			return true;
+		}
+		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW)) {
+			this.withdrawHelp(bot, chatid);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW_PFC)) {
+			if (args.arguments.size() != 2) {
+				this.withdrawHelp(bot, chatid);
+				return true;
+			}
+
+			Double amountFloat = null;
+			AmountPFC amount = null;
+			final String amount_text = args.arguments.getElementAt(0).toLowerCase();
+			if (amount_text.equals("all")) {
+				amountFloat = null;
+			} else {
+				try {
+					amountFloat = Double.parseDouble(amount_text);
+					amount = new AmountPFC(amountFloat);
+				} catch (final Throwable e) {
+					e.printStackTrace();
+
+					Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+					this.withdrawHelp(bot, chatid);
 					return true;
-				}
-				if (text.equals("pfc")) {
-					Handlers.respond(bot, chatid, "Засылай PFC на следующий адрес:", false);
-					Handlers.respond(bot, chatid, pfc_address.toString(), false);
-					return true;
+
 				}
 			}
+
+			final String address_text = args.arguments.getElementAt(1);
+			final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
+			if (anal.PFCAddress == null) {
+				Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
+				Handlers.respond(bot, chatid, anal.Error, false);
+				this.withdrawHelp(bot, chatid);
+				return true;
+			}
+
 			{
-				final StringBuilder b = new StringBuilder();
-				b.append("Команды для зачисления средств на биржу:").append(N);
-				b.append("пополнить DCR: " + OPERATIONS.DEPOSIT + " dcr").append(N);
-				b.append("пополнить PFC: " + OPERATIONS.DEPOSIT + " pfc").append(N);
-				Handlers.respond(bot, chatid, b.toString(), false);
+				final PFCAddress exch_address = settings.getExchangeAddressPFC();
+				final Result result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount, amount == null);
+				Handlers.respond(bot, chatid, result.toString(), false);
 				return true;
 			}
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW)) {
-			if (args.arguments.size() != 0) {
-				if (args.arguments.size() != 3) {
-					this.withdrawHelp(bot, chatid);
-					return true;
-				}
-				final String cointext = args.arguments.getElementAt(0).toLowerCase();
-				String coin = null;
-				if (cointext.equals("dcr")) {
-					coin = "dcr";
-				}
-				if (cointext.equals("pfc")) {
-					coin = "pfc";
-				}
-				if (coin == null) {
-					Handlers.respond(bot, chatid, "Монета указана неправильно: " + cointext, false);
-					this.withdrawHelp(bot, chatid);
-					return true;
-				}
-				Double amount = null;
-				final String amount_text = args.arguments.getElementAt(1).toLowerCase();
-				if (amount_text.equals("all")) {
-					amount = null;
-				} else {
-					try {
-						amount = Double.parseDouble(amount_text);
-					} catch (final Throwable e) {
-						e.printStackTrace();
-
-						Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
-						this.withdrawHelp(bot, chatid);
-						return true;
-
-					}
-				}
-
-				final String address_text = args.arguments.getElementAt(2);
-				final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
-				if (anal.DCRAddress == null && anal.PFCAddress == null) {
-					Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
-					Handlers.respond(bot, chatid, anal.Error, false);
-					this.withdrawHelp(bot, chatid);
-					return true;
-				}
-
-				if (coin.equals("pfc")) {
-					final Operation t = new Operation();
-					if (amount == null) {
-						t.allFunds = true;
-					} else {
-						t.pfcAmount = new AmountPFC(amount);
-					}
-
-					t.pfcAddress = anal.PFCAddress;
-					if (t.pfcAddress == null) {
-						Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
-						Handlers.respond(bot, chatid, anal.Error, false);
-						this.withdrawHelp(bot, chatid);
-						return true;
-					}
-
-					final Result result = this.walletBackEnd.transferPFC(t);
-					Handlers.respond(bot, chatid, result.toString(), false);
-					return true;
-				}
-
-				if (coin.equals("dcr")) {
-					final Operation t = new Operation();
-					if (amount == null) {
-						t.allFunds = true;
-					} else {
-						t.dcrAmount = new AmountDCR(amount);
-					}
-
-					t.dcrAddress = anal.DCRAddress;
-					if (t.dcrAddress == null) {
-						Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
-						Handlers.respond(bot, chatid, anal.Error, false);
-						this.withdrawHelp(bot, chatid);
-						return true;
-					}
-
-					final Result result = this.walletBackEnd.transferDCR(t);
-					Handlers.respond(bot, chatid, result.toString(), false);
-					return true;
-				}
-
-			}
-			{
+		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW_DCR)) {
+			if (args.arguments.size() != 2) {
 				this.withdrawHelp(bot, chatid);
+				return true;
+			}
+
+			Double amountFloat = null;
+			AmountDCR amount = null;
+			final String amount_text = args.arguments.getElementAt(0).toLowerCase();
+			if (amount_text.equals("all")) {
+				amountFloat = null;
+			} else {
+				try {
+					amountFloat = Double.parseDouble(amount_text);
+					amount = new AmountDCR(amountFloat);
+				} catch (final Throwable e) {
+					e.printStackTrace();
+
+					Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+					this.withdrawHelp(bot, chatid);
+					return true;
+
+				}
+			}
+
+			final String address_text = args.arguments.getElementAt(1);
+			final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
+			if (anal.DCRAddress == null) {
+				Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
+				Handlers.respond(bot, chatid, anal.Error, false);
+				this.withdrawHelp(bot, chatid);
+				return true;
+			}
+
+			{
+				final DCRAddress exch_address = settings.getExchangeAddressDCR();
+				final Result result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount, amount == null);
+				Handlers.respond(bot, chatid, result.toString(), false);
 				return true;
 			}
 		}
@@ -291,14 +279,14 @@ public class TgBotMessageHandler implements Handler {
 	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {
 		final StringBuilder b = new StringBuilder();
 		b.append("Команды для вывода монет с биржи:").append(N);
-		b.append("Вывести DCR: " + OPERATIONS.WITHDRAW + " dcr %количество% %адрес%").append(N);
-		b.append("Вывести PFC: " + OPERATIONS.WITHDRAW + " pfc %количество% %адрес%").append(N);
+		b.append("Вывести DCR: " + OPERATIONS.WITHDRAW_DCR + " количество адрес").append(N);
+		b.append("Вывести PFC: " + OPERATIONS.WITHDRAW_PFC + " количество адрес").append(N);
 		b.append(N);
 		b.append("Примеры:").append(N);
-		b.append(OPERATIONS.WITHDRAW + " dcr 0.02 D1aBcDeFg123456789H").append(N);
-		b.append(OPERATIONS.WITHDRAW + " pfc 120 JabcgeFg123456789H").append(N);
-		b.append(OPERATIONS.WITHDRAW + " dcr all DaBcDeFg123456789H").append(N);
-		b.append(OPERATIONS.WITHDRAW + " pfc all J431aBcDeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW_DCR + " 0.02 D1aBcDeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW_PFC + " 120 JabcgeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW_DCR + " all DaBcDeFg123456789H").append(N);
+		b.append(OPERATIONS.WITHDRAW_PFC + " all J431aBcDeFg123456789H").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
