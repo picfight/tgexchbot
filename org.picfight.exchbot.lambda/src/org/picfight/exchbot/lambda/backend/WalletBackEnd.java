@@ -136,9 +136,9 @@ public class WalletBackEnd {
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
-		params.put("PFC_FromAccountAddress", fromAccountAddress + "");
-		params.put("PFC_ToAddress", toAddress + "");
-		params.put("PFC_Amount", amount.Value + "");
+		params.put("Pfc_fromaccountaddress", fromAccountAddress + "");
+		params.put("Pfc_toaddress", toAddress + "");
+		params.put("Pfc_amount", amount.Value + "");
 
 		JsonString resultJson;
 		try {
@@ -158,9 +158,9 @@ public class WalletBackEnd {
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
-		params.put("DCR_FromAccountAddress", fromAccountAddress + "");
-		params.put("DCR_ToAddress", toAddress + "");
-		params.put("DCR_Amount", amount.Value + "");
+		params.put("Dcr_fromaccountaddress", fromAccountAddress + "");
+		params.put("Dcr_toaddress", toAddress + "");
+		params.put("Dcr_amount", amount.Value + "");
 
 		JsonString resultJson;
 		try {

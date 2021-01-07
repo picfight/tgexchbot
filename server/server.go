@@ -141,13 +141,13 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	}
 
 	if command == "transfer_dcr" {
-		DCR_FromAccountAddress := params["DCR_FromAccountAddress"][0]
-		DCR_Amount_string := params["DCR_Amount"][0]
+		DCR_FromAccountAddress := params["Dcr_fromaccountaddress"][0]
+		DCR_Amount_string := params["Dcr_amount"][0]
 		DCR_Amount, err := strconv.ParseFloat(DCR_Amount_string, 64)
 		if err != nil {
 			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
-		DCR_ToAddress := params["DCR_ToAddress"][0]
+		DCR_ToAddress := params["Dcr_toaddress"][0]
 		return s.TransferDCR(DCR_FromAccountAddress, DCR_ToAddress, DCR_Amount)
 	}
 
@@ -483,7 +483,9 @@ func (s HttpsServer) TransferPFC(PFC_FromAccountAddress string, PFC_ToAddress st
 	lang.CheckErr(e)
 	result.PFC_ToAddress = PFC_ToAddress
 
-	amount := pfcutil.Amount(amountFloat)
+	amount, err := pfcutil.NewAmount(amountFloat)
+	lang.CheckErr(err)
+
 	result.PFC_Amount = AmountPFC{
 		Value: amountFloat,
 	}
@@ -520,7 +522,9 @@ func (s HttpsServer) TransferDCR(DCR_FromAccountAddress string, DCR_ToAddress st
 	lang.CheckErr(e)
 	result.DCR_ToAddress = DCR_ToAddress
 
-	amount := dcrutil.Amount(amountFloat)
+	amount, err := dcrutil.NewAmount(amountFloat)
+	lang.CheckErr(err)
+	
 	result.DCR_Amount = AmountDCR{
 		Value: amountFloat,
 	}
