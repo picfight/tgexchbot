@@ -134,31 +134,16 @@ public class TgBotMessageHandler implements Handler {
 	private boolean processWithBackend (final HandleArgs args) throws BackendException, IOException {
 		final UserSettings settings = args.settings;
 		final AbsSender bot = args.bot;
+		final Long chatid = args.update.message.chatID;
 
 		if (!settings.exchangeAddressIsSet()) {
 			settings.setupExchangeAddress(this.walletBackEnd);
 // return true;
 		}
-		final Long chatid = args.update.message.chatID;
+
 		if (args.command.equalsIgnoreCase(OPERATIONS.BALANCE)) {
-			L.d("L3");
+			this.showBalances(args);
 
-			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
-			final DCRBalance dcr = this.walletBackEnd.getDCRBallance(dcr_address, 3);
-
-			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-			final PFCBalance pfc = this.walletBackEnd.getPFCBallance(pfc_address, 3);
-
-			final StringBuilder b = new StringBuilder();
-			b.append("Твои балансы:").append(N);
-			b.append(N);
-			b.append(this.balanceString(pfc.Spendable.Value, pfc.Unconfirmed.Value, "PFC")).append(N);
-			b.append(this.balanceString(dcr.Spendable.Value, dcr.Unconfirmed.Value, "DCR")).append(N);
-			b.append(N);
-			b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
-			b.append("Вывести монеты с биржи - " + OPERATIONS.WITHDRAW).append(N);
-			L.d("L4");
-			Handlers.respond(bot, chatid, b.toString(), false);
 			return true;
 		}
 
@@ -223,6 +208,10 @@ public class TgBotMessageHandler implements Handler {
 				final PFCAddress exch_address = settings.getExchangeAddressPFC();
 				final Result result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount);
 				Handlers.respond(bot, chatid, result.toString(), false);
+
+				if (result.Success) {
+					this.showBalances(args);
+				}
 				return true;
 			}
 		}
@@ -260,7 +249,12 @@ public class TgBotMessageHandler implements Handler {
 			{
 				final DCRAddress exch_address = settings.getExchangeAddressDCR();
 				final Result result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount);
+
 				Handlers.respond(bot, chatid, result.toString(), false);
+
+				if (result.Success) {
+					this.showBalances(args);
+				}
 				return true;
 			}
 		}
@@ -268,11 +262,53 @@ public class TgBotMessageHandler implements Handler {
 		return false;
 	}
 
-	private String balanceString (final double spendable, final double unconfirmed, final String sign) {
-		if (unconfirmed == 0) {
-			return (spendable + " " + sign);
+	private void showBalances (final HandleArgs args) throws BackendException, IOException {
+		final UserSettings settings = args.settings;
+		final AbsSender bot = args.bot;
+		final Long chatid = args.update.message.chatID;
+
+		final StringBuilder b = new StringBuilder();
+		b.append("Твои балансы:").append(N);
+		b.append(N);
+		{
+			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
+			final PFCBalance pfc1 = this.walletBackEnd.getPFCBallance(pfc_address, 1);
+			final PFCBalance pfc3 = this.walletBackEnd.getPFCBallance(pfc_address, 3);
+			final double balance = pfc1.Spendable.Value;
+			final double unconfirmed = pfc1.Unconfirmed.Value;
+			final double tradable = pfc3.Spendable.Value;
+			final String sign = "PFC";
+
+			this.balanceString(b, balance, unconfirmed, tradable, sign);
+
 		}
-		return (spendable + " " + sign + " ( +" + unconfirmed + " ожидается)");
+		b.append(N);
+		{
+			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
+			final DCRBalance dcr1 = this.walletBackEnd.getDCRBallance(dcr_address, 1);
+			final DCRBalance dcr3 = this.walletBackEnd.getDCRBallance(dcr_address, 3);
+			final double balance = dcr1.Spendable.Value;
+			final double unconfirmed = dcr1.Unconfirmed.Value;
+			final double tradable = dcr3.Spendable.Value;
+			final String sign = "DCR";
+
+			this.balanceString(b, balance, unconfirmed, tradable, sign);
+
+		}
+		b.append(N);
+		b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
+		b.append("Вывести монеты с биржи - " + OPERATIONS.WITHDRAW).append(N);
+		L.d("L4");
+		Handlers.respond(bot, chatid, b.toString(), false);
+	}
+
+	private void balanceString (final StringBuilder b, final double balance, final double unconfirmed, final double tradable,
+		final String sign) {
+		b.append("зачислено: " + balance + " " + sign).append(N);
+		if (unconfirmed > 0) {
+			b.append("ожидается: " + unconfirmed + " " + sign).append(N);
+		}
+		b.append("доступно для торгов: " + tradable + " " + sign).append(N);
 	}
 
 	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {
