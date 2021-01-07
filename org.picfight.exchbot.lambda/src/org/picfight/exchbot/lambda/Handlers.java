@@ -97,14 +97,13 @@ class HandleArgs {
 	public TelegramUpdate update;
 	public String command;
 	public List<String> arguments;
-	public String accountName;
+// public String accountName;
 	public UserSettings settings;
 
 	@Override
 	public String toString () {
 		return "HandleArgs [filesystem=" + this.filesystem + ", inputRaw=" + this.inputRaw + ", bot=" + this.bot + ", update="
-			+ this.update + ", command=" + this.command + ", arguments=" + this.arguments + ", accountName=" + this.accountName
-			+ "]";
+			+ this.update + ", command=" + this.command + ", arguments=" + this.arguments + "]";
 	}
 
 }

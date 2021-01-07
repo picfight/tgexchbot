@@ -62,8 +62,8 @@ public class UserSettings {
 	}
 
 //
-	public void setupExchangeAddress (final WalletBackEnd walletBackEnd, final String userID)
-		throws BackendException, IOException {
+	public void setupExchangeAddress (final WalletBackEnd walletBackEnd) throws BackendException, IOException {
+		final String userID = this.data.accountName;
 		if (this.data.exchangeAddress.get("btc") == null) {
 			final BTCAddress add = walletBackEnd.getNewBTCAddress(userID);
 			this.data.exchangeAddress.put("btc", add.AddressString);

@@ -55,8 +55,6 @@ public class TgBotMessageHandler implements Handler {
 
 		final String accountName = this.userID(chatid);
 
-		args.accountName = accountName;
-
 		final UserSettings settings = this.transactionsBackEnd.getUserSettings(accountName, args.filesystem);
 
 		settings.setLanguage(UserSettingsLanguage.RU);
@@ -136,12 +134,10 @@ public class TgBotMessageHandler implements Handler {
 
 	private boolean processWithBackend (final HandleArgs args) throws BackendException, IOException {
 		final UserSettings settings = args.settings;
-		final String userID = args.accountName;
 		final AbsSender bot = args.bot;
-		final String accountName = args.accountName;
 
 		if (!settings.exchangeAddressIsSet()) {
-			settings.setupExchangeAddress(this.walletBackEnd, userID);
+			settings.setupExchangeAddress(this.walletBackEnd);
 // return true;
 		}
 		final Long chatid = args.update.message.chatID;
@@ -149,10 +145,10 @@ public class TgBotMessageHandler implements Handler {
 			L.d("L3");
 
 			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
-			final DCRBalance dcr = this.walletBackEnd.getDCRBallance(dcr_address, accountName, 3);
+			final DCRBalance dcr = this.walletBackEnd.getDCRBallance(dcr_address, 3);
 
 			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-			final PFCBalance pfc = this.walletBackEnd.getPFCBallance(pfc_address, accountName, 3);
+			final PFCBalance pfc = this.walletBackEnd.getPFCBallance(pfc_address, 3);
 
 			final StringBuilder b = new StringBuilder();
 			b.append("Твои балансы:").append(N);

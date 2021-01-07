@@ -104,32 +104,20 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		return s.processRate()
 	}
 
-	if command == "get_balance_btc" {
-		btc_address := params["Btc_address"][0]
-		account_name := params["Account_name"][0]
-		min_confirmations_string := params["Min_confirmations"][0]
-		min_confirmations, err := strconv.ParseInt(min_confirmations_string, 10, 64)
-		lang.CheckErr(err)
-
-		return s.getBalanceBTC(btc_address, account_name, int(min_confirmations))
-	}
-
 	if command == "get_balance_pfc" {
 		pfc_address := params["Pfc_address"][0]
-		account_name := params["Account_name"][0]
 		min_confirmations_string := params["Min_confirmations"][0]
 		min_confirmations, err := strconv.ParseInt(min_confirmations_string, 10, 64)
 		lang.CheckErr(err)
-		return s.getBalancePFC(pfc_address, account_name, int(min_confirmations))
+		return s.getBalancePFC(pfc_address, int(min_confirmations))
 	}
 
 	if command == "get_balance_dcr" {
 		pfc_address := params["Dcr_address"][0]
-		account_name := params["Account_name"][0]
 		min_confirmations_string := params["Min_confirmations"][0]
 		min_confirmations, err := strconv.ParseInt(min_confirmations_string, 10, 64)
 		lang.CheckErr(err)
-		return s.getBalanceDCR(pfc_address, account_name, int(min_confirmations))
+		return s.getBalanceDCR(pfc_address, int(min_confirmations))
 	}
 
 	if command == "transfer_btc" {
@@ -382,87 +370,84 @@ func (s HttpsServer) AnalyzeString(hextext string) string {
 }
 
 func (s HttpsServer) getBalanceBTC(btc_address string, walletAccountName string, min_confirmations int) string {
-	result := BTCBalance{}
-	{
-		result.BTCAddress.Type = "BTC"
-		result.BTCAddress.AddressString = btc_address
-	}
-	{
-		client, err := connect.BTCWallet(s.config)
-		lang.CheckErr(err)
-
-		//client.ListAccounts()
-
-		balance, err := client.GetBalanceMinConf(walletAccountName, min_confirmations)
-		lang.CheckErr(err)
-		pin.D("balance "+walletAccountName, balance)
-		result.AmountBTC.Value = balance.ToBTC()
-	}
-	return toJson(result)
+	//result := BTCBalance{}
+	//{
+	//	result.BTCAddress.Type = "BTC"
+	//	result.BTCAddress.AddressString = btc_address
+	//}
+	//{
+	//	client, err := connect.BTCWallet(s.config)
+	//	lang.CheckErr(err)
+	//
+	//	//client.ListAccounts()
+	//
+	//	balance, err := client.GetBalanceMinConf(walletAccountName, min_confirmations)
+	//	lang.CheckErr(err)
+	//	pin.D("balance "+walletAccountName, balance)
+	//	result.AmountBTC.Value = balance.ToBTC()
+	//}
+	//return toJson(result)
+	return ""
 }
 
-func (s HttpsServer) getBalancePFC(pfc_address string, walletAccountName string, min_confirmations int) string {
+func (s HttpsServer) getBalancePFC(address string, min_confirmations int) string {
 
-	pin.D("pfc_address ", pfc_address)
-	pin.D("walletAccountName ", walletAccountName)
-	pin.D("min_confirmations ", min_confirmations)
+	pin.D("get balance account address ", address)
 
 	result := PFCBalance{}
 	{
 		result.PFCAddress.Type = "PFC"
-		result.PFCAddress.AddressString = pfc_address
+		result.PFCAddress.AddressString = address
 	}
 	{
 		client, err := connect.PFCWallet(s.config)
 		lang.CheckErr(err)
-		balance, err := client.GetBalanceMinConf(walletAccountName, min_confirmations)
-		lang.CheckErr(err)
-		pin.D("balance "+walletAccountName, balance)
 
-		pin.D("balance.Balances[0].Spendable ", balance.Balances[0].Spendable)
+		addr, e := pfcutil.DecodeAddress(address)
+		lang.CheckErr(e)
+
+		validation, e := client.ValidateAddress(addr)
+		lang.CheckErr(e)
+
+		resolvedAccountName := validation.Account
+
+		balance, err := client.GetBalanceMinConf(resolvedAccountName, min_confirmations)
+		lang.CheckErr(err)
+
 		result.AmountPFC.Value = balance.Balances[0].Spendable
 	}
 	js := toJson(result)
-	//pin.D("json ", js)
+
 	return js
 }
 
-func (s HttpsServer) getBalanceDCR(dcr_address string, walletAccountName string, min_confirmations int) string {
-
-	pin.D("dcr_address ", dcr_address)
-	pin.D("walletAccountName ", walletAccountName)
-	pin.D("min_confirmations ", min_confirmations)
+func (s HttpsServer) getBalanceDCR(address string, min_confirmations int) string {
+	pin.D("get balance account address ", address)
 
 	result := DCRBalance{}
 	{
 		result.DCRAddress.Type = "DCR"
-		result.DCRAddress.AddressString = dcr_address
+		result.DCRAddress.AddressString = address
 	}
 	{
 		client, err := connect.DCRWallet(s.config)
 		lang.CheckErr(err)
-		balance, err := client.GetBalanceMinConf(walletAccountName, min_confirmations)
-		if err != nil {
-			addr, e := dcrutil.DecodeAddress(dcr_address)
-			lang.CheckErr(e)
-			validation, e := client.ValidateAddress(addr)
-			lang.CheckErr(e)
-			pin.S("validation", validation)
-			result.accountError = err.Error()
-			result.resolvedAccountName = validation.Account
 
-			balance, err = client.GetBalanceMinConf(result.resolvedAccountName, min_confirmations)
-			walletAccountName = result.resolvedAccountName
-		}
+		addr, e := dcrutil.DecodeAddress(address)
+		lang.CheckErr(e)
 
+		validation, e := client.ValidateAddress(addr)
+		lang.CheckErr(e)
+
+		resolvedAccountName := validation.Account
+
+		balance, err := client.GetBalanceMinConf(resolvedAccountName, min_confirmations)
 		lang.CheckErr(err)
-		pin.D("balance "+walletAccountName, balance)
 
-		pin.D("balance.Balances[0].Spendable ", balance.Balances[0].Spendable)
 		result.AmountDCR.Value = balance.Balances[0].Spendable
 	}
 	js := toJson(result)
-	//pin.D("json ", js)
+
 	return js
 }
 

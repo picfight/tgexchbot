@@ -75,15 +75,13 @@ public class WalletBackEnd {
 		return new String(hexChars).toLowerCase();
 	}
 
-	public PFCBalance getPFCBallance (final PFCAddress pfc_address, final String accountName, final int confirmations)
-		throws BackendException {
+	public PFCBalance getPFCBallance (final PFCAddress pfc_address, final int confirmations) throws BackendException {
 		final String command = "get_balance_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("pfc_address", pfc_address.AddressString);
 		params.put("min_confirmations", confirmations + "");
-		params.put("Account_name", accountName);
 		JsonString resultJson;
 		try {
 			resultJson = BackEndConnector.retrieve(Url, params);
@@ -95,15 +93,13 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public DCRBalance getDCRBallance (final DCRAddress dcr_address, final String accountName, final int confirmations)
-		throws BackendException {
+	public DCRBalance getDCRBallance (final DCRAddress dcr_address, final int confirmations) throws BackendException {
 		final String command = "get_balance_dcr";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
 		params.put("Dcr_address", dcr_address.AddressString);
 		params.put("Min_confirmations", confirmations + "");
-		params.put("Account_name", accountName);
 		JsonString resultJson;
 		try {
 			resultJson = BackEndConnector.retrieve(Url, params);
@@ -115,15 +111,13 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public BTCBalance getBTCBallance (final BTCAddress btc_address, final String accountName, final int confirmations)
-		throws BackendException {
+	public BTCBalance getBTCBallance (final BTCAddress btc_address, final int confirmations) throws BackendException {
 		final String command = "get_balance_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("access_key", this.access_key);
 		params.put("btc_address", btc_address.AddressString);
 		params.put("min_confirmations", confirmations + "");
-		params.put("Account_name", accountName);
 		JsonString resultJson;
 		try {
 			resultJson = BackEndConnector.retrieve(Url, params);
