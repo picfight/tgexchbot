@@ -442,6 +442,16 @@ func (s HttpsServer) getBalanceDCR(dcr_address string, walletAccountName string,
 		client, err := connect.DCRWallet(s.config)
 		lang.CheckErr(err)
 		balance, err := client.GetBalanceMinConf(walletAccountName, min_confirmations)
+		if err != nil {
+			addr, e := dcrutil.DecodeAddress(dcr_address)
+			lang.CheckErr(e)
+			validation, e := client.ValidateAddress(addr)
+			lang.CheckErr(e)
+			pin.S("validation", validation)
+			result.accountError = err.Error()
+			result.resolvedAccountName = validation.Account
+		}
+
 		lang.CheckErr(err)
 		pin.D("balance "+walletAccountName, balance)
 
@@ -502,7 +512,6 @@ func (s HttpsServer) TransferPFC(client_pfc_wallet string, pfc_amount float64, e
 	result.PfcAmount.Value = pfc_amount
 	return toJson(result)
 }
-
 
 func (s HttpsServer) TransferDCR(client_dcr_wallet string, dcr_amount float64, err error) string {
 	result := Result{}

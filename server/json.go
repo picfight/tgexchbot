@@ -30,8 +30,10 @@ type PFCBalance struct {
 }
 
 type DCRBalance struct {
-	AmountDCR  AmountDCR     `json: "AmountDCR"`
-	DCRAddress AddressString `json: "DCRAddress"`
+	AmountDCR           AmountDCR     `json: "AmountDCR"`
+	DCRAddress          AddressString `json: "DCRAddress"`
+	accountError        string `json: "accountError"`
+	resolvedAccountName string `json: "resolvedAccountName"`
 }
 
 type BTCBalance struct {
