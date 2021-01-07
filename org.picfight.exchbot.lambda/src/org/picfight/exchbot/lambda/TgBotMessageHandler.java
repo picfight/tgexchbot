@@ -152,8 +152,8 @@ public class TgBotMessageHandler implements Handler {
 			final StringBuilder b = new StringBuilder();
 			b.append("Твои балансы:").append(N);
 			b.append(N);
-			b.append(dcr.AmountDCR.toString()).append(N);
-			b.append(pfc.AmountPFC.toString()).append(N);
+			b.append(this.balanceString(pfc.Spendable.Value, pfc.Unconfirmed.Value, "PFC")).append(N);
+			b.append(this.balanceString(dcr.Spendable.Value, dcr.Unconfirmed.Value, "DCR")).append(N);
 			b.append(N);
 			b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
 			b.append("Вывести монеты с биржи - " + OPERATIONS.WITHDRAW).append(N);
@@ -266,6 +266,13 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		return false;
+	}
+
+	private String balanceString (final double spendable, final double unconfirmed, final String sign) {
+		if (unconfirmed == 0) {
+			return (spendable + " " + sign);
+		}
+		return (spendable + " " + sign + " ( +" + unconfirmed + " ожидается)");
 	}
 
 	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {

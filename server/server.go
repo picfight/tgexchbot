@@ -420,7 +420,9 @@ func (s HttpsServer) getBalancePFC(address string, min_confirmations int) string
 
 		client.Disconnect()
 
-		result.AmountPFC.Value = balance.Balances[0].Spendable
+		result.Spendable.Value = balance.Balances[0].Spendable
+		result.Unconfirmed.Value = balance.Balances[0].Unconfirmed
+
 		result.ResolvedAccountName = resolvedAccountName
 	}
 	js := toJson(result)
@@ -453,7 +455,9 @@ func (s HttpsServer) getBalanceDCR(address string, min_confirmations int) string
 
 		client.Disconnect()
 
-		result.AmountDCR.Value = balance.Balances[0].Spendable
+		result.Spendable.Value = balance.Balances[0].Spendable
+		result.Unconfirmed.Value = balance.Balances[0].Unconfirmed
+
 		result.ResolvedAccountName = resolvedAccountName
 	}
 	js := toJson(result)
@@ -524,7 +528,7 @@ func (s HttpsServer) TransferDCR(DCR_FromAccountAddress string, DCR_ToAddress st
 
 	amount, err := dcrutil.NewAmount(amountFloat)
 	lang.CheckErr(err)
-	
+
 	result.DCR_Amount = AmountDCR{
 		Value: amountFloat,
 	}

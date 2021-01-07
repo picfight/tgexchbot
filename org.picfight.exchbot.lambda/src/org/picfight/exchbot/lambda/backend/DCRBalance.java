@@ -3,12 +3,9 @@ package org.picfight.exchbot.lambda.backend;
 
 public class DCRBalance {
 
-	@Override
-	public String toString () {
-		return "DCRBalance [amount=" + this.AmountDCR + ", address=" + this.DCRAddress + "]";
-	}
+	public AmountDCR Spendable;
+	public AmountDCR Unconfirmed;
 
-	public AmountDCR AmountDCR;
 	public DCRAddress DCRAddress;
 	public String ResolvedAccountName;
 
