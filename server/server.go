@@ -415,6 +415,7 @@ func (s HttpsServer) getBalancePFC(address string, min_confirmations int) string
 		lang.CheckErr(err)
 
 		result.AmountPFC.Value = balance.Balances[0].Spendable
+		result.resolvedAccountName = resolvedAccountName
 	}
 	js := toJson(result)
 
@@ -445,6 +446,7 @@ func (s HttpsServer) getBalanceDCR(address string, min_confirmations int) string
 		lang.CheckErr(err)
 
 		result.AmountDCR.Value = balance.Balances[0].Spendable
+		result.resolvedAccountName = resolvedAccountName
 	}
 	js := toJson(result)
 
