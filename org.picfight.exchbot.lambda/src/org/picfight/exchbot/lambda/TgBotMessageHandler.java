@@ -245,6 +245,12 @@ public class TgBotMessageHandler implements Handler {
 			try {
 				amountFloat = Double.parseDouble(amount_text);
 				amount = new AmountPFC(amountFloat);
+
+				if (amountFloat <= 0) {
+					Handlers.respond(bot, chatid, "Количество монет должно быть положительным: " + amount_text, false);
+					this.buyHelp(bot, chatid);
+					return true;
+				}
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
@@ -274,6 +280,12 @@ public class TgBotMessageHandler implements Handler {
 			try {
 				amountFloat = Double.parseDouble(amount_text);
 				amount = new AmountPFC(amountFloat);
+
+				if (amountFloat <= 0) {
+					Handlers.respond(bot, chatid, "Количество монет должно быть положительным: " + amount_text, false);
+					this.buyHelp(bot, chatid);
+					return true;
+				}
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
