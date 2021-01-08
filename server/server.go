@@ -625,7 +625,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) 
 		result.DCR_InPool_AfterTrade = PoolConstant / result.PFC_InPool_AfterTrade
 
 		result.DCR_Executed_Amount = -(result.DCR_InPool_AfterTrade - result.DCR_InPool_BeforeTrade)
-		if result.Operation == "SELL" {
+		if result.Operation == "BUY" {
 			result.DCR_Executed_Amount = -result.DCR_Executed_Amount
 		}
 		result.PFC_Executed_Amount = amountPFC
