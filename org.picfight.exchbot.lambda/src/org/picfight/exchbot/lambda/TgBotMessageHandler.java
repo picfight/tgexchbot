@@ -82,49 +82,6 @@ public class TgBotMessageHandler implements Handler {
 
 			Handlers.respond(args.bot, chatid, b.toString(), false);
 		}
-// if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
-// if (args.arguments.size() != 0) {
-// final String text = args.arguments.getElementAt(0);
-// final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
-// if (anal.PFCAddress != null) {
-// this.processBuy(args, settings, anal.PFCAddress);
-// return true;
-// }
-// }
-//
-// Handlers.respond(args.bot, chatid, "Buy-command usage:\n" + OPERATIONS.BUY_PFC + " pfc_wallet_address\n\n Example:\n"
-// + OPERATIONS.BUY_PFC + " Ja0bBc1d2e3f4g5h6j7k8l9m0", false);
-//
-// return true;
-// }
-//
-// if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
-// if (args.arguments.size() != 0) {
-// final String text = args.arguments.getElementAt(0);
-// final StringAnalysis anal = this.walletBackEnd.analyzeString(text);
-// if (anal.BTCAddress != null) {
-// this.processSell(args, settings, anal.BTCAddress);
-// return true;
-// }
-// }
-//
-// Handlers.respond(args.bot, chatid, "Sell-command usage:\n" + OPERATIONS.SELL_PFC + " btc_wallet_address\n\n Example:\n"
-// + OPERATIONS.SELL_PFC + " 1a0bBc1d2e3f4g5h6j7k8l9m0", false);
-//
-// return true;
-// }
-//
-// if (args.command.equalsIgnoreCase(OPERATIONS.STATUS)) {
-// final List<Transaction> transactions = this.checkStatus(args, settings);
-// if (transactions.size() == 0) {
-// Handlers.respond(args.bot, chatid, "No processing orders.", false);
-// } else {
-// for (final Transaction t : transactions) {
-// this.printTransaction(args, t);
-// }
-// }
-// return true;
-// }
 
 		L.e("Command not found", args.command);
 		this.respondMenu(args.bot, settings, chatid);
@@ -214,11 +171,15 @@ public class TgBotMessageHandler implements Handler {
 			{
 				final PFCAddress exch_address = settings.getExchangeAddressPFC();
 				final TransactionResult result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount);
-				Handlers.respond(bot, chatid, result.toString(), false);
 
 				if (result.Success) {
-
+					Handlers.respond(bot, chatid, "Монеты высланы на адрес " + result.PFC_ToAddress + "", false);
+					Handlers.respond(bot, chatid, "Чек операции:", false);
+					Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/tx/" + result.PFC_TransactionReceipt, true);
+				} else {
+					Handlers.respond(bot, chatid, "Не удалось записать транзакцию: " + result.ErrorMessage, false);
 				}
+
 				this.showBalances(args);
 				return true;
 			}
@@ -258,10 +219,13 @@ public class TgBotMessageHandler implements Handler {
 				final DCRAddress exch_address = settings.getExchangeAddressDCR();
 				final TransactionResult result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount);
 
-				Handlers.respond(bot, chatid, result.toString(), false);
-
 				if (result.Success) {
 
+					Handlers.respond(bot, chatid, "Монеты высланы на адрес " + result.DCR_ToAddress + "", false);
+					Handlers.respond(bot, chatid, "Чек операции:", false);
+					Handlers.respond(args.bot, chatid, "https://dcrdata.decred.org/tx/" + result.DCR_TransactionReceipt, true);
+				} else {
+					Handlers.respond(bot, chatid, "Не удалось записать транзакцию: " + result.ErrorMessage, false);
 				}
 				this.showBalances(args);
 				return true;
@@ -327,8 +291,8 @@ public class TgBotMessageHandler implements Handler {
 		b.append("Купить PFC:").append(N);
 		b.append(OPERATIONS.BUY_PFC + " %количество% ").append(N);
 		b.append(N);
-		b.append("Примеры:").append(N);
-		b.append(OPERATIONS.BUY_PFC + " 100.5").append(N);
+		b.append("пример:").append(N);
+		b.append(OPERATIONS.BUY_PFC + " 154.5").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 
@@ -340,8 +304,8 @@ public class TgBotMessageHandler implements Handler {
 		b.append("Продать PFC:").append(N);
 		b.append(OPERATIONS.SELL_PFC + " %количество% ").append(N);
 		b.append(N);
-		b.append("Примеры:").append(N);
-		b.append(OPERATIONS.SELL_PFC + " 100.5").append(N);
+		b.append("пример:").append(N);
+		b.append(OPERATIONS.SELL_PFC + " 11.3").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 
@@ -482,182 +446,21 @@ public class TgBotMessageHandler implements Handler {
 		b.append("Вывести PFC:").append(N);
 		b.append(OPERATIONS.WITHDRAW_PFC + " %количество% %адрес%").append(N);
 		b.append(N);
-		b.append("Примеры:").append(N);
-		b.append(OPERATIONS.WITHDRAW_DCR + " 0.02 D1aBcDeFg123456789H").append(N);
+		b.append("Примеры").append(N);
+		b.append(OPERATIONS.WITHDRAW_DCR + " 0.5 D1aBcDeFg12345abcD").append(N);
 		b.append(OPERATIONS.WITHDRAW_PFC + " 120 JabcgeFg123456789H").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
-// private void printTransaction (final HandleArgs args, final Transaction status) throws IOException {
-// final Long chatid = args.update.message.chatID;
-//
-// final StringBuilder b = new StringBuilder();
-// b.append("Order:");
-// b.append(N);
-// b.append(N);
-//
-// if (status.states.size() > 0) {
-// b.append("Status: ");
-// final Status state = status.states.get(status.states.size() - 1);
-// b.append(state.status);
-// b.append(N);
-//
-// if (state.error_message != null) {
-// b.append(state.error_message);
-// b.append(N);
-// }
-// }
-//
-// b.append("Type: ");
-// b.append(status.operation.type);
-// b.append(N);
-//
-// b.append(N);
-//
-// if (status.operation.exchangeBTCWallet != null) {
-// b.append("Exchange BTC wallet:");
-// b.append(N);
-// b.append(status.operation.exchangeBTCWallet.AddressString);
-// b.append(N);
-// b.append(N);
-// }
-//
-// if (status.operation.exchangePFCWallet != null) {
-// b.append("Exchange PFC wallet:");
-// b.append(N);
-// b.append(status.operation.exchangePFCWallet.AddressString);
-// b.append(N);
-// b.append(N);
-// }
-//
-// if (status.operation.clientBTCWallet != null) {
-// b.append("Client BTC wallet:");
-// b.append(N);
-// b.append(status.operation.clientBTCWallet.AddressString);
-// b.append(N);
-// b.append(N);
-// }
-//
-// if (status.operation.clientPFCWallet != null) {
-// b.append("Client PFC wallet:");
-// b.append(N);
-// b.append(status.operation.clientPFCWallet.AddressString);
-// b.append(N);
-// b.append(N);
-// }
-//
-// Handlers.respond(args.bot, chatid, b.toString(), false);
-// Handlers.respond(args.bot, chatid, Json.serializeToString(status).toString(), false);
-//
-// }
-
 	private String userID (final Long chatid) {
 		return "tg-" + chatid;
 	}
-
-// private void processBuy (final HandleArgs args, final UserSettings settings, final PFCAddress pfcAddress) throws IOException {
-// final Long chatid = args.update.message.chatID;
-//
-// final BTCAddress exchangeAddress = settings.getExchangeAddressBTC();
-//
-//// settings.setupPrivateAddressPFC(pfcAddress);
-//
-// Handlers.respond(args.bot, chatid, "Send BTC to the following address:", false);
-// Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
-// Handlers.respond(args.bot, chatid, "Your PFC will be sent to the following address:", false);
-// Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/address/" + settings.getPrivateAddressPFC(), true);
-// Handlers.respond(args.bot, chatid, "Check your PFC address beforehand.", false);
-//// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
-//
-// }
-//
-// private void processSell (final HandleArgs args, final UserSettings settings, final BTCAddress btcAddress) throws IOException {
-// final Long chatid = args.update.message.chatID;
-//
-// final PFCAddress exchangeAddress = settings.getExchangeAddressPFC();
-//
-//// settings.setupPrivateAddressBTC(btcAddress);
-//
-// Handlers.respond(args.bot, chatid, "Send PFC to the following address:", false);
-// Handlers.respond(args.bot, chatid, exchangeAddress.AddressString, false);
-// Handlers.respond(args.bot, chatid, "Your BTC will be sent to the following address:", false);
-// Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/address/" + settings.getPrivateAddressBTC(), true);
-// Handlers.respond(args.bot, chatid, "Check your BTC address beforehand.", false);
-//// Handlers.respond(args.bot, chatid, "Processing time can be up to 24H.", false);
-//
-// }
-
-// private List<Transaction> checkStatus (final HandleArgs args, final UserSettings settings) throws IOException {
-// final List<Transaction> transactions = Collections.newList();
-// this.checkBuyStatus(transactions, args, settings);
-// this.checkSellStatus(transactions, args, settings);
-// return transactions;
-// }
-
-// private void checkSellStatus (final List<Transaction> transactions, final HandleArgs args, final UserSettings settings)
-// throws IOException {
-// final String accountName = args.userID;
-// final Long chatid = args.update.message.chatID;
-//
-// final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-// final PFCBalance pfc = this.walletBackEnd.getPFCBallance(pfc_address, accountName);
-// if (pfc.AmountPFC.Value > 0) {
-// final Transaction t = new Transaction();
-// t.operation = new Operation();
-// {
-// final Operation op = t.operation;
-// op.chatID = chatid;
-// op.type = Operation.SELL;
-// op.firstName = args.update.message.from.firstName;
-// op.lastName = args.update.message.from.lastName;
-// op.clientBTCWallet = settings.getPrivateAddressBTC();
-// op.exchangePFCWallet = pfc_address;
-// op.timestamp = System.currentTimeMillis();
-// op.userName = args.update.message.from.userName;
-// op.pendingPFC = pfc.AmountPFC.Value;
-// }
-// transactions.add(t);
-// }
-// }
-
-// private void checkBuyStatus (final List<Transaction> transactions, final HandleArgs args, final UserSettings settings)
-// throws IOException {
-// final String accountName = args.userID;
-// final Long chatid = args.update.message.chatID;
-//
-// final BTCAddress btc_address = settings.getExchangeAddressBTC();
-// final BTCBalance btc = this.walletBackEnd.getBTCBallance(btc_address, accountName);
-// if (btc.AmountBTC.Value > 0) {
-// final Transaction t = new Transaction();
-// t.operation = new Operation();
-// {
-// final Operation op = t.operation;
-// op.type = Operation.BUY;
-// op.chatID = chatid;
-// op.firstName = args.update.message.from.firstName;
-// op.lastName = args.update.message.from.lastName;
-// op.clientPFCWallet = settings.getPrivateAddressPFC();
-// op.exchangeBTCWallet = btc_address;
-// op.timestamp = System.currentTimeMillis();
-// op.userName = args.update.message.from.userName;
-// op.pendingBTC = btc.AmountBTC.Value;
-// }
-// transactions.add(t);
-// }
-// }
 
 	public static final String N = "\n";
 
 	private void respondMenu (final AbsSender bot, final UserSettings settings, final Long chatid) throws IOException {
 		try {
-// final AvailableFunds rate = this.walletBackEnd.getFunds();
-
-// final MarketPair pair = MarketPair.newMarketPair(CoinSign.TETHER, CoinSign.BITCOIN);
-// final Ticker ticker = GetTicker.get(pair);
-// final double usd_per_btc = ticker.result.Last;
-// final double btc_per_pfc = Exchange.sellPriceBTC(rate);
-// final double usd_per_pfc = usd_per_btc * btc_per_pfc;
 
 			final StringBuilder b = new StringBuilder();
 			b.append("Этот бот-биржа продаёт и покупает пикфайт-коины (PFC) за декреды (DCR)").append(N);

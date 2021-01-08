@@ -112,6 +112,14 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		return s.getBalancePFC(pfc_address, int(min_confirmations))
 	}
 
+	if command == "get_balance_pfc" {
+		pfc_address := params["Pfc_address"][0]
+		min_confirmations_string := params["Min_confirmations"][0]
+		min_confirmations, err := strconv.ParseInt(min_confirmations_string, 10, 64)
+		lang.CheckErr(err)
+		return s.getBalancePFC(pfc_address, int(min_confirmations))
+	}
+
 	if command == "get_balance_dcr" {
 		pfc_address := params["Dcr_address"][0]
 		min_confirmations_string := params["Min_confirmations"][0]
