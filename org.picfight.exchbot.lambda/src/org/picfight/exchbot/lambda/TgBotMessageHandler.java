@@ -149,7 +149,8 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT)) {
 			final StringBuilder b = new StringBuilder();
-			b.append("Команды для зачисления средств на биржу:").append(N);
+			b.append("Команды для зачисления средств на биржу").append(N);
+			b.append(N);
 			b.append("пополнить DCR: " + OPERATIONS.DEPOSIT_DCR).append(N);
 			b.append("пополнить PFC: " + OPERATIONS.DEPOSIT_PFC).append(N);
 			Handlers.respond(bot, chatid, b.toString(), false);
@@ -268,7 +269,7 @@ public class TgBotMessageHandler implements Handler {
 		final Long chatid = args.update.message.chatID;
 
 		final StringBuilder b = new StringBuilder();
-		b.append("Твои балансы:").append(N);
+		b.append("Твои балансы").append(N);
 		b.append(N);
 		{
 			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
@@ -313,9 +314,13 @@ public class TgBotMessageHandler implements Handler {
 
 	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {
 		final StringBuilder b = new StringBuilder();
-		b.append("Команды для вывода монет с биржи:").append(N);
-		b.append("Вывести DCR: " + OPERATIONS.WITHDRAW_DCR + " количество адрес").append(N);
-		b.append("Вывести PFC: " + OPERATIONS.WITHDRAW_PFC + " количество адрес").append(N);
+		b.append("Команды для вывода монет с биржи").append(N);
+		b.append(N);
+		b.append("Вывести DCR: ").append(N);
+		b.append(OPERATIONS.WITHDRAW_DCR + " %количество% %адрес%").append(N);
+		b.append(N);
+		b.append("Вывести PFC:").append(N);
+		b.append(OPERATIONS.WITHDRAW_PFC + " %количество% %адрес%").append(N);
 		b.append(N);
 		b.append("Примеры:").append(N);
 		b.append(OPERATIONS.WITHDRAW_DCR + " 0.02 D1aBcDeFg123456789H").append(N);
@@ -498,7 +503,8 @@ public class TgBotMessageHandler implements Handler {
 			b.append("Этот бот-биржа продаёт и покупает пикфайт-коины (PFC) за декреды (DCR)").append(N);
 			b.append(N);
 
-			b.append("Команды для бота:").append(N);
+			b.append("Команды для бота").append(N);
+			b.append(N);
 			b.append(OPERATIONS.BALANCE + " - посмотреть свои текущие балансы на бирже").append(N);
 			b.append(OPERATIONS.DEPOSIT + " - пополнить балансы").append(N);
 			b.append(OPERATIONS.WITHDRAW + " - вывести монеты с биржи").append(N);
@@ -507,56 +513,8 @@ public class TgBotMessageHandler implements Handler {
 			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
 			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
 			b.append(N);
-// b.append("Доступно к торговле: " + rate.AvailablePFC.Value + " PFC");
-// b.append(N);
-// b.append(N);
-// b.append("Курс обмена:");
-// b.append(N);
-// b.append("1 PFC = $" + this.formatFloat(usd_per_pfc, UP) + "");
-// b.append(N);
-// b.append("100 PFC можно купить за " + this.formatFloat(Exchange.buyPriceBTC(rate) * 100, UP) + " BTC");
-// b.append(N);
-// b.append("и продать за " + this.formatFloat(Exchange.sellPriceBTC(rate) * 100, DOWN) + " BTC");
-// b.append(N);
-// b.append(N);
-// b.append(OPERATIONS.BUY_PFC + " to buy PFC");
-// b.append(N);
-// b.append(OPERATIONS.SELL_PFC + " to sell PFC");
-// b.append(N);
-// b.append(OPERATIONS.STATUS + " to check your order status");
-// b.append(N);
-// b.append(N);
-// b.append("Твой адрес для депозитов BTC:");
-// b.append(N);
-// b.append("" + settings.getExchangeAddressBTC().toString());
-// b.append(N);
-// b.append(N);
-// b.append("для депозитов PFC:");
-// b.append(N);
-// b.append("" + settings.getExchangeAddressPFC().toString());
-// b.append(N);
-// b.append(N);
-// b.append("Твой адрес для вывода BTC:");
-// b.append(N);
-// if (settings.privateBTCAddressIsSet()) {
-// b.append("" + settings.getPrivateAddressBTC().toString());
-// } else {
-// b.append("-не установлен-");
-// }
-// b.append(N);
-// b.append(N);
-// b.append("для вывода PFC:");
-// b.append(N);
-// if (settings.privatePFCAddressIsSet()) {
-// b.append("" + settings.getPrivateAddressPFC().toString());
-// } else {
-// b.append("-не установлен-");
-// }
-// b.append(N);
-// b.append(N);
-// b.append(OPERATIONS.STATUS + " to check your order status");
-// b.append(N);
-// b.append(N);
+			b.append("Обмен на BTC отключён, т.к. из-за высокой цены биткоина операции с ним стоят по $20-$50.").append(N);
+			b.append(N);
 			b.append("PFC-кошелёк можно скачать тут: https://github.com/picfight/pfcredit").append(N);
 			b.append("DCR можно купить и продать на Бинансе: https://www.binance.com/en/trade/DCR_BTC").append(N);
 
