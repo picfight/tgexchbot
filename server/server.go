@@ -3,14 +3,14 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
-
 	"github.com/btcsuite/btcd/btcjson"
 	btccfg "github.com/btcsuite/btcd/chaincfg"
 	dcrutil "github.com/decred/dcrd/dcrutil"
 	pfcutil "github.com/picfight/pfcd/dcrutil"
+	"os"
+	"strconv"
+	"strings"
+	"sync"
 
 	"io"
 	"log"
@@ -104,12 +104,16 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		return s.processRate()
 	}
 
-	if command == "get_balance_pfc" {
-		pfc_address := params["Pfc_address"][0]
-		min_confirmations_string := params["Min_confirmations"][0]
-		min_confirmations, err := strconv.ParseInt(min_confirmations_string, 10, 64)
+	if command == "trade_pfc" {
+		amountString := params["Pfc_amount"][0]
+		pfc_amount, err := strconv.ParseFloat(amountString, 64)
 		lang.CheckErr(err)
-		return s.getBalancePFC(pfc_address, int(min_confirmations))
+		op_string := params["Operation"][0]
+		op := op_string == "BUY" //true
+		getquote_string := params["Getquote"][0]
+		getquote := getquote_string == "true"
+
+		return s.tradePFC(pfc_amount, op, getquote)
 	}
 
 	if command == "get_balance_pfc" {
@@ -550,6 +554,80 @@ func (s HttpsServer) TransferDCR(DCR_FromAccountAddress string, DCR_ToAddress st
 	} else {
 		result.Success = true
 		result.DCR_TransactionReceipt = hash.String()
+	}
+
+	return toJson(result)
+}
+
+var mutex = &sync.Mutex{}
+
+func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) string {
+
+	result := TradeResult{}
+	if operation {
+		result.Operation = "BUY"
+	} else {
+		result.Operation = "SELL"
+	}
+	result.GetQuote = getQuote
+
+	mutex.Lock()
+	defer mutex.Unlock()
+	{
+		var SpendableDCR = 0.0
+		var SpendablePFC = 0.0
+		{
+			client, err := connect.DCRWallet(s.config)
+			lang.CheckErr(err)
+
+			resolvedAccountName := s.config.DCRWalletConfig.OutputWalletAccountName
+
+			balance, err := client.GetBalanceMinConf(resolvedAccountName, 1)
+			lang.CheckErr(err)
+
+			client.Disconnect()
+
+			SpendableDCR = balance.Balances[0].Spendable
+
+		}
+		{
+			client, err := connect.PFCWallet(s.config)
+			lang.CheckErr(err)
+
+			resolvedAccountName := s.config.PFCWalletConfig.OutputWalletAccountName
+
+			balance, err := client.GetBalanceMinConf(resolvedAccountName, 1)
+			lang.CheckErr(err)
+
+			client.Disconnect()
+
+			SpendablePFC = balance.Balances[0].Spendable
+
+		}
+		result.DCR_InPool_BeforeTrade = SpendableDCR
+		result.PFC_InPool_BeforeTrade = SpendablePFC
+		result.DCRPFC_Price_BeforeTrade = SpendableDCR / SpendablePFC
+		PoolConstant := SpendableDCR * SpendablePFC
+		result.PoolConstant = PoolConstant
+
+		if result.Operation == "BUY" {
+			result.PFC_InPool_AfterTrade = SpendablePFC - amountPFC
+		} else {
+			result.PFC_InPool_AfterTrade = SpendablePFC + amountPFC
+		}
+
+		if result.PFC_InPool_AfterTrade <= 0 {
+			result.ErrorMessage = fmt.Sprintf("Requested amount(%v) exceeds pool size(%v)", amountPFC, SpendablePFC)
+			result.Success = false
+			return toJson(result)
+		}
+
+		result.DCR_InPool_AfterTrade = PoolConstant / result.PFC_InPool_AfterTrade
+		result.DCR_Executed_Amount = result.DCR_InPool_AfterTrade - result.DCR_InPool_BeforeTrade
+		result.PFC_Executed_Amount =amountPFC
+		result.DCRPFC_Price_AfterTrade = result.DCR_InPool_AfterTrade / result.PFC_InPool_AfterTrade
+		result.DCRPFC_Executed_Price = result.DCR_Executed_Amount / amountPFC
+
 	}
 
 	return toJson(result)

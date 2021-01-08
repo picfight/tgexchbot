@@ -57,6 +57,27 @@ type AmountBTC struct {
 	Value float64 `json: "Value"`
 }
 
+type TradeResult struct {
+	Success      bool   `json: "Success"`
+	ErrorMessage string `json: "ErrorMessage"`
+	Operation    string `json: "Operation"`
+	GetQuote     bool   `json: "GetQuote"`
+
+	DCRPFC_Price_BeforeTrade float64 `json: "DCRPFC_Price_BeforeTrade"`
+	DCRPFC_Price_AfterTrade  float64 `json: "DCRPFC_Price_AfterTrade"`
+
+	DCR_InPool_BeforeTrade float64 `json: "DCR_InPool_BeforeTrade"`
+	PFC_InPool_BeforeTrade float64 `json: "PFC_InPool_BeforeTrade"`
+	PoolConstant                      float64 `json: "PoolConstant"`
+	PFC_InPool_AfterTrade  float64 `json: "PFC_InPool_AfterTrade"`
+	DCR_InPool_AfterTrade  float64 `json: "DCR_InPool_AfterTrade"`
+
+	DCR_Executed_Amount float64 `json: "DCR_Executed_Amount"`
+	PFC_Executed_Amount float64 `json: "PFC_Executed_Amount"`
+
+	DCRPFC_Executed_Price float64 `json: "DCRPFC_Executed_Price"`
+}
+
 type Result struct {
 	Success      bool   `json: "Success"`
 	ErrorMessage string `json: "ErrorMessage"`

@@ -15,6 +15,7 @@ import org.picfight.exchbot.lambda.backend.DCRBalance;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
+import org.picfight.exchbot.lambda.backend.TradeResult;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
 import org.picfight.exchbot.lambda.backend.TransactionBackEndArgs;
 import org.picfight.exchbot.lambda.backend.UserSettings;
@@ -253,7 +254,11 @@ public class TgBotMessageHandler implements Handler {
 			}
 
 			final boolean getQuote = true;
-			this.walletBackEnd.tradePFC(TRADE_OPERATION.SELL, getQuote, amount);
+			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.SELL, getQuote, amount);
+
+			Handlers.respond(bot, chatid, result.toString(), false);
+
+			return true;
 
 		}
 
@@ -278,7 +283,10 @@ public class TgBotMessageHandler implements Handler {
 			}
 
 			final boolean getQuote = true;
-			this.walletBackEnd.tradePFC(TRADE_OPERATION.BUY, getQuote, amount);
+			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.BUY, getQuote, amount);
+
+			Handlers.respond(bot, chatid, result.toString(), false);
+			return true;
 
 		}
 
