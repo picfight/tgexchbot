@@ -147,6 +147,12 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
+		if (args.command.equalsIgnoreCase(OPERATIONS.MARKET)) {
+			this.showMarketState(args);
+
+			return true;
+		}
+
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT)) {
 			final StringBuilder b = new StringBuilder();
 			b.append("Команды для зачисления средств на биржу").append(N);
@@ -263,6 +269,81 @@ public class TgBotMessageHandler implements Handler {
 		return false;
 	}
 
+	private void showMarketState (final HandleArgs args) throws IOException, BackendException {
+		final StringBuilder b = new StringBuilder();
+
+		b.append(
+			"Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансирует состояние пула.")
+			.append(N);
+
+		b.append("В пуле находится:").append(N);
+
+		{
+			final PFCAddress exch_pfc_address = EXCHANGE_PFC_ADDRESS();
+			final PFCBalance exch_pfc_balance = this.walletBackEnd.getPFCBallance(exch_pfc_address, 1);
+			b.append(exch_pfc_balance.Spendable.Value + " PFC").append(N);
+			final DCRAddress exch_dcr_address = EXCHANGE_DCR_ADDRESS();
+			final DCRBalance exch_dcr_balance = this.walletBackEnd.getDCRBallance(exch_dcr_address, 1);
+			b.append(exch_dcr_balance.Spendable.Value + " DCR").append(N);
+
+			final double dcr_for_1_pfc = exch_dcr_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
+			final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+			b.append(N);
+			b.append("1 PFC стоит " + round(dcr_for_1_pfc) + " DCR или " + round(usd_for_1_pfc) + "$").append(N);
+			b.append(N);
+		}
+
+		Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
+
+	}
+
+	static String round (final double v) {
+// final double r = 100000;
+		return String.format("%.5f", v);
+	}
+
+	public static double usd_for_1_pfc (final double dcr_for_1_pfc) throws IOException {
+
+		final MarketPair btcusdpair = MarketPair.newMarketPair(CoinSign.TETHER, CoinSign.BITCOIN);
+		final Ticker btcusdticker = GetTicker.get(btcusdpair);
+		final double usd_for_1_btc = btcusdticker.result.Last;
+
+// L.d("usd_for_1_btc", usd_for_1_btc);
+
+		final MarketPair dcrbtcpair = MarketPair.newMarketPair(CoinSign.BITCOIN, CoinSign.DECRED);
+		final Ticker dcrbtcticker = GetTicker.get(dcrbtcpair);
+		final double btc_for_1_dcr = dcrbtcticker.result.Last;
+
+// L.d("btc_for_1_dcr", btc_for_1_dcr);
+
+		final double usd_for_1_dcr = usd_for_1_btc * btc_for_1_dcr;
+
+// L.d("usd_for_1_dcr", usd_for_1_dcr);
+
+		final double usd_for_1_pfc = usd_for_1_dcr * dcr_for_1_pfc;
+
+// L.d("usd_for_1_pfc", usd_for_1_pfc);
+
+		// final double btc_per_pfc = Exchange.sellPriceBTC(rate);
+		// final double usd_per_pfc = usd_per_btc * btc_per_pfc;
+
+		return usd_for_1_pfc;
+	}
+
+	public static final DCRAddress EXCHANGE_DCR_ADDRESS () {
+		final DCRAddress addr = new DCRAddress();
+		addr.AddressString = "DsdJYEiPaw1WTC4HW5ULqj2tpLPUxzG2ECn";
+		addr.Type = "DCR";
+		return addr;
+	}
+
+	public static final PFCAddress EXCHANGE_PFC_ADDRESS () {
+		final PFCAddress addr = new PFCAddress();
+		addr.AddressString = "JsVjxJ697AAELw4TNEfXQm4pLjsMupjXLfj";
+		addr.Type = "PFC";
+		return addr;
+	}
+
 	private void showBalances (final HandleArgs args) throws BackendException, IOException {
 		final UserSettings settings = args.settings;
 		final AbsSender bot = args.bot;
@@ -299,7 +380,6 @@ public class TgBotMessageHandler implements Handler {
 		b.append(N);
 		b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
 		b.append("Вывести монеты с биржи - " + OPERATIONS.WITHDRAW).append(N);
-		L.d("L4");
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
