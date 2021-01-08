@@ -269,6 +269,7 @@ public class WalletBackEnd {
 
 	public TradeResult tradePFC (final TRADE_OPERATION op, final boolean getQuote, final AmountPFC amount)
 		throws BackendException {
+
 		final String command = "trade_pfc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();

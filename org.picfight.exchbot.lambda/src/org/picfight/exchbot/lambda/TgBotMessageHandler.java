@@ -297,7 +297,25 @@ public class TgBotMessageHandler implements Handler {
 			final boolean getQuote = true;
 			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.BUY, getQuote, amount);
 
-			Handlers.respond(bot, chatid, result.toString(), false);
+			if (result.Success) {
+				final StringBuilder b = new StringBuilder();
+
+				final double dcr_for_1_pfc = result.DCRPFC_Price_AfterTrade;
+				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+
+				b.append(N);
+				b.append(result.PFC_Executed_Amount + " PFC можно купить за " + result.DCR_Executed_Amount + " DCR").append(N);
+				b.append("1 PFC при этом будет стоить " + round(dcr_for_1_pfc, 8) + " DCR или " + round(usd_for_1_pfc, 2) + "$")
+					.append(N);
+				b.append("для выподнения сделки по этой цене нужно отправить команду:");
+				Handlers.respond(bot, chatid, b.toString(), false);
+
+				Handlers.respond(bot, chatid,
+					OPERATIONS.BUY_PFC + " " + result.PFC_Executed_Amount + " " + round(dcr_for_1_pfc, 8) + " execute", false);
+			} else {
+				Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+			}
+
 			return true;
 
 		}
@@ -347,7 +365,7 @@ public class TgBotMessageHandler implements Handler {
 			final double dcr_for_1_pfc = exch_dcr_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
 			final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 			b.append(N);
-			b.append("1 PFC стоит " + round(dcr_for_1_pfc) + " DCR или " + round(usd_for_1_pfc) + "$").append(N);
+			b.append("1 PFC стоит " + round(dcr_for_1_pfc, 6) + " DCR или " + round(usd_for_1_pfc, 2) + "$").append(N);
 			b.append(N);
 			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
 			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
@@ -361,9 +379,9 @@ public class TgBotMessageHandler implements Handler {
 
 	}
 
-	static String round (final double v) {
+	static String round (final double v, final int digit) {
 // final double r = 100000;
-		return String.format("%.6f", v);
+		return String.format("%." + digit + "f", v);
 	}
 
 	public static double usd_for_1_pfc (final double dcr_for_1_pfc) throws IOException {
