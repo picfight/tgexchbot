@@ -1,6 +1,8 @@
 
 package org.picfight.exchbot.lambda.backend;
 
+import com.jfixby.scarabei.api.json.Json;
+
 public class TradeResult {
 
 	public boolean Success;
@@ -17,5 +19,10 @@ public class TradeResult {
 	public double DCR_Executed_Amount;
 	public double PFC_Executed_Amount;
 	public double DCRPFC_Executed_Price;
+
+	@Override
+	public String toString () {
+		return Json.serializeToString(this).toString();
+	}
 
 }
