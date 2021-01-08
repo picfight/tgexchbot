@@ -213,12 +213,13 @@ public class TgBotMessageHandler implements Handler {
 
 			{
 				final PFCAddress exch_address = settings.getExchangeAddressPFC();
-				final Result result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount);
+				final TransactionResult result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount);
 				Handlers.respond(bot, chatid, result.toString(), false);
 
 				if (result.Success) {
-					this.showBalances(args);
+
 				}
+				this.showBalances(args);
 				return true;
 			}
 		}
@@ -255,28 +256,101 @@ public class TgBotMessageHandler implements Handler {
 
 			{
 				final DCRAddress exch_address = settings.getExchangeAddressDCR();
-				final Result result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount);
+				final TransactionResult result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount);
 
 				Handlers.respond(bot, chatid, result.toString(), false);
 
 				if (result.Success) {
-					this.showBalances(args);
+
 				}
+				this.showBalances(args);
 				return true;
 			}
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
+			if (args.arguments.size() == 0) {
+				this.sellHelp(bot, chatid);
+				return true;
+			}
+
+			Double amountFloat = null;
+			AmountPFC amount = null;
+			final String amount_text = args.arguments.getElementAt(0).toLowerCase();
+			try {
+				amountFloat = Double.parseDouble(amount_text);
+				amount = new AmountPFC(amountFloat);
+			} catch (final Throwable e) {
+				e.printStackTrace();
+
+				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+				this.buyHelp(bot, chatid);
+				return true;
+			}
+
+			final boolean getQuote = true;
+			this.walletBackEnd.tradePFC(TRADE_OPERATION.SELL, getQuote, amount);
+
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
+			if (args.arguments.size() == 0) {
+				this.buyHelp(bot, chatid);
+				return true;
+			}
+
+			Double amountFloat = null;
+			AmountPFC amount = null;
+			final String amount_text = args.arguments.getElementAt(0).toLowerCase();
+			try {
+				amountFloat = Double.parseDouble(amount_text);
+				amount = new AmountPFC(amountFloat);
+			} catch (final Throwable e) {
+				e.printStackTrace();
+
+				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+				this.buyHelp(bot, chatid);
+				return true;
+			}
+
+			final boolean getQuote = true;
+			this.walletBackEnd.tradePFC(TRADE_OPERATION.BUY, getQuote, amount);
+
 		}
 
 		return false;
 	}
 
+	private void buyHelp (final AbsSender bot, final Long chatid) throws IOException {
+
+		final StringBuilder b = new StringBuilder();
+		b.append("Купить PFC:").append(N);
+		b.append(OPERATIONS.BUY_PFC + " %количество% ").append(N);
+		b.append(N);
+		b.append("Примеры:").append(N);
+		b.append(OPERATIONS.BUY_PFC + " 100.5").append(N);
+		b.append(N);
+		Handlers.respond(bot, chatid, b.toString(), false);
+
+	}
+
+	private void sellHelp (final AbsSender bot, final Long chatid) throws IOException {
+
+		final StringBuilder b = new StringBuilder();
+		b.append("Продать PFC:").append(N);
+		b.append(OPERATIONS.SELL_PFC + " %количество% ").append(N);
+		b.append(N);
+		b.append("Примеры:").append(N);
+		b.append(OPERATIONS.SELL_PFC + " 100.5").append(N);
+		b.append(N);
+		Handlers.respond(bot, chatid, b.toString(), false);
+
+	}
+
 	private void showMarketState (final HandleArgs args) throws IOException, BackendException {
 		final StringBuilder b = new StringBuilder();
 
-		b.append(
-			"Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансирует состояние пула.")
-			.append(N);
-
-		b.append("В пуле находится:").append(N);
+		b.append("В пуле биржи находится:").append(N);
 
 		{
 			final PFCAddress exch_pfc_address = EXCHANGE_PFC_ADDRESS();
@@ -291,7 +365,13 @@ public class TgBotMessageHandler implements Handler {
 			b.append(N);
 			b.append("1 PFC стоит " + round(dcr_for_1_pfc) + " DCR или " + round(usd_for_1_pfc) + "$").append(N);
 			b.append(N);
+			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
+			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
+			b.append(N);
 		}
+		b.append(
+			"Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансируется состоянием пула.")
+			.append(N);
 
 		Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
 
@@ -299,7 +379,7 @@ public class TgBotMessageHandler implements Handler {
 
 	static String round (final double v) {
 // final double r = 100000;
-		return String.format("%.5f", v);
+		return String.format("%.6f", v);
 	}
 
 	public static double usd_for_1_pfc (final double dcr_for_1_pfc) throws IOException {

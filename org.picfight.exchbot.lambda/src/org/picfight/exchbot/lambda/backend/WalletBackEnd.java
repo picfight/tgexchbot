@@ -4,7 +4,8 @@ package org.picfight.exchbot.lambda.backend;
 import java.io.IOException;
 
 import org.picfight.exchbot.back.BackEndConnector;
-import org.picfight.exchbot.lambda.Result;
+import org.picfight.exchbot.lambda.TRADE_OPERATION;
+import org.picfight.exchbot.lambda.TransactionResult;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
@@ -130,7 +131,7 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public Result transferPFC (final PFCAddress fromAccountAddress, final PFCAddress toAddress, final AmountPFC amount)
+	public TransactionResult transferPFC (final PFCAddress fromAccountAddress, final PFCAddress toAddress, final AmountPFC amount)
 		throws BackendException {
 		final String command = "transfer_pfc";
 		final HttpURL Url = this.commadToUrl(command);
@@ -147,12 +148,12 @@ public class WalletBackEnd {
 			e.printStackTrace();
 			throw new BackendException(e);
 		}
-		final Result r = Json.deserializeFromString(Result.class, resultJson);
+		final TransactionResult r = Json.deserializeFromString(TransactionResult.class, resultJson);
 		return r;
 
 	}
 
-	public Result transferDCR (final DCRAddress fromAccountAddress, final DCRAddress toAddress, final AmountDCR amount)
+	public TransactionResult transferDCR (final DCRAddress fromAccountAddress, final DCRAddress toAddress, final AmountDCR amount)
 		throws BackendException {
 		final String command = "transfer_dcr";
 		final HttpURL Url = this.commadToUrl(command);
@@ -169,12 +170,12 @@ public class WalletBackEnd {
 			e.printStackTrace();
 			throw new BackendException(e);
 		}
-		final Result r = Json.deserializeFromString(Result.class, resultJson);
+		final TransactionResult r = Json.deserializeFromString(TransactionResult.class, resultJson);
 		return r;
 
 	}
 
-	public Result transferBTC (final Operation t) throws BackendException {
+	public TransactionResult transferBTC (final Operation t) throws BackendException {
 		Err.throwNotImplementedYet();
 		return null;
 	}
@@ -263,6 +264,27 @@ public class WalletBackEnd {
 			throw new BackendException(e);
 		}
 		final DCRAddress r = Json.deserializeFromString(DCRAddress.class, resultJson);
+		return r;
+	}
+
+	public TradeResult tradePFC (final TRADE_OPERATION op, final boolean getQuote, final AmountPFC amount)
+		throws BackendException {
+		final String command = "trade_pfc";
+		final HttpURL Url = this.commadToUrl(command);
+		final Map<String, String> params = Collections.newMap();
+		params.put("Access_key", this.access_key + "");
+		params.put("Pfc_amount", amount.Value + "");
+		params.put("Operation", op + "");
+		params.put("Getquote", getQuote + "");
+
+		JsonString resultJson;
+		try {
+			resultJson = BackEndConnector.retrieve(Url, params);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			throw new BackendException(e);
+		}
+		final TradeResult r = Json.deserializeFromString(TradeResult.class, resultJson);
 		return r;
 	}
 

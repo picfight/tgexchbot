@@ -4,7 +4,7 @@ package org.picfight.exchbot.lambda;
 import org.picfight.exchbot.lambda.backend.AmountDCR;
 import org.picfight.exchbot.lambda.backend.AmountPFC;
 
-public class Result {
+public class TransactionResult {
 
 	public Boolean Success;
 	public String ErrorMessage;
