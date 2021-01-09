@@ -70,11 +70,24 @@ func NewServer(cfg *cfg.ConfigJson) *HttpsServer {
 	return &HttpsServer{config: cfg}
 }
 
+// GetIP gets a requests IP address by reading off the forwarded-for
+// header (for proxies) and falls back to use the remote address.
+func GetIP(r *http.Request) string {
+	forwarded := r.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return r.RemoteAddr
+}
+
 func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	uri := r.RequestURI
 	_, command := path.Split(uri)
 	//pin.D("dir", dir)
 	pin.D("command", command)
+
+	client_ip := GetIP(r)
+	pin.D("client ip", client_ip)
 	//params := r.URL.Query()
 	//pin.D("params", params)
 
