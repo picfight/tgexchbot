@@ -260,8 +260,25 @@ public class TgBotMessageHandler implements Handler {
 				return true;
 			}
 
-			final boolean getQuote = true;
-			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.SELL, getQuote, amount);
+			boolean getQuote = true;
+			Double dcr_for_1_pfc_order = 0.0d;
+			if (args.arguments.size() == 3) {
+				final String price_text = args.arguments.getElementAt(1).toLowerCase();
+				try {
+					dcr_for_1_pfc_order = Double.parseDouble(price_text);
+				} catch (final Throwable e) {
+					e.printStackTrace();
+					Handlers.respond(bot, chatid, "Цена не распознана: " + price_text, false);
+					this.buyHelp(bot, chatid);
+					return true;
+				}
+				final String execute_text = args.arguments.getElementAt(2).toLowerCase();
+				if ("execute".equals(execute_text)) {
+					getQuote = false;
+				}
+			}
+
+			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.SELL, getQuote, amount, dcr_for_1_pfc_order);
 			if (result.Success) {
 				final StringBuilder b = new StringBuilder();
 
@@ -471,26 +488,26 @@ public class TgBotMessageHandler implements Handler {
 		{
 			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
 			final PFCBalance pfc1 = this.walletBackEnd.getPFCBallance(pfc_address, 1);
-			final PFCBalance pfc3 = this.walletBackEnd.getPFCBallance(pfc_address, 3);
-			final double balance = pfc1.Spendable.Value;
+// final PFCBalance pfc3 = this.walletBackEnd.getPFCBallance(pfc_address, 3);
+			final double tradable = pfc1.Spendable.Value;
 			final double unconfirmed = pfc1.Unconfirmed.Value;
-			final double tradable = pfc3.Spendable.Value;
+// final double tradable = pfc3.Spendable.Value;
 			final String sign = "PFC";
 
-			this.balanceString(b, balance, unconfirmed, tradable, sign);
+			this.balanceString(b, tradable, unconfirmed, tradable, sign);
 
 		}
 		b.append(N);
 		{
 			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
 			final DCRBalance dcr1 = this.walletBackEnd.getDCRBallance(dcr_address, 1);
-			final DCRBalance dcr3 = this.walletBackEnd.getDCRBallance(dcr_address, 3);
-			final double balance = dcr1.Spendable.Value;
+// final DCRBalance dcr3 = this.walletBackEnd.getDCRBallance(dcr_address, 3);
+			final double tradable = dcr1.Spendable.Value;
 			final double unconfirmed = dcr1.Unconfirmed.Value;
-			final double tradable = dcr3.Spendable.Value;
+// final double tradable = dcr3.Spendable.Value;
 			final String sign = "DCR";
 
-			this.balanceString(b, balance, unconfirmed, tradable, sign);
+			this.balanceString(b, tradable, unconfirmed, tradable, sign);
 
 		}
 		b.append(N);
@@ -505,7 +522,7 @@ public class TgBotMessageHandler implements Handler {
 		if (unconfirmed > 0) {
 			b.append("ожидается: " + unconfirmed + " " + sign).append(N);
 		}
-		b.append("доступно для торгов: " + tradable + " " + sign).append(N);
+// b.append("доступно для торгов: " + tradable + " " + sign).append(N);
 	}
 
 	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {

@@ -267,8 +267,8 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public TradeResult tradePFC (final TRADE_OPERATION op, final boolean getQuote, final AmountPFC amount)
-		throws BackendException {
+	public TradeResult tradePFC (final TRADE_OPERATION op, final boolean getQuote, final AmountPFC amount,
+		final Double dcr_for_1_pfc_order) throws BackendException {
 
 		final String command = "trade_pfc";
 		final HttpURL Url = this.commadToUrl(command);

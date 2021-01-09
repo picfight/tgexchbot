@@ -628,9 +628,50 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) 
 		result.PFC_Executed_Amount = amountPFC
 		result.DCRPFC_Ratio_AfterTrade = result.DCR_InPool_AfterTrade / result.PFC_InPool_AfterTrade
 		result.DCRPFC_Executed_Price = result.DCR_Executed_Amount / amountPFC
-		result.Success = true
+
 	}
 
+	if getQuote {
+		result.Success = true
+		return toJson(result)
+	}
+
+	{
+		if result.Operation == "BUY" { //buy pfc
+
+		}
+
+		{
+			client, err := connect.DCRWallet(s.config)
+			lang.CheckErr(err)
+
+			resolvedAccountName := s.config.DCRWalletConfig.OutputWalletAccountName
+
+			balance, err := client.GetBalanceMinConf(resolvedAccountName, 1)
+			lang.CheckErr(err)
+
+			client.Disconnect()
+
+			SpendableDCR = balance.Balances[0].Spendable
+
+		}
+		{
+			client, err := connect.PFCWallet(s.config)
+			lang.CheckErr(err)
+
+			resolvedAccountName := s.config.PFCWalletConfig.OutputWalletAccountName
+
+			balance, err := client.GetBalanceMinConf(resolvedAccountName, 1)
+			lang.CheckErr(err)
+
+			client.Disconnect()
+
+			SpendablePFC = balance.Balances[0].Spendable
+
+		}
+	}
+
+	result.Success = true
 	return toJson(result)
 }
 
