@@ -31,6 +31,7 @@ import com.jfixby.scarabei.api.base64.Base64;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.FilesList;
 import com.jfixby.scarabei.api.java.ByteArray;
+import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
@@ -483,11 +484,19 @@ public class TgBotMessageHandler implements Handler {
 // b.append("Состояние пула биржи").append(N);
 
 		final FilesList files = args.filesystem.Executed.listAllChildren();
+		final ChartData data = new ChartData();
+
+		data.Title = "PFC/DCR";
+		data.X_Label = "Time";
+		data.Y_Label = "Price";
+		data.ImgWidth = 640.0;
+		data.ImgHeight = 480.0;
+
 		for (final File f : files) {
 			final ExecutedOrder order = f.readJson(ExecutedOrder.class);
 		}
 
-		final PlottedChart chartResult = this.walletBackEnd.plotChart("");
+		final PlottedChart chartResult = this.walletBackEnd.plotChart(Json.serializeToString(data).toString());
 		Handlers.respond(args.bot, args.update.message.chatID, chartResult.toString(), false);
 
 		if (chartResult.Success) {
