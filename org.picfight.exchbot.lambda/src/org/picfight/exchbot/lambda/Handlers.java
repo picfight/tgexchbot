@@ -96,11 +96,7 @@ public class Handlers {
 		TelegramApiException x = null;
 		for (int i = 0; i < 5; i++) {
 			try {
-				final SendPhoto sendMessage = new SendPhoto().setChatId(chatid).setPhoto("", inputStream);
-				sendMessage.setParseMode(ParseMode.HTML);
-
-				// sendMessage.enableMarkdown(true);
-// L.d("Sending message[" + i + "]: " + sendMessage);
+				final SendPhoto sendMessage = new SendPhoto().setChatId(chatid).setPhoto("123", inputStream);
 
 				if (bot != null) {
 					bot.execute(sendMessage);

@@ -233,22 +233,22 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public PlottedChart plotChart (final String Chart_data_base64) throws BackendException {
-		final String command = "plot_chart";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("Access_key", this.access_key);
-		params.put("Chart_data_base64", Chart_data_base64);
-		JsonString resultJson;
-		try {
-			resultJson = BackEndConnector.retrieve(Url, params);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new BackendException(e);
-		}
-		final PlottedChart r = Json.deserializeFromString(PlottedChart.class, resultJson);
-		return r;
-	}
+// public PlottedChart plotChart (final String Chart_data_base64) throws BackendException {
+// final String command = "plot_chart";
+// final HttpURL Url = this.commadToUrl(command);
+// final Map<String, String> params = Collections.newMap();
+// params.put("Access_key", this.access_key);
+// params.put("Chart_data_base64", Chart_data_base64);
+// JsonString resultJson;
+// try {
+// resultJson = BackEndConnector.retrieve(Url, params);
+// } catch (final IOException e) {
+// e.printStackTrace();
+// throw new BackendException(e);
+// }
+// final PlottedChart r = Json.deserializeFromString(PlottedChart.class, resultJson);
+// return r;
+// }
 
 	public PFCAddress getNewPFCAddress (final String accountName) throws BackendException {
 		final String command = "new_pfc_address";

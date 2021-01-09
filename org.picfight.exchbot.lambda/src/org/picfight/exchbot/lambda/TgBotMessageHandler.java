@@ -1,10 +1,11 @@
 
 package org.picfight.exchbot.lambda;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
@@ -17,7 +18,6 @@ import org.picfight.exchbot.lambda.backend.DCRAddress;
 import org.picfight.exchbot.lambda.backend.DCRBalance;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
-import org.picfight.exchbot.lambda.backend.PlottedChart;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.TradeResult;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
@@ -27,15 +27,11 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import com.jfixby.scarabei.api.base64.Base64;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.FilesList;
-import com.jfixby.scarabei.api.java.ByteArray;
-import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
-import com.jfixby.scarabei.api.util.Utils;
 
 public class TgBotMessageHandler implements Handler {
 	public static final String WALLET_CHECK = "/walletcheck";
@@ -122,11 +118,11 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.CHART)) {
-			this.showMenuCharts(args);
-
-			return true;
-		}
+// if (args.command.equalsIgnoreCase(OPERATIONS.CHART)) {
+// this.showMenuCharts(args);
+//
+// return true;
+// }
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT)) {
 			final StringBuilder b = new StringBuilder();
@@ -491,25 +487,22 @@ public class TgBotMessageHandler implements Handler {
 			data.Title = "PFC/DCR";
 			data.X_Label = "Time";
 			data.Y_Label = "Price";
-			data.ImgWidth = 640.0;
-			data.ImgHeight = 480.0;
+			data.ImgWidth = 100.0;
+			data.ImgHeight = 75.0;
 
 			for (final File f : files) {
 				final ExecutedOrder order = f.readJson(ExecutedOrder.class);
 			}
-			final byte[] bytes = Json.serializeToString(data).toString().getBytes();
 
-			final String base64 = Base64.encode(Utils.newByteArray(bytes));
-			final PlottedChart chartResult = this.walletBackEnd.plotChart(base64);
-			Handlers.respond(args.bot, args.update.message.chatID, chartResult.toString(), false);
+			final String content = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Cat_poster_1.jpg";
+			final URL u = new URL(content);
+			InputStream is = u.openStream();
+			is = u.openStream();
+			Handlers.respond(args.bot, args.update.message.chatID, is, false);
+			is.close();
 
-			if (chartResult.Success) {
-				final ByteArray pngbytes = Base64.decode(chartResult.ImageBase64);
-				final ByteArrayInputStream is = new ByteArrayInputStream(pngbytes.toArray());
-				Handlers.respond(args.bot, args.update.message.chatID, is, false);
-			}
 		} catch (final Throwable e) {
-			Handlers.respond(args.bot, args.update.message.chatID, L.stackTraceToString(e), false);
+			Handlers.respond(args.bot, args.update.message.chatID, e.toString(), false);
 		}
 	}
 
@@ -603,13 +596,13 @@ public class TgBotMessageHandler implements Handler {
 				b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
 				b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
 				b.append(OPERATIONS.BALANCE + " - балансы").append(N);
-				b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
+// b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
 				b.append(N);
 			} else {
 				b.append("Пул балансируется...").append(N);
 				b.append(N);
 				b.append(OPERATIONS.MARKET + " - информация о состоянии").append(N);
-				b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
+// b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
 				b.append(N);
 			}
 		}
@@ -765,7 +758,7 @@ public class TgBotMessageHandler implements Handler {
 			b.append(OPERATIONS.WITHDRAW + " - вывести монеты с биржи").append(N);
 			b.append(N);
 			b.append(OPERATIONS.MARKET + " - информация о состоянии торгового пула").append(N);
-			b.append(OPERATIONS.CHART + " - посмотреть график цены").append(N);
+// b.append(OPERATIONS.CHART + " - посмотреть график цены").append(N);
 			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
 			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
 			b.append(N);

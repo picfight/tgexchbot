@@ -135,11 +135,11 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		return s.AnalyzeString(raw_text[0])
 	}
 
-	if command == "plot_chart" {
-		Chart_data_base64 := params["Chart_data_base64"][0]
-		//pin.D("Raw_text", raw_text)
-		return s.PlotChart(Chart_data_base64)
-	}
+	//if command == "plot_chart" {
+	//	Chart_data_base64 := params["Chart_data_base64"][0]
+	//	//pin.D("Raw_text", raw_text)
+	//	return s.PlotChart(Chart_data_base64)
+	//}
 
 	mutex.Lock()
 	//------------------------------------------------------------------------------

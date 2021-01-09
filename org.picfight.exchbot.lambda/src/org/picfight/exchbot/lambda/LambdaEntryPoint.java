@@ -35,6 +35,7 @@ public class LambdaEntryPoint implements RequestStreamHandler {
 
 	static {
 		ScarabeiDesktop.deploy();
+// Base64.installComponent(new Base64());
 		S3.installComponent(new DesktopS3());
 		deployFS();
 	}
