@@ -386,23 +386,7 @@ func (s HttpsServer) AnalyzeString(hextext string) string {
 }
 
 func (s HttpsServer) getBalanceBTC(btc_address string, walletAccountName string, min_confirmations int) string {
-	//result := BTCBalance{}
-	//{
-	//	result.BTCAddress.Type = "BTC"
-	//	result.BTCAddress.AddressString = btc_address
-	//}
-	//{
-	//	client, err := connect.BTCWallet(s.config)
-	//	lang.CheckErr(err)
-	//
-	//	//client.ListAccounts()
-	//
-	//	balance, err := client.GetBalanceMinConf(walletAccountName, min_confirmations)
-	//	lang.CheckErr(err)
-	//	pin.D("balance "+walletAccountName, balance)
-	//	result.AmountBTC.Value = balance.ToBTC()
-	//}
-	//return toJson(result)
+
 	return ""
 }
 
@@ -606,7 +590,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) 
 		}
 		result.DCR_InPool_BeforeTrade = SpendableDCR
 		result.PFC_InPool_BeforeTrade = SpendablePFC
-		result.DCRPFC_Price_BeforeTrade = SpendableDCR / SpendablePFC
+		result.DCRPFC_Ratio_BeforeTrade = SpendableDCR / SpendablePFC
 		PoolConstant := SpendableDCR * SpendablePFC
 		result.PoolConstant = PoolConstant
 
@@ -629,7 +613,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) 
 			result.DCR_Executed_Amount = -result.DCR_Executed_Amount
 		}
 		result.PFC_Executed_Amount = amountPFC
-		result.DCRPFC_Price_AfterTrade = result.DCR_InPool_AfterTrade / result.PFC_InPool_AfterTrade
+		result.DCRPFC_Ratio_AfterTrade = result.DCR_InPool_AfterTrade / result.PFC_InPool_AfterTrade
 		result.DCRPFC_Executed_Price = result.DCR_Executed_Amount / amountPFC
 		result.Success = true
 	}

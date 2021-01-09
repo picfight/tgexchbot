@@ -63,8 +63,8 @@ type TradeResult struct {
 	Operation    string `json: "Operation"`
 	GetQuote     bool   `json: "GetQuote"`
 
-	DCRPFC_Price_BeforeTrade float64 `json: "DCRPFC_Price_BeforeTrade"`
-	DCRPFC_Price_AfterTrade  float64 `json: "DCRPFC_Price_AfterTrade"`
+	DCRPFC_Ratio_BeforeTrade float64 `json: "DCRPFC_Ratio_BeforeTrade"`
+	DCRPFC_Ratio_AfterTrade  float64 `json: "DCRPFC_Ratio_AfterTrade"`
 
 	DCR_InPool_BeforeTrade float64 `json: "DCR_InPool_BeforeTrade"`
 	PFC_InPool_BeforeTrade float64 `json: "PFC_InPool_BeforeTrade"`
