@@ -729,6 +729,7 @@ func (s HttpsServer) PlotChart(dataJson string) string {
 	}
 
 	result.ImageBase64 = base64.StdEncoding.EncodeToString(imgBytes)
+	result.Success = true
 
 	return toJson(result)
 

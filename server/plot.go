@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/jfixby/pin"
 	"github.com/pplcc/plotext/custplotter"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/vg"
@@ -31,6 +32,7 @@ func Plot(data ChartData) ([]byte, error) {
 	p.Add(bars)
 
 	file := "candlesticks.png"
+	pin.D("writing", file)
 	err = p.Save(vg.Length(data.ImgWidth), vg.Length(data.ImgHeight), file)
 	if err != nil {
 		return []byte{}, err
