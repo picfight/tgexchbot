@@ -26,6 +26,7 @@ public class OPERATIONS {
 	public static final String WITHDRAW_DCR = "/withdraw_dcr";
 
 	public static final String MARKET = "/market";
+	public static final String CHART = "/chart";;
 
 // public static final String SET_ENGLISH = "/set_eng";
 // public static final String SET_RUSSIAN = "/set_ru";

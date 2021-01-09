@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.AmountDCR;
@@ -24,13 +25,15 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.file.FilesList;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
 public class TgBotMessageHandler implements Handler {
 	public static final String WALLET_CHECK = "/walletcheck";
-	private static final double SPREAD = 0.07;
+	private static final double SPREAD = 0.01;
 	public final WalletBackEnd walletBackEnd;
 	public final TransactionBackEnd transactionsBackEnd;
 	{
@@ -109,6 +112,12 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.MARKET)) {
 			this.showMarketState(args);
+
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.CHART)) {
+			this.showMenuCharts(args);
 
 			return true;
 		}
@@ -320,6 +329,7 @@ public class TgBotMessageHandler implements Handler {
 						"Продано " + round(result.PFC_Executed_Amount.Value, 8) + " PFC за "
 							+ round(result.DCR_Executed_Amount.Value, 8) + " DCR по цене " + round(result.DCRPFC_Executed_Price, 8),
 						false);
+					this.saveOrder(args, result);
 					this.showBalances(args);
 				}
 			} else {
@@ -328,10 +338,11 @@ public class TgBotMessageHandler implements Handler {
 					this.showBalances(args);
 				} else if (result.PriceNotMet) {
 					final StringBuilder b = new StringBuilder();
-					b.append(result.PFC_Executed_Amount + " можно продать за " + round(result.DCR_Executed_Amount.Value, 8) + " DCR")
-						.append(N);
-					b.append("Текущая цена за 1 PFC на бирже " + round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
-					b.append("ниже запрошенной " + round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
+					b.append("Цена за 1 PFC на бирже в момент выполнения ордера").append(N);
+					b.append(round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
+					b.append("была ниже запрошенной").append(N);
+					b.append(round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
+					b.append(N);
 					b.append("Ордер не выполнился.");
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.showMarketState(args);
@@ -431,6 +442,7 @@ public class TgBotMessageHandler implements Handler {
 						"Куплено " + round(result.PFC_Executed_Amount.Value, 8) + " PFC за "
 							+ round(result.DCR_Executed_Amount.Value, 8) + " DCR по цене " + round(result.DCRPFC_Executed_Price, 8),
 						false);
+					this.saveOrder(args, result);
 					this.showBalances(args);
 				}
 			} else {
@@ -439,10 +451,11 @@ public class TgBotMessageHandler implements Handler {
 					this.showBalances(args);
 				} else if (result.PriceNotMet) {
 					final StringBuilder b = new StringBuilder();
-					b.append(result.PFC_Executed_Amount + " можно продать за " + round(result.DCR_Executed_Amount.Value, 8) + " DCR")
-						.append(N);
-					b.append("Текущая цена за 1 PFC на бирже " + round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
-					b.append("выше запрошенной " + round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
+					b.append("Цена за 1 PFC на бирже в момент выполнения ордера").append(N);
+					b.append(round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
+					b.append("была выше запрошенной").append(N);
+					b.append(round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
+					b.append(N);
 					b.append("Ордер не выполнился.");
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.showMarketState(args);
@@ -458,6 +471,36 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		return false;
+	}
+
+	private void showMenuCharts (final HandleArgs args) throws IOException {
+		final StringBuilder b = new StringBuilder();
+
+// b.append("Состояние пула биржи").append(N);
+
+		final FilesList files = args.filesystem.Executed.listAllChildren();
+		for (final File f : files) {
+			final ExecutedOrder order = f.readJson(ExecutedOrder.class);
+		}
+
+		this.walletBackEnd.plotChart();
+
+		Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
+	}
+
+	private void saveOrder (final HandleArgs args, final TradeResult result) {
+		try {
+			final String filename = System.currentTimeMillis() + ".json";
+			final File orderFile = args.filesystem.Executed.child(filename);
+			final ExecutedOrder order = new ExecutedOrder();
+			order.timestamp = System.currentTimeMillis();
+			order.date = (new Date(order.timestamp)).toString();
+			order.price = result.DCRPFC_Executed_Price;
+			order.size = result.PFC_Executed_Amount.Value;
+			orderFile.writeJson(order);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void reportUnfinishedTransaction (final HandleArgs args, final TradeResult result) throws IOException {
@@ -535,11 +578,13 @@ public class TgBotMessageHandler implements Handler {
 				b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
 				b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
 				b.append(OPERATIONS.BALANCE + " - балансы").append(N);
+				b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
 				b.append(N);
 			} else {
 				b.append("Пул балансируется...").append(N);
 				b.append(N);
 				b.append(OPERATIONS.MARKET + " - информация о состоянии").append(N);
+				b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
 				b.append(N);
 			}
 		}
@@ -695,6 +740,7 @@ public class TgBotMessageHandler implements Handler {
 			b.append(OPERATIONS.WITHDRAW + " - вывести монеты с биржи").append(N);
 			b.append(N);
 			b.append(OPERATIONS.MARKET + " - информация о состоянии торгового пула").append(N);
+			b.append(OPERATIONS.CHART + " - посмотреть график цены").append(N);
 			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
 			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
 			b.append(N);

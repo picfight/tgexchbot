@@ -16,7 +16,7 @@ import (
 	"strings"
 	"sync"
 	"time"
-
+	"encoding/base64"
 	"github.com/btcsuite/btcutil"
 	"github.com/jfixby/coin"
 	"github.com/jfixby/pin"
@@ -712,8 +712,23 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 
 func (s HttpsServer) PlotChart(dataJson string) string {
 	result := PlottedChart{}
+	data := ChartData{}
+	err := json.Unmarshal([]byte(dataJson), &data)
+	if err != nil {
+		result.Error = err.Error()
+		result.Success = false
+		return toJson(result)
+	}
 
-	result.ImageBase64 = ""
+	imgBytes, err := Plot(data)
+
+	if err != nil {
+		result.Error = err.Error()
+		result.Success = false
+		return toJson(result)
+	}
+
+	result.ImageBase64 = base64.StdEncoding.EncodeToString(imgBytes)
 
 	return toJson(result)
 

@@ -59,6 +59,22 @@ type AmountBTC struct {
 
 type PlottedChart struct {
 	ImageBase64 string `json: "ImageBase64"`
+	Error       string `json: "Error"`
+	Success     bool   `json: "Success"`
+}
+
+type DataPoint struct {
+	X float64 `json: "X"`
+	Y float64 `json: "Y"`
+}
+
+type ChartData struct {
+	Title      string      `json: "Title"`
+	DataPoints []DataPoint `json: "DataPoints"`
+	ImgWidth   float64     `json: "ImgWidth"`
+	ImgHeight  float64     `json: "ImgHeight"`
+	X_Label    string     `json: "X_Label"`
+	Y_Label    string     `json: "Y_Label"`
 }
 
 type TradeResult struct {
@@ -88,7 +104,7 @@ type TradeResult struct {
 	Requested_Price_Dcr_for_1_pfc float64 `json: "Requested_Price_Dcr_for_1_pfc"`
 
 	UnfinishedTransaction bool `json: "UnfinishedTransaction"`
-	PriceNotMet           bool  `json: "PriceNotMet"`
+	PriceNotMet           bool `json: "PriceNotMet"`
 }
 
 type TransactionResult struct {

@@ -12,37 +12,37 @@ public class FilesystemSetup {
 		setup.Root = root;
 		setup.Users = setup.Root.child("users");
 		setup.Orders = setup.Root.child("orders");
-		setup.Newo = setup.Orders.child("new");
+// setup.Newo = setup.Orders.child("new");
 		setup.Executed = setup.Orders.child("executed");
-		setup.Expired = setup.Orders.child("expired");
-		setup.Processing = setup.Orders.child("processing");
-		setup.Error = setup.Processing.child("error");
-		setup.NoEnoughBTC = setup.Processing.child("no_btc");
-		setup.NoEnoughPFC = setup.Processing.child("no_pfc");
+// setup.Expired = setup.Orders.child("expired");
+// setup.Processing = setup.Orders.child("processing");
+// setup.Error = setup.Processing.child("error");
+// setup.NoEnoughBTC = setup.Processing.child("no_btc");
+// setup.NoEnoughPFC = setup.Processing.child("no_pfc");
 	}
 
 	public File Root;
 	public File Orders;
 	public File Users;
-
-	public File Newo;
+//
+// public File Newo;
 	public File Executed;
-	public File Expired;
-	public File Processing;
-
-	public File Error;
-	public File NoEnoughBTC;
-	public File NoEnoughPFC;
+// public File Expired;
+// public File Processing;
+//
+// public File Error;
+// public File NoEnoughBTC;
+// public File NoEnoughPFC;
 
 	public void deploy () throws IOException {
 		final FilesystemSetup setup = this;
-		setup.Newo.makeFolder();
+// setup.Newo.makeFolder();
 		setup.Users.makeFolder();
 		setup.Executed.makeFolder();
-		setup.Expired.makeFolder();
-		setup.Error.makeFolder();
-		setup.NoEnoughBTC.makeFolder();
-		setup.NoEnoughPFC.makeFolder();
+// setup.Expired.makeFolder();
+// setup.Error.makeFolder();
+// setup.NoEnoughBTC.makeFolder();
+// setup.NoEnoughPFC.makeFolder();
 	}
 
 }

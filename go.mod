@@ -11,4 +11,6 @@ require (
 	github.com/jfixby/pin v0.0.0-20190926185208-4828e1e664f4
 	github.com/picfight/pfcd v0.0.0-20191229010435-dfe5cf45f91b
 	github.com/picfight/picfightcoin v0.0.0-20191107151210-0ab5c80ba5bc
+	github.com/pplcc/plotext v0.0.0-20180221170324-68ab3c6e05c3 // indirect
+	gonum.org/v1/plot v0.8.1 // indirect
 )
