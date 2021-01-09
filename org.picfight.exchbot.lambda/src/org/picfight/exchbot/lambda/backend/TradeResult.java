@@ -10,6 +10,9 @@ public class TradeResult {
 	public boolean Success;
 // Success bool `json: "Success"`
 
+	public boolean NoEnoughFunds;
+// Success bool `json: "NoEnoughFunds"`
+
 	public String ErrorMessage;
 // ErrorMessage string `json: "ErrorMessage"`
 

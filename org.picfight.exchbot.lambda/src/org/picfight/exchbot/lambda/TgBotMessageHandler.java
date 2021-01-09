@@ -30,6 +30,7 @@ import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
 public class TgBotMessageHandler implements Handler {
 	public static final String WALLET_CHECK = "/walletcheck";
+	private static final double SPREAD = 0.0;
 	public final WalletBackEnd walletBackEnd;
 	public final TransactionBackEnd transactionsBackEnd;
 	{
@@ -298,12 +299,11 @@ public class TgBotMessageHandler implements Handler {
 				if (!result.Executed) {
 					final StringBuilder b = new StringBuilder();
 
-					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
+					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price * (1 - SPREAD);
 					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
 					b.append(N);
-					b.append(
-						result.PFC_Executed_Amount + " PFC можно продать за " + round(result.DCR_Executed_Amount.Value, 6) + " DCR")
+					b.append(result.PFC_Executed_Amount + " можно продать за " + round(result.DCR_Executed_Amount.Value, 6) + " DCR")
 						.append(N);
 
 					b.append(N);
@@ -319,7 +319,13 @@ public class TgBotMessageHandler implements Handler {
 					Handlers.respond(bot, chatid, "Executed: " + result, false);
 				}
 			} else {
-				Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+				if (result.NoEnoughFunds) {
+					Handlers.respond(bot, chatid, "Не хватает монет для выставления ордера. Нужно " + result.PFC_Executed_Amount,
+						false);
+					this.showBalances(args);
+				} else {
+					Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+				}
 			}
 
 			return true;
@@ -390,12 +396,11 @@ public class TgBotMessageHandler implements Handler {
 				if (!result.Executed) {
 					final StringBuilder b = new StringBuilder();
 
-					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
+					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price * (1 + SPREAD);
 					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
 					b.append(N);
-					b.append(
-						result.PFC_Executed_Amount + " PFC можно купить за " + round(result.DCR_Executed_Amount.Value, 6) + " DCR")
+					b.append(result.PFC_Executed_Amount + " можно купить за " + round(result.DCR_Executed_Amount.Value, 6) + " DCR")
 						.append(N);
 
 					b.append(N);
@@ -411,7 +416,13 @@ public class TgBotMessageHandler implements Handler {
 					Handlers.respond(bot, chatid, "Executed: " + result, false);
 				}
 			} else {
-				Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+				if (result.NoEnoughFunds) {
+					Handlers.respond(bot, chatid, "Не хватает монет для выставления ордера. Нужно " + result.DCR_Executed_Amount,
+						false);
+					this.showBalances(args);
+				} else {
+					Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+				}
 			}
 
 			return true;
@@ -450,27 +461,53 @@ public class TgBotMessageHandler implements Handler {
 	private void showMarketState (final HandleArgs args) throws IOException, BackendException {
 		final StringBuilder b = new StringBuilder();
 
-		b.append("В пуле биржи находится:").append(N);
-
+		b.append("Состояние пула биржи").append(N);
+		b.append(N);
 		{
 			final PFCAddress exch_pfc_address = EXCHANGE_PFC_ADDRESS();
 			final PFCBalance exch_pfc_balance = this.walletBackEnd.getPFCBallance(exch_pfc_address, 1);
-			b.append(exch_pfc_balance.Spendable.Value + " PFC").append(N);
 			final DCRAddress exch_dcr_address = EXCHANGE_DCR_ADDRESS();
 			final DCRBalance exch_dcr_balance = this.walletBackEnd.getDCRBallance(exch_dcr_address, 1);
-			b.append(exch_dcr_balance.Spendable.Value + " DCR").append(N);
+			{
 
-			final double dcr_for_1_pfc = exch_dcr_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
-			final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
-			b.append(N);
-			b.append("1 PFC стоит " + round(dcr_for_1_pfc, 6) + " DCR или " + round(usd_for_1_pfc, 2) + "$").append(N);
-			b.append(N);
-			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
-			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
-			b.append(N);
+				final double unconfirmed_pfc = exch_pfc_balance.Unconfirmed.Value;
+				final double balance_pfc = exch_pfc_balance.Spendable.Value;
+				final double unconfirmed_dcr = exch_dcr_balance.Unconfirmed.Value;
+				final double balance_dcr = exch_dcr_balance.Spendable.Value;
+
+				b.append("Доступно для торгов:").append(N);
+				b.append("" + balance_pfc + " PFC ").append(N);
+				b.append("" + balance_dcr + " DCR ").append(N);
+				b.append(N);
+				if (unconfirmed_dcr > 0 || unconfirmed_pfc > 0) {
+					b.append("и ещё ожидается:").append(N);
+					if (unconfirmed_pfc > 0) {
+						b.append("" + unconfirmed_pfc + " PFC ").append(N);
+					}
+					if (unconfirmed_dcr > 0) {
+						b.append("" + unconfirmed_dcr + " DCR ").append(N);
+					}
+				}
+				b.append(N);
+			}
+
+			if (exch_dcr_balance.Spendable.Value != 0 && exch_pfc_balance.Spendable.Value != 0) {
+				final double dcr_for_1_pfc = exch_dcr_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
+				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+				b.append("1 PFC стоит " + round(dcr_for_1_pfc, 6) + " DCR или " + round(usd_for_1_pfc, 2) + "$").append(N);
+				b.append(N);
+				b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
+				b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
+				b.append(N);
+			} else {
+				b.append("Пул балансируется...").append(N);
+				b.append(N);
+				b.append(OPERATIONS.MARKET + " - информация о состоянии").append(N);
+				b.append(N);
+			}
 		}
 		b.append(
-			"Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансируется состоянием пула.")
+			"Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансируется состоянием пула. Балансировка в среднем занимает 5 минут.")
 			.append(N);
 
 		Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
@@ -540,44 +577,46 @@ public class TgBotMessageHandler implements Handler {
 		b.append("Твои балансы").append(N);
 		b.append(N);
 		{
-			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-			final PFCBalance pfc1 = this.walletBackEnd.getPFCBallance(pfc_address, 1);
-// final PFCBalance pfc3 = this.walletBackEnd.getPFCBallance(pfc_address, 3);
-			final double tradable = pfc1.Spendable.Value;
-			final double unconfirmed = pfc1.Unconfirmed.Value;
-// final double tradable = pfc3.Spendable.Value;
-			final String sign = "PFC";
+			final PFCAddress user_pfc_address = settings.getExchangeAddressPFC();
+			final PFCBalance user_pfc_balance = this.walletBackEnd.getPFCBallance(user_pfc_address, 1);
+			final DCRAddress user_dcr_address = settings.getExchangeAddressDCR();
+			final DCRBalance user_dcr_balance = this.walletBackEnd.getDCRBallance(user_dcr_address, 1);
+			{
 
-			this.balanceString(b, tradable, unconfirmed, tradable, sign);
+				final double unconfirmed_pfc = user_pfc_balance.Unconfirmed.Value;
+				final double balance_pfc = user_pfc_balance.Spendable.Value;
+				final double unconfirmed_dcr = user_dcr_balance.Unconfirmed.Value;
+				final double balance_dcr = user_dcr_balance.Spendable.Value;
 
+				b.append("Доступно для торгов:").append(N);
+				b.append("" + balance_pfc + " PFC ").append(N);
+				b.append("" + balance_dcr + " DCR ").append(N);
+				b.append(N);
+				if (unconfirmed_dcr > 0 || unconfirmed_pfc > 0) {
+					b.append("и ещё ожидается:").append(N);
+					if (unconfirmed_pfc > 0) {
+						b.append("" + unconfirmed_pfc + " PFC ").append(N);
+					}
+					if (unconfirmed_dcr > 0) {
+						b.append("" + unconfirmed_dcr + " DCR ").append(N);
+					}
+				}
+				b.append(N);
+			}
 		}
-		b.append(N);
-		{
-			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
-			final DCRBalance dcr1 = this.walletBackEnd.getDCRBallance(dcr_address, 1);
-// final DCRBalance dcr3 = this.walletBackEnd.getDCRBallance(dcr_address, 3);
-			final double tradable = dcr1.Spendable.Value;
-			final double unconfirmed = dcr1.Unconfirmed.Value;
-// final double tradable = dcr3.Spendable.Value;
-			final String sign = "DCR";
-
-			this.balanceString(b, tradable, unconfirmed, tradable, sign);
-
-		}
-		b.append(N);
 		b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
 		b.append("Вывести монеты с биржи - " + OPERATIONS.WITHDRAW).append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
-	private void balanceString (final StringBuilder b, final double balance, final double unconfirmed, final double tradable,
-		final String sign) {
-		b.append("зачислено: " + balance + " " + sign).append(N);
-		if (unconfirmed > 0) {
-			b.append("ожидается: " + unconfirmed + " " + sign).append(N);
-		}
-// b.append("доступно для торгов: " + tradable + " " + sign).append(N);
-	}
+// private void balanceString (final StringBuilder b, final double balance, final double unconfirmed, final double tradable,
+// final String sign) {
+// b.append("зачислено: " + balance + " " + sign).append(N);
+// if (unconfirmed > 0) {
+// b.append("ожидается: " + unconfirmed + " " + sign).append(N);
+// }
+//// b.append("доступно для торгов: " + tradable + " " + sign).append(N);
+// }
 
 	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {
 		final StringBuilder b = new StringBuilder();
@@ -615,7 +654,7 @@ public class TgBotMessageHandler implements Handler {
 			b.append(OPERATIONS.DEPOSIT + " - пополнить балансы").append(N);
 			b.append(OPERATIONS.WITHDRAW + " - вывести монеты с биржи").append(N);
 			b.append(N);
-			b.append(OPERATIONS.MARKET + " - информация о торгах").append(N);
+			b.append(OPERATIONS.MARKET + " - информация о состоянии торгового пула").append(N);
 			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
 			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
 			b.append(N);

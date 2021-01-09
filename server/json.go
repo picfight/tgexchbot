@@ -63,6 +63,7 @@ type PlottedChart struct {
 
 type TradeResult struct {
 	Success      bool   `json: "Success"`
+	NoEnoughFunds      bool   `json: "NoEnoughFunds"`
 	ErrorMessage string `json: "ErrorMessage"`
 	Operation    string `json: "Operation"`
 	Executed     bool   `json: "Executed"`
