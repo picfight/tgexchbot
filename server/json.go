@@ -57,6 +57,10 @@ type AmountBTC struct {
 	Value float64 `json: "Value"`
 }
 
+type PlottedChart struct {
+	ImageBase64 string `json: "ImageBase64"`
+}
+
 type TradeResult struct {
 	Success      bool   `json: "Success"`
 	ErrorMessage string `json: "ErrorMessage"`

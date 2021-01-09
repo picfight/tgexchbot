@@ -7,15 +7,14 @@ import (
 	btccfg "github.com/btcsuite/btcd/chaincfg"
 	dcrutil "github.com/decred/dcrd/dcrutil"
 	pfcutil "github.com/picfight/pfcd/dcrutil"
-	"os"
-	"strconv"
-	"strings"
-	"sync"
-
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"path"
+	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/btcsuite/btcutil"
@@ -94,11 +93,44 @@ func (s *HttpsServer) Handler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, responseString)
 }
 
+var mutex = &sync.Mutex{}
+
 func (s *HttpsServer) processRequest(command string, access_key string, params http.Header) string {
 	valid := checkAccessKey(access_key)
 	if !valid {
 		return `{"error":"Access denied, invalid key"}`
 	}
+
+	if command == "new_pfc_address" {
+		account_name := params["Account_name"][0]
+		return s.obrtainPFCAddress(account_name)
+	}
+
+	if command == "new_btc_address" {
+		account_name := params["Account_name"][0]
+		return s.obrtainBTCAddress(account_name)
+	}
+
+	if command == "new_dcr_address" {
+		account_name := params["Account_name"][0]
+		return s.obrtainDCRAddress(account_name)
+	}
+
+	if command == "analyze_string" {
+		raw_text := params["Raw_text"]
+		//pin.D("Raw_text", raw_text)
+		return s.AnalyzeString(raw_text[0])
+	}
+
+	if command == "plot_chart" {
+		chartDataJson := params["Chart_data_json"][0]
+		//pin.D("Raw_text", raw_text)
+		return s.PlotChart(chartDataJson)
+	}
+
+	mutex.Lock()
+	//------------------------------------------------------------------------------
+	defer mutex.Unlock()
 
 	if command == "rate" {
 		return s.processRate()
@@ -161,27 +193,6 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 		}
 		DCR_ToAddress := params["Dcr_toaddress"][0]
 		return s.TransferDCR(DCR_FromAccountAddress, DCR_ToAddress, DCR_Amount)
-	}
-
-	if command == "new_pfc_address" {
-		account_name := params["Account_name"][0]
-		return s.obrtainPFCAddress(account_name)
-	}
-
-	if command == "new_btc_address" {
-		account_name := params["Account_name"][0]
-		return s.obrtainBTCAddress(account_name)
-	}
-
-	if command == "new_dcr_address" {
-		account_name := params["Account_name"][0]
-		return s.obrtainDCRAddress(account_name)
-	}
-
-	if command == "analyze_string" {
-		raw_text := params["Raw_text"]
-		//pin.D("Raw_text", raw_text)
-		return s.AnalyzeString(raw_text[0])
 	}
 
 	return `{"status":"ok"}`
@@ -543,8 +554,6 @@ func (s HttpsServer) TransferDCR(DCR_FromAccountAddress string, DCR_ToAddress st
 	return toJson(result)
 }
 
-var mutex = &sync.Mutex{}
-
 func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) string {
 
 	result := TradeResult{}
@@ -555,8 +564,6 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) 
 	}
 	result.GetQuote = getQuote
 
-	mutex.Lock()
-	defer mutex.Unlock()
 	{
 		var SpendableDCR = 0.0
 		var SpendablePFC = 0.0
@@ -593,6 +600,12 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) 
 		result.DCRPFC_Ratio_BeforeTrade = SpendableDCR / SpendablePFC
 		PoolConstant := SpendableDCR * SpendablePFC
 		result.PoolConstant = PoolConstant
+		minPFCAmount := 10.0
+		if amountPFC <= minPFCAmount {
+			result.ErrorMessage = fmt.Sprintf("Requested amount(%v) must be > %v ", amountPFC, minPFCAmount)
+			result.Success = false
+			return toJson(result)
+		}
 
 		if result.Operation == "BUY" {
 			result.PFC_InPool_AfterTrade = SpendablePFC - amountPFC
@@ -619,6 +632,15 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool) 
 	}
 
 	return toJson(result)
+}
+
+func (s HttpsServer) PlotChart(dataJson string) string {
+	result := PlottedChart{}
+
+	result.ImageBase64 = ""
+
+	return toJson(result)
+
 }
 
 func receivedPFCByAddress(r []dcrjson.ListUnspentResult, address string, acc string, minConf int64) float64 {
