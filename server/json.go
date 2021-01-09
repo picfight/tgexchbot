@@ -70,14 +70,14 @@ type TradeResult struct {
 	DCRPFC_Ratio_BeforeTrade float64 `json: "DCRPFC_Ratio_BeforeTrade"`
 	DCRPFC_Ratio_AfterTrade  float64 `json: "DCRPFC_Ratio_AfterTrade"`
 
-	DCR_InPool_BeforeTrade float64 `json: "DCR_InPool_BeforeTrade"`
-	PFC_InPool_BeforeTrade float64 `json: "PFC_InPool_BeforeTrade"`
+	DCR_InPool_BeforeTrade AmountDCR `json: "DCR_InPool_BeforeTrade"`
+	PFC_InPool_BeforeTrade AmountPFC `json: "PFC_InPool_BeforeTrade"`
 	PoolConstant           float64 `json: "PoolConstant"`
-	PFC_InPool_AfterTrade  float64 `json: "PFC_InPool_AfterTrade"`
-	DCR_InPool_AfterTrade  float64 `json: "DCR_InPool_AfterTrade"`
+	PFC_InPool_AfterTrade  AmountPFC `json: "PFC_InPool_AfterTrade"`
+	DCR_InPool_AfterTrade  AmountDCR `json: "DCR_InPool_AfterTrade"`
 
-	DCR_Executed_Amount float64 `json: "DCR_Executed_Amount"`
-	PFC_Executed_Amount float64 `json: "PFC_Executed_Amount"`
+	DCR_Executed_Amount AmountDCR `json: "DCR_Executed_Amount"`
+	PFC_Executed_Amount AmountPFC `json: "PFC_Executed_Amount"`
 
 	DCRPFC_Executed_Price float64 `json: "DCRPFC_Executed_Price"`
 

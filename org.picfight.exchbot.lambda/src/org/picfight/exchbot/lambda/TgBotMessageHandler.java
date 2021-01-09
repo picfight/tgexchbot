@@ -302,7 +302,8 @@ public class TgBotMessageHandler implements Handler {
 					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
 					b.append(N);
-					b.append(result.PFC_Executed_Amount + " PFC можно продать за " + round(result.DCR_Executed_Amount, 6) + " DCR")
+					b.append(
+						result.PFC_Executed_Amount + " PFC можно продать за " + round(result.DCR_Executed_Amount.Value, 6) + " DCR")
 						.append(N);
 
 					b.append(N);
@@ -312,9 +313,8 @@ public class TgBotMessageHandler implements Handler {
 					b.append("Для выполнения сделки по этой цене нужно отправить команду:");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
-					Handlers.respond(bot, chatid,
-						OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
-						false);
+					Handlers.respond(bot, chatid, OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
+						+ round(dcr_for_1_pfc, 10) + " execute", false);
 				} else {
 					Handlers.respond(bot, chatid, "Executed: " + result, false);
 				}
@@ -394,7 +394,8 @@ public class TgBotMessageHandler implements Handler {
 					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
 					b.append(N);
-					b.append(result.PFC_Executed_Amount + " PFC можно купить за " + round(result.DCR_Executed_Amount, 6) + " DCR")
+					b.append(
+						result.PFC_Executed_Amount + " PFC можно купить за " + round(result.DCR_Executed_Amount.Value, 6) + " DCR")
 						.append(N);
 
 					b.append(N);
@@ -404,9 +405,8 @@ public class TgBotMessageHandler implements Handler {
 					b.append("Для выполнения сделки по этой цене нужно отправить команду:");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
-					Handlers.respond(bot, chatid,
-						OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
-						false);
+					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
+						+ round(dcr_for_1_pfc, 10) + " execute", false);
 				} else {
 					Handlers.respond(bot, chatid, "Executed: " + result, false);
 				}

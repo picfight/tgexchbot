@@ -185,22 +185,24 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	if command == "transfer_pfc" {
 		PFC_FromAccountAddress := params["Pfc_fromaccountaddress"][0]
 		PFC_Amount_string := params["Pfc_amount"][0]
-		PFC_Amount, err := strconv.ParseFloat(PFC_Amount_string, 64)
+		Amount, err := strconv.ParseFloat(PFC_Amount_string, 64)
 		if err != nil {
 			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
 		PFC_ToAddress := params["Pfc_toaddress"][0]
+		PFC_Amount := AmountPFC{Value: Amount}
 		return s.TransferPFC(PFC_FromAccountAddress, PFC_ToAddress, PFC_Amount)
 	}
 
 	if command == "transfer_dcr" {
 		DCR_FromAccountAddress := params["Dcr_fromaccountaddress"][0]
 		DCR_Amount_string := params["Dcr_amount"][0]
-		DCR_Amount, err := strconv.ParseFloat(DCR_Amount_string, 64)
+		Amount, err := strconv.ParseFloat(DCR_Amount_string, 64)
 		if err != nil {
 			return fmt.Sprintf(`{"status":"%v"}`, err)
 		}
 		DCR_ToAddress := params["Dcr_toaddress"][0]
+		DCR_Amount := AmountDCR{Value: Amount}
 		return s.TransferDCR(DCR_FromAccountAddress, DCR_ToAddress, DCR_Amount)
 	}
 
@@ -485,15 +487,15 @@ func (s HttpsServer) TransferBTC(client_btc_wallet string, btc_amount float64, e
 	return ""
 }
 
-func (s HttpsServer) TransferPFC(PFC_FromAccountAddress string, PFC_ToAddress string, amountFloat float64) string {
-	result, err := s.executeTransferDCR(PFC_FromAccountAddress, PFC_ToAddress, amountFloat)
+func (s HttpsServer) TransferPFC(PFC_FromAccountAddress string, PFC_ToAddress string, amountFloat AmountPFC) string {
+	result, err := s.executeTransferPFC(PFC_FromAccountAddress, PFC_ToAddress, amountFloat)
 	if result == nil {
 		lang.CheckErr(err)
 	}
 	return toJson(result)
 }
 
-func (s HttpsServer) TransferDCR(DCR_FromAccountAddress string, DCR_ToAddress string, amountFloat float64) string {
+func (s HttpsServer) TransferDCR(DCR_FromAccountAddress string, DCR_ToAddress string, amountFloat AmountDCR) string {
 	result, err := s.executeTransferDCR(DCR_FromAccountAddress, DCR_ToAddress, amountFloat)
 	if result == nil {
 		lang.CheckErr(err)
@@ -542,8 +544,8 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 			SpendablePFC = balance.Balances[0].Spendable
 
 		}
-		result.DCR_InPool_BeforeTrade = SpendableDCR
-		result.PFC_InPool_BeforeTrade = SpendablePFC
+		result.DCR_InPool_BeforeTrade.Value = SpendableDCR
+		result.PFC_InPool_BeforeTrade.Value = SpendablePFC
 		result.DCRPFC_Ratio_BeforeTrade = SpendableDCR / SpendablePFC
 		PoolConstant := SpendableDCR * SpendablePFC
 		result.PoolConstant = PoolConstant
@@ -555,32 +557,32 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 		}
 
 		if result.Operation == "BUY" {
-			result.PFC_InPool_AfterTrade = SpendablePFC - amountPFC
+			result.PFC_InPool_AfterTrade.Value = SpendablePFC - amountPFC
 		} else {
-			result.PFC_InPool_AfterTrade = SpendablePFC + amountPFC
+			result.PFC_InPool_AfterTrade.Value = SpendablePFC + amountPFC
 		}
 
-		if result.PFC_InPool_AfterTrade <= 0 {
+		if result.PFC_InPool_AfterTrade.Value <= 0 {
 			result.ErrorMessage = fmt.Sprintf("Requested amount(%v) exceeds pool size(%v)", amountPFC, SpendablePFC)
 			result.Success = false
 			return toJson(result)
 		}
 
-		result.DCR_InPool_AfterTrade = PoolConstant / result.PFC_InPool_AfterTrade
+		result.DCR_InPool_AfterTrade.Value = PoolConstant / result.PFC_InPool_AfterTrade.Value
 
-		if result.DCR_InPool_AfterTrade <= 0 {
+		if result.DCR_InPool_AfterTrade.Value <= 0 {
 			result.ErrorMessage = fmt.Sprintf("Pool drain (%v DCR) ", result.DCR_InPool_AfterTrade)
 			result.Success = false
 			return toJson(result)
 		}
 
-		result.DCR_Executed_Amount = -(result.DCR_InPool_AfterTrade - result.DCR_InPool_BeforeTrade)
+		result.DCR_Executed_Amount.Value = -(result.DCR_InPool_AfterTrade.Value - result.DCR_InPool_BeforeTrade.Value)
 		if result.Operation == "BUY" {
-			result.DCR_Executed_Amount = -result.DCR_Executed_Amount
+			result.DCR_Executed_Amount.Value = -result.DCR_Executed_Amount.Value
 		}
-		result.PFC_Executed_Amount = amountPFC
-		result.DCRPFC_Ratio_AfterTrade = result.DCR_InPool_AfterTrade / result.PFC_InPool_AfterTrade
-		result.DCRPFC_Executed_Price = result.DCR_Executed_Amount / amountPFC
+		result.PFC_Executed_Amount.Value = amountPFC
+		result.DCRPFC_Ratio_AfterTrade = result.DCR_InPool_AfterTrade.Value / result.PFC_InPool_AfterTrade.Value
+		result.DCRPFC_Executed_Price = result.DCR_Executed_Amount.Value / amountPFC
 
 	}
 
@@ -645,7 +647,7 @@ func (s HttpsServer) PlotChart(dataJson string) string {
 
 }
 
-func (s HttpsServer) executeTransferPFC(PFC_FromAccountAddress string, PFC_ToAddress string, amountFloat float64) (*TransactionResult, error) {
+func (s HttpsServer) executeTransferPFC(PFC_FromAccountAddress string, PFC_ToAddress string, amountFloat AmountPFC) (*TransactionResult, error) {
 	result := &TransactionResult{}
 
 	client, err := connect.PFCWallet(s.config)
@@ -673,14 +675,12 @@ func (s HttpsServer) executeTransferPFC(PFC_FromAccountAddress string, PFC_ToAdd
 	}
 	result.PFC_ToAddress = PFC_ToAddress
 
-	amount, err := pfcutil.NewAmount(amountFloat)
+	amount, err := pfcutil.NewAmount(amountFloat.Value)
 	if err != nil {
 		return nil, err
 	}
 
-	result.PFC_Amount = AmountPFC{
-		Value: amountFloat,
-	}
+	result.PFC_Amount = amountFloat
 
 	hash, err := client.SendFrom(result.PFC_ResolvedAccountName, toAddr, amount)
 
@@ -698,7 +698,7 @@ func (s HttpsServer) executeTransferPFC(PFC_FromAccountAddress string, PFC_ToAdd
 
 }
 
-func (s HttpsServer) executeTransferDCR(DCR_FromAccountAddress string, DCR_ToAddress string, amountFloat float64) (*TransactionResult, error) {
+func (s HttpsServer) executeTransferDCR(DCR_FromAccountAddress string, DCR_ToAddress string, amountFloat AmountDCR) (*TransactionResult, error) {
 	result := &TransactionResult{}
 
 	client, err := connect.DCRWallet(s.config)
@@ -726,14 +726,12 @@ func (s HttpsServer) executeTransferDCR(DCR_FromAccountAddress string, DCR_ToAdd
 	}
 	result.DCR_ToAddress = DCR_ToAddress
 
-	amount, err := dcrutil.NewAmount(amountFloat)
+	amount, err := dcrutil.NewAmount(amountFloat.Value)
 	if err != nil {
 		return nil, err
 	}
 
-	result.DCR_Amount = AmountDCR{
-		Value: amountFloat,
-	}
+	result.DCR_Amount = amountFloat
 
 	hash, err := client.SendFrom(result.DCR_ResolvedAccountName, toAddr, amount)
 
