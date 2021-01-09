@@ -13,6 +13,9 @@ public class TradeResult {
 	public boolean NoEnoughFunds;
 // Success bool `json: "NoEnoughFunds"`
 
+	public boolean PriceNotMet;
+// Success bool `json: "PriceNotMet"`
+
 	public String ErrorMessage;
 // ErrorMessage string `json: "ErrorMessage"`
 

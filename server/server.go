@@ -624,6 +624,22 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 	}
 	// order execution:
 	{
+		if result.Operation == "BUY" {
+			if result.DCRPFC_Executed_Price > Dcr_for_1_pfc_order {
+				result.PriceNotMet = true
+				result.Success = false
+				return toJson(result)
+			}
+		}
+		if result.Operation == "SELL" {
+			if result.DCRPFC_Executed_Price < Dcr_for_1_pfc_order {
+				result.PriceNotMet = true
+				result.Success = false
+				return toJson(result)
+			}
+		}
+	}
+	{
 		result.Executed = true
 		if result.Operation == "BUY" { //buy pfc
 
