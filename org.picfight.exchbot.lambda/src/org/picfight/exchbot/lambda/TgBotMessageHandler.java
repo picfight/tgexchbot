@@ -488,6 +488,7 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		final PlottedChart chartResult = this.walletBackEnd.plotChart("");
+		Handlers.respond(args.bot, args.update.message.chatID, chartResult.toString(), false);
 
 		if (chartResult.Success) {
 
@@ -496,7 +497,6 @@ public class TgBotMessageHandler implements Handler {
 			Handlers.respond(args.bot, args.update.message.chatID, is, false);
 		}
 
-// Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
 	}
 
 	private void saveOrder (final HandleArgs args, final TradeResult result) {
