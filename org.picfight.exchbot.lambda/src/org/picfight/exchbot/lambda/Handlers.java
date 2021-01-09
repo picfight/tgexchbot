@@ -2,10 +2,12 @@
 package org.picfight.exchbot.lambda;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.picfight.exchbot.lambda.backend.UserSettings;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -88,6 +90,34 @@ public class Handlers {
 		throw new IOException(x);
 	}
 
+	public static void respond (final AbsSender bot, final Long chatid, final InputStream inputStream, final boolean addlink)
+		throws IOException {
+
+		TelegramApiException x = null;
+		for (int i = 0; i < 5; i++) {
+			try {
+				final SendPhoto sendMessage = new SendPhoto().setChatId(chatid).setPhoto("", inputStream);
+				sendMessage.setParseMode(ParseMode.HTML);
+
+				// sendMessage.enableMarkdown(true);
+// L.d("Sending message[" + i + "]: " + sendMessage);
+
+				if (bot != null) {
+					bot.execute(sendMessage);
+					L.d("Message sent: " + sendMessage);
+				} else {
+					L.d("Resulting message: " + sendMessage);
+				}
+				return;
+			} catch (final TelegramApiException e) {
+				x = e;
+				e.printStackTrace();
+				Sys.sleep(1000);
+			}
+		}
+
+		throw new IOException(x);
+	}
 }
 
 class HandleArgs {

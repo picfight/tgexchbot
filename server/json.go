@@ -73,8 +73,8 @@ type ChartData struct {
 	DataPoints []DataPoint `json: "DataPoints"`
 	ImgWidth   float64     `json: "ImgWidth"`
 	ImgHeight  float64     `json: "ImgHeight"`
-	X_Label    string     `json: "X_Label"`
-	Y_Label    string     `json: "Y_Label"`
+	X_Label    string      `json: "X_Label"`
+	Y_Label    string      `json: "Y_Label"`
 }
 
 type TradeResult struct {

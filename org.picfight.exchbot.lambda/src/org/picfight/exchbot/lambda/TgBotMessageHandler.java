@@ -1,6 +1,7 @@
 
 package org.picfight.exchbot.lambda;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,6 +17,7 @@ import org.picfight.exchbot.lambda.backend.DCRAddress;
 import org.picfight.exchbot.lambda.backend.DCRBalance;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
+import org.picfight.exchbot.lambda.backend.PlottedChart;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
 import org.picfight.exchbot.lambda.backend.TradeResult;
 import org.picfight.exchbot.lambda.backend.TransactionBackEnd;
@@ -25,8 +27,10 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import com.jfixby.scarabei.api.base64.Base64;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.FilesList;
+import com.jfixby.scarabei.api.java.ByteArray;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
@@ -473,7 +477,7 @@ public class TgBotMessageHandler implements Handler {
 		return false;
 	}
 
-	private void showMenuCharts (final HandleArgs args) throws IOException {
+	private void showMenuCharts (final HandleArgs args) throws IOException, BackendException {
 		final StringBuilder b = new StringBuilder();
 
 // b.append("Состояние пула биржи").append(N);
@@ -483,9 +487,16 @@ public class TgBotMessageHandler implements Handler {
 			final ExecutedOrder order = f.readJson(ExecutedOrder.class);
 		}
 
-		this.walletBackEnd.plotChart();
+		final PlottedChart chartResult = this.walletBackEnd.plotChart("");
 
-		Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
+		if (chartResult.Success) {
+
+			final ByteArray pngbytes = Base64.decode(chartResult.ImageBase64);
+			final ByteArrayInputStream is = new ByteArrayInputStream(pngbytes.toArray());
+			Handlers.respond(args.bot, args.update.message.chatID, is, false);
+		}
+
+// Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
 	}
 
 	private void saveOrder (final HandleArgs args, final TradeResult result) {
