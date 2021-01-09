@@ -316,13 +316,16 @@ public class TgBotMessageHandler implements Handler {
 					Handlers.respond(bot, chatid, OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
 						+ round(dcr_for_1_pfc, 10) + " execute", false);
 				} else {
-					Handlers.respond(bot, chatid, "Executed: " + result, false);
+					Handlers.respond(bot, chatid, "Продано " + result.PFC_Executed_Amount + " за " + result.DCR_Executed_Amount
+						+ " по цене " + result.DCRPFC_Executed_Price, false);
+					this.showBalances(args);
 				}
 			} else {
 				if (result.NoEnoughFunds) {
-					Handlers.respond(bot, chatid, "Не хватает монет для выставления ордера. Нужно " + result.PFC_Executed_Amount,
-						false);
+					Handlers.respond(bot, chatid, "Не хватает монет для ордера. Нужно " + result.PFC_Executed_Amount, false);
 					this.showBalances(args);
+				} else if (result.UnfinishedTransaction) {
+					this.reportUnfinishedTransaction(args, result);
 				} else {
 					Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
 				}
@@ -413,13 +416,16 @@ public class TgBotMessageHandler implements Handler {
 					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
 						+ round(dcr_for_1_pfc, 10) + " execute", false);
 				} else {
-					Handlers.respond(bot, chatid, "Executed: " + result, false);
+					Handlers.respond(bot, chatid, "Куплено " + result.PFC_Executed_Amount + " за " + result.DCR_Executed_Amount
+						+ " по цене " + result.DCRPFC_Executed_Price, false);
+					this.showBalances(args);
 				}
 			} else {
 				if (result.NoEnoughFunds) {
-					Handlers.respond(bot, chatid, "Не хватает монет для выставления ордера. Нужно " + result.DCR_Executed_Amount,
-						false);
+					Handlers.respond(bot, chatid, "Не хватает монет для ордера. Нужно " + result.DCR_Executed_Amount, false);
 					this.showBalances(args);
+				} else if (result.UnfinishedTransaction) {
+					this.reportUnfinishedTransaction(args, result);
 				} else {
 					Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
 				}
@@ -430,6 +436,14 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 		return false;
+	}
+
+	private void reportUnfinishedTransaction (final HandleArgs args, final TradeResult result) throws IOException {
+		final UserSettings settings = args.settings;
+		final AbsSender bot = args.bot;
+		final Long chatid = args.update.message.chatID;
+		Handlers.respond(bot, chatid, "Похоже пул протёк. Отправь @JFixby следующий отчёт об ошибке:", false);
+		Handlers.respond(bot, chatid, "" + result.toString(), false);
 	}
 
 	private void buyHelp (final AbsSender bot, final Long chatid) throws IOException {
@@ -487,8 +501,8 @@ public class TgBotMessageHandler implements Handler {
 					if (unconfirmed_dcr > 0) {
 						b.append("" + unconfirmed_dcr + " DCR ").append(N);
 					}
+					b.append(N);
 				}
-				b.append(N);
 			}
 
 			if (exch_dcr_balance.Spendable.Value != 0 && exch_pfc_balance.Spendable.Value != 0) {
@@ -600,12 +614,15 @@ public class TgBotMessageHandler implements Handler {
 					if (unconfirmed_dcr > 0) {
 						b.append("" + unconfirmed_dcr + " DCR ").append(N);
 					}
+					b.append(N);
 				}
-				b.append(N);
 			}
 		}
-		b.append("Пополнить балансы - " + OPERATIONS.DEPOSIT).append(N);
-		b.append("Вывести монеты с биржи - " + OPERATIONS.WITHDRAW).append(N);
+		b.append(OPERATIONS.DEPOSIT + " - пополнить балансы").append(N);
+		b.append(OPERATIONS.WITHDRAW + " - вывести монеты с биржи").append(N);
+		b.append(OPERATIONS.MARKET + " - информация о состоянии торгового пула").append(N);
+		b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
+		b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
