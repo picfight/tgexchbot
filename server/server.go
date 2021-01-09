@@ -562,7 +562,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 		result.DCRPFC_Ratio_BeforeTrade = SpendableDCR / SpendablePFC
 		PoolConstant := SpendableDCR * SpendablePFC
 		result.PoolConstant = PoolConstant
-		minPFCAmount := 10.0
+		minPFCAmount := 0.0
 		if amountPFC <= minPFCAmount {
 			result.ErrorMessage = fmt.Sprintf("Requested amount(%v) must be > %v ", amountPFC, minPFCAmount)
 			result.Success = false
