@@ -2,6 +2,7 @@
 package org.picfight.exchbot.lambda;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -261,8 +262,29 @@ public class TgBotMessageHandler implements Handler {
 
 			final boolean getQuote = true;
 			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.SELL, getQuote, amount);
+			if (result.Success) {
+				final StringBuilder b = new StringBuilder();
 
-			Handlers.respond(bot, chatid, result.toString(), false);
+				final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
+				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+
+				b.append(N);
+				b.append(result.PFC_Executed_Amount + " PFC можно продать за " + round(result.DCR_Executed_Amount, 6) + " DCR")
+					.append(N);
+
+				b.append(N);
+				b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
+					+ round(usd_for_1_pfc, 4) + "$").append(N);
+				b.append(N);
+				b.append("Для выполнения сделки по этой цене нужно отправить команду:");
+				Handlers.respond(bot, chatid, b.toString(), false);
+
+				Handlers.respond(bot, chatid,
+					OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
+					false);
+			} else {
+				Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+			}
 
 			return true;
 
@@ -300,18 +322,23 @@ public class TgBotMessageHandler implements Handler {
 			if (result.Success) {
 				final StringBuilder b = new StringBuilder();
 
-				final double dcr_for_1_pfc = result.DCRPFC_Price_AfterTrade;
+				final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
 				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
 				b.append(N);
-				b.append(result.PFC_Executed_Amount + " PFC можно купить за " + result.DCR_Executed_Amount + " DCR").append(N);
-				b.append("1 PFC при этом будет стоить " + round(dcr_for_1_pfc, 8) + " DCR или " + round(usd_for_1_pfc, 2) + "$")
+				b.append(result.PFC_Executed_Amount + " PFC можно купить за " + round(result.DCR_Executed_Amount, 6) + " DCR")
 					.append(N);
-				b.append("для выподнения сделки по этой цене нужно отправить команду:");
+
+				b.append(N);
+				b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
+					+ round(usd_for_1_pfc, 4) + "$").append(N);
+				b.append(N);
+				b.append("Для выполнения сделки по этой цене нужно отправить команду:");
 				Handlers.respond(bot, chatid, b.toString(), false);
 
 				Handlers.respond(bot, chatid,
-					OPERATIONS.BUY_PFC + " " + result.PFC_Executed_Amount + " " + round(dcr_for_1_pfc, 8) + " execute", false);
+					OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
+					false);
 			} else {
 				Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
 			}
@@ -381,7 +408,14 @@ public class TgBotMessageHandler implements Handler {
 
 	static String round (final double v, final int digit) {
 // final double r = 100000;
-		return String.format("%." + digit + "f", v);
+		final BigDecimal number = new BigDecimal(String.format("%." + digit + "f", v));
+		return (number.stripTrailingZeros().toPlainString());
+// final double d = v;
+// if (d == (long)d) {
+// return String.format("%d", (long)d);
+// } else {
+// return String.format("%s", d);
+// }
 	}
 
 	public static double usd_for_1_pfc (final double dcr_for_1_pfc) throws IOException {

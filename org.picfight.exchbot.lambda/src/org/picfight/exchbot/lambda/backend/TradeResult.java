@@ -9,8 +9,8 @@ public class TradeResult {
 	public String ErrorMessage;
 	public String Operation;
 	public boolean GetQuote;
-	public double DCRPFC_Price_BeforeTrade;
-	public double DCRPFC_Price_AfterTrade;
+	public double DCRPFC_Ratio_BeforeTrade;
+	public double DCRPFC_Ratio_AfterTrade;
 	public double DCR_InPool_BeforeTrade;
 	public double PFC_InPool_BeforeTrade;
 	public double PoolConstant;
