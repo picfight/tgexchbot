@@ -35,6 +35,7 @@ import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
+import com.jfixby.scarabei.api.util.Utils;
 
 public class TgBotMessageHandler implements Handler {
 	public static final String WALLET_CHECK = "/walletcheck";
@@ -478,34 +479,38 @@ public class TgBotMessageHandler implements Handler {
 		return false;
 	}
 
-	private void showMenuCharts (final HandleArgs args) throws IOException, BackendException {
-		final StringBuilder b = new StringBuilder();
+	private void showMenuCharts (final HandleArgs args) throws IOException {
+		try {
+			final StringBuilder b = new StringBuilder();
 
 // b.append("Состояние пула биржи").append(N);
 
-		final FilesList files = args.filesystem.Executed.listAllChildren();
-		final ChartData data = new ChartData();
+			final FilesList files = args.filesystem.Executed.listAllChildren();
+			final ChartData data = new ChartData();
 
-		data.Title = "PFC/DCR";
-		data.X_Label = "Time";
-		data.Y_Label = "Price";
-		data.ImgWidth = 640.0;
-		data.ImgHeight = 480.0;
+			data.Title = "PFC/DCR";
+			data.X_Label = "Time";
+			data.Y_Label = "Price";
+			data.ImgWidth = 640.0;
+			data.ImgHeight = 480.0;
 
-		for (final File f : files) {
-			final ExecutedOrder order = f.readJson(ExecutedOrder.class);
+			for (final File f : files) {
+				final ExecutedOrder order = f.readJson(ExecutedOrder.class);
+			}
+			final byte[] bytes = Json.serializeToString(data).toString().getBytes();
+
+			final String base64 = Base64.encode(Utils.newByteArray(bytes));
+			final PlottedChart chartResult = this.walletBackEnd.plotChart(base64);
+			Handlers.respond(args.bot, args.update.message.chatID, chartResult.toString(), false);
+
+			if (chartResult.Success) {
+				final ByteArray pngbytes = Base64.decode(chartResult.ImageBase64);
+				final ByteArrayInputStream is = new ByteArrayInputStream(pngbytes.toArray());
+				Handlers.respond(args.bot, args.update.message.chatID, is, false);
+			}
+		} catch (final Throwable e) {
+			Handlers.respond(args.bot, args.update.message.chatID, L.stackTraceToString(e), false);
 		}
-
-		final PlottedChart chartResult = this.walletBackEnd.plotChart(Json.serializeToString(data).toString());
-		Handlers.respond(args.bot, args.update.message.chatID, chartResult.toString(), false);
-
-		if (chartResult.Success) {
-
-			final ByteArray pngbytes = Base64.decode(chartResult.ImageBase64);
-			final ByteArrayInputStream is = new ByteArrayInputStream(pngbytes.toArray());
-			Handlers.respond(args.bot, args.update.message.chatID, is, false);
-		}
-
 	}
 
 	private void saveOrder (final HandleArgs args, final TradeResult result) {

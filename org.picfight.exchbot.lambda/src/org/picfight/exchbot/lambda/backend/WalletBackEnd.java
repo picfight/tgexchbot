@@ -233,12 +233,12 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public PlottedChart plotChart (final String Chart_data_json) throws BackendException {
+	public PlottedChart plotChart (final String Chart_data_base64) throws BackendException {
 		final String command = "plot_chart";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
-		params.put("Chart_data_json", Chart_data_json);
+		params.put("Chart_data_base64", Chart_data_base64);
 		JsonString resultJson;
 		try {
 			resultJson = BackEndConnector.retrieve(Url, params);

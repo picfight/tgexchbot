@@ -1,12 +1,21 @@
 package server
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/btcsuite/btcd/btcjson"
 	btccfg "github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcutil"
 	dcrutil "github.com/decred/dcrd/dcrutil"
+	"github.com/jfixby/coin"
+	"github.com/jfixby/pin"
+	"github.com/jfixby/pin/lang"
+	"github.com/picfight/pfcd/dcrjson"
 	pfcutil "github.com/picfight/pfcd/dcrutil"
+	"github.com/picfight/picfightcoin"
+	"github.com/picfight/tgexchbot/cfg"
+	"github.com/picfight/tgexchbot/connect"
 	"io"
 	"log"
 	"net/http"
@@ -16,15 +25,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"encoding/base64"
-	"github.com/btcsuite/btcutil"
-	"github.com/jfixby/coin"
-	"github.com/jfixby/pin"
-	"github.com/jfixby/pin/lang"
-	"github.com/picfight/pfcd/dcrjson"
-	"github.com/picfight/picfightcoin"
-	"github.com/picfight/tgexchbot/cfg"
-	"github.com/picfight/tgexchbot/connect"
 )
 
 type HttpsServer struct {
@@ -136,9 +136,9 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	}
 
 	if command == "plot_chart" {
-		chartDataJson := params["Chart_data_json"][0]
+		Chart_data_base64 := params["Chart_data_base64"][0]
 		//pin.D("Raw_text", raw_text)
-		return s.PlotChart(chartDataJson)
+		return s.PlotChart(Chart_data_base64)
 	}
 
 	mutex.Lock()
@@ -710,10 +710,19 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 	return toJson(result)
 }
 
-func (s HttpsServer) PlotChart(dataJson string) string {
+func (s HttpsServer) PlotChart(Chart_data_base64 string) string {
+
 	result := PlottedChart{}
 	data := ChartData{}
-	err := json.Unmarshal([]byte(dataJson), &data)
+
+	bytes, err := base64.StdEncoding.DecodeString(Chart_data_base64)
+	if err != nil {
+		result.Error = err.Error()
+		result.Success = false
+		return toJson(result)
+	}
+
+	err = json.Unmarshal(bytes, &data)
 	if err != nil {
 		result.Error = err.Error()
 		result.Success = false
