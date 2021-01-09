@@ -65,14 +65,14 @@ type TradeResult struct {
 	Success      bool   `json: "Success"`
 	ErrorMessage string `json: "ErrorMessage"`
 	Operation    string `json: "Operation"`
-	GetQuote     bool   `json: "GetQuote"`
+	Executed     bool   `json: "Executed"`
 
 	DCRPFC_Ratio_BeforeTrade float64 `json: "DCRPFC_Ratio_BeforeTrade"`
 	DCRPFC_Ratio_AfterTrade  float64 `json: "DCRPFC_Ratio_AfterTrade"`
 
 	DCR_InPool_BeforeTrade float64 `json: "DCR_InPool_BeforeTrade"`
 	PFC_InPool_BeforeTrade float64 `json: "PFC_InPool_BeforeTrade"`
-	PoolConstant                      float64 `json: "PoolConstant"`
+	PoolConstant           float64 `json: "PoolConstant"`
 	PFC_InPool_AfterTrade  float64 `json: "PFC_InPool_AfterTrade"`
 	DCR_InPool_AfterTrade  float64 `json: "DCR_InPool_AfterTrade"`
 
@@ -80,9 +80,16 @@ type TradeResult struct {
 	PFC_Executed_Amount float64 `json: "PFC_Executed_Amount"`
 
 	DCRPFC_Executed_Price float64 `json: "DCRPFC_Executed_Price"`
+
+	DCR_Transaction TransactionResult `json: "DCR_Transaction"`
+	PFC_Transaction TransactionResult `json: "PFC_Transaction"`
+
+	Requested_Price_Dcr_for_1_pfc float64 `json: "Requested_Price_Dcr_for_1_pfc"`
+
+	UnfinishedTransaction         bool  `json: "UnfinishedTransaction"`
 }
 
-type Result struct {
+type TransactionResult struct {
 	Success      bool   `json: "Success"`
 	ErrorMessage string `json: "ErrorMessage"`
 

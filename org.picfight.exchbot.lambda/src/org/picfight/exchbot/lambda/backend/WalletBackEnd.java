@@ -267,8 +267,16 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public TradeResult tradePFC (final TRADE_OPERATION op, final boolean getQuote, final AmountPFC amount,
-		final Double dcr_for_1_pfc_order) throws BackendException {
+	public TradeResult tradePFC (//
+		final TRADE_OPERATION op, //
+		final boolean getQuote, //
+		final AmountPFC amount, //
+		final Double dcr_for_1_pfc_order, //
+		final PFCAddress user_pfc_account, //
+		final DCRAddress user_dcr_account, //
+		final PFCAddress exchange_pfc_account, //
+		final DCRAddress exchange_dcr_account//
+	) throws BackendException {
 
 		final String command = "trade_pfc";
 		final HttpURL Url = this.commadToUrl(command);
@@ -277,6 +285,13 @@ public class WalletBackEnd {
 		params.put("Pfc_amount", amount.Value + "");
 		params.put("Operation", op + "");
 		params.put("Getquote", getQuote + "");
+
+		params.put("User_pfc_account", user_pfc_account + "");
+		params.put("User_dcr_account", user_dcr_account + "");
+		params.put("Exchange_pfc_account", exchange_pfc_account + "");
+		params.put("Exchange_dcr_account", exchange_dcr_account + "");
+
+		params.put("Dcr_for_1_pfc_order", dcr_for_1_pfc_order + "");
 
 		JsonString resultJson;
 		try {

@@ -278,27 +278,46 @@ public class TgBotMessageHandler implements Handler {
 				}
 			}
 
-			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.SELL, getQuote, amount, dcr_for_1_pfc_order);
+			final PFCAddress user_pfc_account = settings.getExchangeAddressPFC();
+			final DCRAddress user_dcr_account = settings.getExchangeAddressDCR();
+
+			final PFCAddress exchange_pfc_account = EXCHANGE_PFC_ADDRESS();
+			final DCRAddress exchange_dcr_account = EXCHANGE_DCR_ADDRESS();
+
+			final TradeResult result = this.walletBackEnd.tradePFC(//
+				TRADE_OPERATION.SELL, //
+				getQuote, //
+				amount, //
+				dcr_for_1_pfc_order, //
+				user_pfc_account, //
+				user_dcr_account, //
+				exchange_pfc_account, //
+				exchange_dcr_account//
+			);
 			if (result.Success) {
-				final StringBuilder b = new StringBuilder();
+				if (!result.Executed) {
+					final StringBuilder b = new StringBuilder();
 
-				final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
-				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
+					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
-				b.append(N);
-				b.append(result.PFC_Executed_Amount + " PFC можно продать за " + round(result.DCR_Executed_Amount, 6) + " DCR")
-					.append(N);
+					b.append(N);
+					b.append(result.PFC_Executed_Amount + " PFC можно продать за " + round(result.DCR_Executed_Amount, 6) + " DCR")
+						.append(N);
 
-				b.append(N);
-				b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
-					+ round(usd_for_1_pfc, 4) + "$").append(N);
-				b.append(N);
-				b.append("Для выполнения сделки по этой цене нужно отправить команду:");
-				Handlers.respond(bot, chatid, b.toString(), false);
+					b.append(N);
+					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
+						+ round(usd_for_1_pfc, 4) + "$").append(N);
+					b.append(N);
+					b.append("Для выполнения сделки по этой цене нужно отправить команду:");
+					Handlers.respond(bot, chatid, b.toString(), false);
 
-				Handlers.respond(bot, chatid,
-					OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
-					false);
+					Handlers.respond(bot, chatid,
+						OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
+						false);
+				} else {
+					Handlers.respond(bot, chatid, "Executed: " + result, false);
+				}
 			} else {
 				Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
 			}
@@ -333,29 +352,64 @@ public class TgBotMessageHandler implements Handler {
 				return true;
 			}
 
-			final boolean getQuote = true;
-			final TradeResult result = this.walletBackEnd.tradePFC(TRADE_OPERATION.BUY, getQuote, amount);
+			boolean getQuote = true;
+			Double dcr_for_1_pfc_order = 0.0d;
+			if (args.arguments.size() == 3) {
+				final String price_text = args.arguments.getElementAt(1).toLowerCase();
+				try {
+					dcr_for_1_pfc_order = Double.parseDouble(price_text);
+				} catch (final Throwable e) {
+					e.printStackTrace();
+					Handlers.respond(bot, chatid, "Цена не распознана: " + price_text, false);
+					this.buyHelp(bot, chatid);
+					return true;
+				}
+				final String execute_text = args.arguments.getElementAt(2).toLowerCase();
+				if ("execute".equals(execute_text)) {
+					getQuote = false;
+				}
+			}
+			final PFCAddress user_pfc_account = settings.getExchangeAddressPFC();
+			final DCRAddress user_dcr_account = settings.getExchangeAddressDCR();
+
+			final PFCAddress exchange_pfc_account = EXCHANGE_PFC_ADDRESS();
+			final DCRAddress exchange_dcr_account = EXCHANGE_DCR_ADDRESS();
+
+			final TradeResult result = this.walletBackEnd.tradePFC(//
+				TRADE_OPERATION.BUY, //
+				getQuote, //
+				amount, //
+				dcr_for_1_pfc_order, //
+				user_pfc_account, //
+				user_dcr_account, //
+				exchange_pfc_account, //
+				exchange_dcr_account//
+			);
 
 			if (result.Success) {
-				final StringBuilder b = new StringBuilder();
+				if (!result.Executed) {
+					final StringBuilder b = new StringBuilder();
 
-				final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
-				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
+					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
-				b.append(N);
-				b.append(result.PFC_Executed_Amount + " PFC можно купить за " + round(result.DCR_Executed_Amount, 6) + " DCR")
-					.append(N);
+					b.append(N);
+					b.append(result.PFC_Executed_Amount + " PFC можно купить за " + round(result.DCR_Executed_Amount, 6) + " DCR")
+						.append(N);
 
-				b.append(N);
-				b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
-					+ round(usd_for_1_pfc, 4) + "$").append(N);
-				b.append(N);
-				b.append("Для выполнения сделки по этой цене нужно отправить команду:");
-				Handlers.respond(bot, chatid, b.toString(), false);
+					b.append(N);
+					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
+						+ round(usd_for_1_pfc, 4) + "$").append(N);
+					b.append(N);
+					b.append("Для выполнения сделки по этой цене нужно отправить команду:");
+					Handlers.respond(bot, chatid, b.toString(), false);
 
-				Handlers.respond(bot, chatid,
-					OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
-					false);
+					Handlers.respond(bot, chatid,
+						OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount, 10) + " " + round(dcr_for_1_pfc, 10) + " execute",
+						false);
+				} else {
+					Handlers.respond(bot, chatid, "Executed: " + result, false);
+				}
 			} else {
 				Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
 			}
