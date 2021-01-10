@@ -189,16 +189,19 @@ public class TgBotMessageHandler implements Handler {
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
-				Handlers.respond(bot, chatid, "фсыысфысфысфысфысфысфысфыс: " + amount_text, false);
+				Handlers.respond(bot, chatid,
+					Translate.translate(settings.getLanguage(), Translate.UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
 				this.withdrawHelp(args, chatid);
 				return true;
 
 			}
-
+// Handlers.respond(bot, chatid,
+// Translate.translate(settings.getLanguage(), Translate.TRANSACTION_FAILED) + ": " + result.ErrorMessage, false);
 			final String address_text = args.arguments.getElementAt(1);
 			final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
 			if (anal.PFCAddress == null) {
-				Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
+				Handlers.respond(bot, chatid,
+					Translate.translate(settings.getLanguage(), Translate.UNRECOGNIZED_ADDRESS) + ": " + address_text, false);
 				Handlers.respond(bot, chatid, anal.Error, false);
 				this.withdrawHelp(args, chatid);
 				return true;
@@ -209,11 +212,15 @@ public class TgBotMessageHandler implements Handler {
 				final TransactionResult result = this.walletBackEnd.transferPFC(exch_address, anal.PFCAddress, amount);
 
 				if (result.Success) {
-					Handlers.respond(bot, chatid, "Монеты высланы на адрес " + result.PFC_ToAddress + "", false);
-					Handlers.respond(bot, chatid, "Чек операции:", false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.COINS_WERE_SENT) + " " + result.PFC_ToAddress + "",
+						false);
+					Handlers.respond(bot, chatid, Translate.translate(settings.getLanguage(), Translate.TRANSACTION_RECEIPT) + ":",
+						false);
 					Handlers.respond(args.bot, chatid, "http://explorer.picfight.org/tx/" + result.PFC_TransactionReceipt, true);
 				} else {
-					Handlers.respond(bot, chatid, "Не удалось записать транзакцию: " + result.ErrorMessage, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.TRANSACTION_FAILED) + ": " + result.ErrorMessage, false);
 				}
 
 				this.showBalances(args);
@@ -236,7 +243,8 @@ public class TgBotMessageHandler implements Handler {
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
-				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+				Handlers.respond(bot, chatid,
+					Translate.translate(settings.getLanguage(), Translate.UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
 				this.withdrawHelp(args, chatid);
 				return true;
 
@@ -245,7 +253,8 @@ public class TgBotMessageHandler implements Handler {
 			final String address_text = args.arguments.getElementAt(1);
 			final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
 			if (anal.DCRAddress == null) {
-				Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
+				Handlers.respond(bot, chatid,
+					Translate.translate(settings.getLanguage(), Translate.UNRECOGNIZED_ADDRESS) + ": " + address_text, false);
 				Handlers.respond(bot, chatid, anal.Error, false);
 				this.withdrawHelp(args, chatid);
 				return true;
@@ -257,11 +266,15 @@ public class TgBotMessageHandler implements Handler {
 
 				if (result.Success) {
 
-					Handlers.respond(bot, chatid, "Монеты высланы на адрес " + result.DCR_ToAddress + "", false);
-					Handlers.respond(bot, chatid, "Чек операции:", false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.COINS_WERE_SENT) + " " + result.DCR_ToAddress + "",
+						false);
+					Handlers.respond(bot, chatid, Translate.translate(settings.getLanguage(), Translate.TRANSACTION_RECEIPT) + ":",
+						false);
 					Handlers.respond(args.bot, chatid, "https://dcrdata.decred.org/tx/" + result.DCR_TransactionReceipt, true);
 				} else {
-					Handlers.respond(bot, chatid, "Не удалось записать транзакцию: " + result.ErrorMessage, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.TRANSACTION_FAILED) + ": " + result.ErrorMessage, false);
 				}
 				this.showBalances(args);
 				return true;
@@ -696,11 +709,11 @@ public class TgBotMessageHandler implements Handler {
 		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW)).append(N);
 		b.append(N);
 		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW_DCR) + " ").append(N);
-		b.append(OPERATIONS.WITHDRAW_DCR + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%"
+		b.append(OPERATIONS.WITHDRAW_DCR + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "% %"
 			+ Translate.translate(settings.getLanguage(), Translate.Adress) + "%").append(N);
 		b.append(N);
 		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW_PFC) + " ").append(N);
-		b.append(OPERATIONS.WITHDRAW_PFC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%"
+		b.append(OPERATIONS.WITHDRAW_PFC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "% %"
 			+ Translate.translate(settings.getLanguage(), Translate.Adress) + "%").append(N);
 		b.append(N);
 		b.append(Translate.translate(settings.getLanguage(), Translate.Examples) + " ").append(N);

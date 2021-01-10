@@ -67,7 +67,14 @@ public class Translate {
 	public static final String TO_SELL_PFC = "Купить PFC";
 	public static final String TO_BUY_PFC = "Продать PFC";
 
+	public static final String TRANSACTION_RECEIPT = "Чек операции";
+	public static final String TRANSACTION_FAILED = "Не удалось записать транзакцию";
+
+	public static final String COINS_WERE_SENT = "Монеты высланы на адрес";
+
 	public static final String TO_EXECUTE_ORDER = "Для выполнения сделки по этой цене отправь следующую команду";
+
+	public static final String UNRECOGNIZED_ADDRESS = "Неправильный адрес для вывода";
 
 	static {
 		mappings.put(UserSettingsLanguage.RU, Collections.newMap());
@@ -76,6 +83,22 @@ public class Translate {
 		final Map<String, String> ru = mappings.get(UserSettingsLanguage.RU);
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
+
+		ru.put(UNRECOGNIZED_ADDRESS, UNRECOGNIZED_ADDRESS);
+		en.put(UNRECOGNIZED_ADDRESS, "Invalid address");
+		ch.put(UNRECOGNIZED_ADDRESS, "无效地址");
+
+		ru.put(TRANSACTION_FAILED, TRANSACTION_FAILED);
+		en.put(TRANSACTION_FAILED, "Transaction failed");
+		ch.put(TRANSACTION_FAILED, "交易失败");
+
+		ru.put(TRANSACTION_RECEIPT, TRANSACTION_RECEIPT);
+		en.put(TRANSACTION_RECEIPT, "Transaction receipt");
+		ch.put(TRANSACTION_RECEIPT, "交易收据");
+
+		ru.put(COINS_WERE_SENT, COINS_WERE_SENT);
+		en.put(COINS_WERE_SENT, "The coins were sent to ");
+		ch.put(COINS_WERE_SENT, "硬币被发送到");
 
 		ru.put(TO_EXECUTE_ORDER, TO_EXECUTE_ORDER);
 		en.put(TO_EXECUTE_ORDER, "To execute order send the following command");
