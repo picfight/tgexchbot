@@ -31,13 +31,23 @@ public class Translate {
 	public static final String TO_WITHDRAW_DCR = "вывести DCR";
 	public static final String TO_WITHDRAW_PFC = "вывести PFC";
 
+	public static final String POOL_STATE = "Состояние пула биржи";
+
 	public static final String Your_balances = "Твои балансы";
+
+	public static final String OrderWasNotExecuted = "Ордер не выполнился";
+
+	public static final String POOL_IS_BALANCING = "Пул балансируется...";
 
 	public static final String Examples = "примеры";
 	public static final String Example = "пример";
 
+	public static final String ProceFor1PFCDrionExecution = "Цена за 1 PFC на бирже в момент выполнения ордера";
+
 	public static final String Available = "Доступно для торгов";
 	public static final String Unconfirmed = "и ещё ожидается";
+
+	public static final String UniSwap = "Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансируется состоянием пула.";
 
 	public static final String Amount = "количество";
 	public static final String Adress = "адрес кошелька";
@@ -47,6 +57,18 @@ public class Translate {
 
 	public static final String UNRECOGNIZED_AMOUNT = "Количество монет не распознано";
 
+	public static final String WasAboveLim = "была выше запрошенной";
+	public static final String WasBelowLim = "была ниже запрошенной";
+
+	public static final String FailedToSubmitorder = "Не удалось выставить ордер";
+
+	public static final String NoEnoughCoinsForOrder = "Не хватает монет для ордера. Нужно";
+
+	public static final String TO_SELL_PFC = "Купить PFC";
+	public static final String TO_BUY_PFC = "Продать PFC";
+
+	public static final String TO_EXECUTE_ORDER = "Для выполнения сделки по этой цене отправь следующую команду";
+
 	static {
 		mappings.put(UserSettingsLanguage.RU, Collections.newMap());
 		mappings.put(UserSettingsLanguage.CH, Collections.newMap());
@@ -54,6 +76,47 @@ public class Translate {
 		final Map<String, String> ru = mappings.get(UserSettingsLanguage.RU);
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
+
+		ru.put(TO_EXECUTE_ORDER, TO_EXECUTE_ORDER);
+		en.put(TO_EXECUTE_ORDER, "To execute order send the following command");
+		ch.put(TO_EXECUTE_ORDER, "要执行订单，请发送以下命令");
+
+		ru.put(WasBelowLim, WasBelowLim);
+		en.put(WasBelowLim, " whis is below the requested price");
+		ch.put(WasBelowLim, "这低于要求的价格");
+
+		ru.put(FailedToSubmitorder, FailedToSubmitorder);
+		en.put(FailedToSubmitorder, "Failed to submit order");
+		ch.put(FailedToSubmitorder, "这高于要求的价格");
+
+		ru.put(FailedToSubmitorder, FailedToSubmitorder);
+		en.put(FailedToSubmitorder, "Failed to submit order");
+		ch.put(FailedToSubmitorder, "这高于要求的价格");
+
+		ru.put(WasAboveLim, WasAboveLim);
+		en.put(WasAboveLim, " whis is abolve the requested price");
+		ch.put(WasAboveLim, "这高于要求的价格");
+
+		ru.put(UniSwap, UniSwap);
+		en.put(UniSwap,
+			"Exchange rates are calculated using what is termed the “constant product formula” similar to the UniSwap decentralized exchange protocol.");
+		ch.put(UniSwap, "常数乘积公式用于计算汇率。这类似于UniSwap分散式交换协议。");
+
+		ru.put(ProceFor1PFCDrionExecution, ProceFor1PFCDrionExecution);
+		en.put(ProceFor1PFCDrionExecution, "Price for 1PFC during order execution was");
+		ch.put(ProceFor1PFCDrionExecution, "订单执行期间1PFC的价格为");
+
+		ru.put(OrderWasNotExecuted, OrderWasNotExecuted);
+		en.put(OrderWasNotExecuted, "Order was not executed");
+		ch.put(OrderWasNotExecuted, "订单未执行");
+
+		ru.put(POOL_STATE, POOL_STATE);
+		en.put(POOL_STATE, "Trading pool state");
+		ch.put(POOL_STATE, "交易池状态");
+
+		ru.put(POOL_IS_BALANCING, POOL_IS_BALANCING);
+		en.put(POOL_IS_BALANCING, "Pool is balancing...");
+		ch.put(POOL_IS_BALANCING, "池正在等待余额...");
 
 		ru.put(Unconfirmed, Unconfirmed);
 		en.put(Unconfirmed, "Unconfirmed");

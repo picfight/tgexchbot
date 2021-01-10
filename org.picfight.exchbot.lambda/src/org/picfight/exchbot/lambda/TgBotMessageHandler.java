@@ -49,7 +49,7 @@ public class TgBotMessageHandler implements Handler {
 		final Long chatid = args.update.message.chatID;
 
 		if (flag) {
-			Handlers.respond(args.bot, chatid, "Бот отключен.", false);
+			Handlers.respond(args.bot, chatid, "Bot is disabled for maintenance", false);
 			return true;
 		}
 
@@ -189,7 +189,7 @@ public class TgBotMessageHandler implements Handler {
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
-				Handlers.respond(bot, chatid, в": " + amount_text, false);
+				Handlers.respond(bot, chatid, "фсыысфысфысфысфысфысфысфыс: " + amount_text, false);
 				this.withdrawHelp(args, chatid);
 				return true;
 
@@ -270,7 +270,7 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.SELL_PFC)) {
 			if (args.arguments.size() == 0) {
-				this.sellHelp(bot, chatid);
+				this.sellHelp(args, chatid);
 				return true;
 			}
 
@@ -283,14 +283,14 @@ public class TgBotMessageHandler implements Handler {
 
 				if (amountFloat <= 0) {
 					Handlers.respond(bot, chatid, "Количество монет должно быть положительным: " + amount_text, false);
-					this.buyHelp(bot, chatid);
+					this.buyHelp(args, chatid);
 					return true;
 				}
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
 				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
-				this.buyHelp(bot, chatid);
+				this.buyHelp(args, chatid);
 				return true;
 			}
 
@@ -303,7 +303,7 @@ public class TgBotMessageHandler implements Handler {
 				} catch (final Throwable e) {
 					e.printStackTrace();
 					Handlers.respond(bot, chatid, "Цена не распознана: " + price_text, false);
-					this.buyHelp(bot, chatid);
+					this.buyHelp(args, chatid);
 					return true;
 				}
 				final String execute_text = args.arguments.getElementAt(2).toLowerCase();
@@ -343,7 +343,7 @@ public class TgBotMessageHandler implements Handler {
 					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
 						+ round(usd_for_1_pfc, 4) + "$").append(N);
 					b.append(N);
-					b.append("Для выполнения сделки по этой цене нужно отправить команду:");
+					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
 					Handlers.respond(bot, chatid, OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
@@ -358,22 +358,25 @@ public class TgBotMessageHandler implements Handler {
 				}
 			} else {
 				if (result.NoEnoughFunds) {
-					Handlers.respond(bot, chatid, "Не хватает монет для ордера. Нужно " + result.PFC_Executed_Amount, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.NoEnoughCoinsForOrder) + result.PFC_Executed_Amount,
+						false);
 					this.showBalances(args);
 				} else if (result.PriceNotMet) {
 					final StringBuilder b = new StringBuilder();
-					b.append("Цена за 1 PFC на бирже в момент выполнения ордера").append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.ProceFor1PFCDrionExecution)).append(N);
 					b.append(round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
-					b.append("была ниже запрошенной").append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.WasBelowLim)).append(N);
 					b.append(round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
 					b.append(N);
-					b.append("Ордер не выполнился.");
+					b.append(Translate.translate(settings.getLanguage(), Translate.OrderWasNotExecuted));
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.showMarketState(args);
 				} else if (result.UnfinishedTransaction) {
 					this.reportUnfinishedTransaction(args, result);
 				} else {
-					Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.FailedToSubmitorder) + ": " + result.ErrorMessage, false);
 				}
 			}
 
@@ -383,7 +386,7 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.BUY_PFC)) {
 			if (args.arguments.size() == 0) {
-				this.buyHelp(bot, chatid);
+				this.buyHelp(args, chatid);
 				return true;
 			}
 
@@ -396,14 +399,14 @@ public class TgBotMessageHandler implements Handler {
 
 				if (amountFloat <= 0) {
 					Handlers.respond(bot, chatid, "Количество монет должно быть положительным: " + amount_text, false);
-					this.buyHelp(bot, chatid);
+					this.buyHelp(args, chatid);
 					return true;
 				}
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
 				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
-				this.buyHelp(bot, chatid);
+				this.buyHelp(args, chatid);
 				return true;
 			}
 
@@ -416,7 +419,7 @@ public class TgBotMessageHandler implements Handler {
 				} catch (final Throwable e) {
 					e.printStackTrace();
 					Handlers.respond(bot, chatid, "Цена не распознана: " + price_text, false);
-					this.buyHelp(bot, chatid);
+					this.buyHelp(args, chatid);
 					return true;
 				}
 				final String execute_text = args.arguments.getElementAt(2).toLowerCase();
@@ -456,7 +459,7 @@ public class TgBotMessageHandler implements Handler {
 					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
 						+ round(usd_for_1_pfc, 4) + "$").append(N);
 					b.append(N);
-					b.append("Для выполнения сделки по этой цене нужно отправить команду:");
+					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
 					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
@@ -471,29 +474,29 @@ public class TgBotMessageHandler implements Handler {
 				}
 			} else {
 				if (result.NoEnoughFunds) {
-					Handlers.respond(bot, chatid, "Не хватает монет для ордера. Нужно " + result.DCR_Executed_Amount, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.NoEnoughCoinsForOrder) + result.DCR_Executed_Amount,
+						false);
 					this.showBalances(args);
 				} else if (result.PriceNotMet) {
 					final StringBuilder b = new StringBuilder();
-					b.append("Цена за 1 PFC на бирже в момент выполнения ордера").append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.ProceFor1PFCDrionExecution)).append(N);
 					b.append(round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
-					b.append("была выше запрошенной").append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.WasAboveLim)).append(N);
 					b.append(round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
 					b.append(N);
-					b.append("Ордер не выполнился.");
+					b.append(Translate.translate(settings.getLanguage(), Translate.OrderWasNotExecuted));
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.showMarketState(args);
 				} else if (result.UnfinishedTransaction) {
 					this.reportUnfinishedTransaction(args, result);
 				} else {
-					Handlers.respond(bot, chatid, "Не удалось выставить ордер: " + result.ErrorMessage, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.FailedToSubmitorder) + ": " + result.ErrorMessage, false);
 				}
 			}
-
 			return true;
-
 		}
-
 		return false;
 	}
 
@@ -524,10 +527,10 @@ public class TgBotMessageHandler implements Handler {
 		final UserSettings settings = args.settings;
 		final AbsSender bot = args.bot;
 		final StringBuilder b = new StringBuilder();
-		b.append("Купить PFC:").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.TO_BUY_PFC)).append(N);
 		b.append(OPERATIONS.BUY_PFC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%").append(N);
 		b.append(N);
-		b.append(Translate.translate(settings.getLanguage(), Translate.Example) + ":").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.Example)).append(N);
 		b.append(OPERATIONS.BUY_PFC + " 154.5").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
@@ -538,10 +541,10 @@ public class TgBotMessageHandler implements Handler {
 		final UserSettings settings = args.settings;
 		final AbsSender bot = args.bot;
 		final StringBuilder b = new StringBuilder();
-		b.append("Продать PFC:").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.TO_SELL_PFC)).append(N);
 		b.append(OPERATIONS.SELL_PFC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%").append(N);
 		b.append(N);
-		b.append(Translate.translate(settings.getLanguage(), Translate.Example) + ":").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.Example)).append(N);
 		b.append(OPERATIONS.SELL_PFC + " 11.3").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
@@ -550,8 +553,9 @@ public class TgBotMessageHandler implements Handler {
 
 	private void showMarketState (final HandleArgs args) throws IOException, BackendException {
 		final StringBuilder b = new StringBuilder();
+		final UserSettings settings = args.settings;
 
-		b.append("Состояние пула биржи").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.POOL_STATE) + "").append(N);
 		b.append(N);
 		{
 			final PFCAddress exch_pfc_address = EXCHANGE_PFC_ADDRESS();
@@ -565,12 +569,12 @@ public class TgBotMessageHandler implements Handler {
 				final double unconfirmed_dcr = exch_dcr_balance.Unconfirmed.Value;
 				final double balance_dcr = exch_dcr_balance.Spendable.Value;
 
-				b.append("Доступно для торгов:").append(N);
+				b.append(Translate.translate(settings.getLanguage(), Translate.Available) + "").append(N);
 				b.append("" + balance_pfc + " PFC ").append(N);
 				b.append("" + balance_dcr + " DCR ").append(N);
 				b.append(N);
 				if (unconfirmed_dcr > 0 || unconfirmed_pfc > 0) {
-					b.append("и ещё ожидается:").append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.Unconfirmed) + "").append(N);
 					if (unconfirmed_pfc > 0) {
 						b.append("" + unconfirmed_pfc + " PFC ").append(N);
 					}
@@ -584,24 +588,24 @@ public class TgBotMessageHandler implements Handler {
 			if (exch_dcr_balance.Spendable.Value != 0 && exch_pfc_balance.Spendable.Value != 0) {
 				final double dcr_for_1_pfc = exch_dcr_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
 				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
-				b.append("1 PFC стоит " + round(dcr_for_1_pfc, 8) + " DCR или " + round(usd_for_1_pfc, 2) + "$").append(N);
+				b.append("1 PFC = " + round(dcr_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 				b.append(N);
-				b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
-				b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
-				b.append(OPERATIONS.BALANCE + " - балансы").append(N);
-// b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
+
+				b.append(OPERATIONS.BUY_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.BUY_PFC)).append(N);
+				b.append(OPERATIONS.SELL_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.SELL_PFC)).append(N);
+				b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
+
 				b.append(N);
 			} else {
-				b.append("Пул балансируется...").append(N);
+				b.append(Translate.translate(settings.getLanguage(), Translate.POOL_IS_BALANCING)).append(N);
+				b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
 				b.append(N);
-				b.append(OPERATIONS.MARKET + " - информация о состоянии").append(N);
-// b.append(OPERATIONS.CHART + " - посмотреть график").append(N);
+				b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
+				b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
 				b.append(N);
 			}
 		}
-		b.append(
-			"Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансируется состоянием пула. Балансировка в среднем занимает 5 минут.")
-			.append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.UniSwap)).append(N);
 
 		Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
 
