@@ -84,6 +84,14 @@ public class Translate {
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
 
+		ru.put(TO_SELL_PFC, TO_SELL_PFC);
+		en.put(TO_SELL_PFC, "Command to sell PFC");
+		ch.put(TO_SELL_PFC, "出售PFC的命令");
+
+		ru.put(TO_BUY_PFC, TO_BUY_PFC);
+		en.put(TO_BUY_PFC, "Command to buy PFC");
+		ch.put(TO_BUY_PFC, "购买PFC的命令");
+
 		ru.put(UNRECOGNIZED_ADDRESS, UNRECOGNIZED_ADDRESS);
 		en.put(UNRECOGNIZED_ADDRESS, "Invalid address");
 		ch.put(UNRECOGNIZED_ADDRESS, "无效地址");
