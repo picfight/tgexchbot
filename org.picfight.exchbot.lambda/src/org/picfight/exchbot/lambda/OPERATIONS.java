@@ -27,6 +27,10 @@ public class OPERATIONS {
 
 	public static final String MARKET = "/market";
 // public static final String CHART = "/chart";;
+	public static final String RESET_LANG = "/reset_lang";
+	public static final String SET_LANG_RU = "/set_lang_ru";
+	public static final String SET_LANG_EN = "/set_lang_en";
+	public static final String SET_LANG_CH = "/set_lang_ch";
 
 // public static final String SET_ENGLISH = "/set_eng";
 // public static final String SET_RUSSIAN = "/set_ru";

@@ -2,14 +2,8 @@
 package org.picfight.exchbot.lambda;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Date;
-import java.util.Locale;
 
 import org.picfight.exchbot.lambda.backend.AmountDCR;
 import org.picfight.exchbot.lambda.backend.AmountPFC;
@@ -28,7 +22,6 @@ import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import com.jfixby.scarabei.api.file.File;
-import com.jfixby.scarabei.api.file.FilesList;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
 import com.jfixby.scarabei.api.sys.settings.SystemSettings;
@@ -63,20 +56,35 @@ public class TgBotMessageHandler implements Handler {
 		final String accountName = this.userID(chatid);
 
 		final UserSettings settings = this.transactionsBackEnd.getUserSettings(accountName, args.filesystem);
-
-		settings.setLanguage(UserSettingsLanguage.RU);
 		args.settings = settings;
-		L.d("L1");
 
-		if (false || //
-			args.command.equalsIgnoreCase(OPERATIONS.MENU) || //
-			args.command.equalsIgnoreCase(OPERATIONS.START) || //
-			args.command.equalsIgnoreCase(OPERATIONS.HELP) || //
-			false) {
+		if (args.command.equalsIgnoreCase(OPERATIONS.RESET_LANG)) {
+			args.settings.setLanguage(null);
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SET_LANG_CH)) {
+			settings.setLanguage(UserSettingsLanguage.CH);
 			this.respondMenu(args.bot, settings, chatid);
 			return true;
 		}
-		L.d("L2");
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SET_LANG_EN)) {
+			settings.setLanguage(UserSettingsLanguage.EN);
+			this.respondMenu(args.bot, settings, chatid);
+			return true;
+		}
+
+		if (args.command.equalsIgnoreCase(OPERATIONS.SET_LANG_RU)) {
+			settings.setLanguage(UserSettingsLanguage.RU);
+			this.respondMenu(args.bot, settings, chatid);
+			return true;
+		}
+
+		if (!settings.languageIsSet()) {
+			this.respondChooseLang(args.bot, settings, chatid);
+			return true;
+		}
+
 		try {
 			final boolean result = this.processWithBackend(args);
 			if (result) {
@@ -91,9 +99,30 @@ public class TgBotMessageHandler implements Handler {
 			Handlers.respond(args.bot, chatid, b.toString(), false);
 		}
 
+		if (false || //
+			args.command.equalsIgnoreCase(OPERATIONS.MENU) || //
+			args.command.equalsIgnoreCase(OPERATIONS.START) || //
+			args.command.equalsIgnoreCase(OPERATIONS.HELP) || //
+			false) {
+			this.respondMenu(args.bot, settings, chatid);
+			return true;
+		}
+
 		L.e("Command not found", args.command);
 		this.respondMenu(args.bot, settings, chatid);
 		return true;
+	}
+
+	private void respondChooseLang (final AbsSender bot, final UserSettings settings, final Long chatid) throws IOException {
+
+		final StringBuilder b = new StringBuilder();
+		b.append("Set language").append(N);
+		b.append(N);
+		b.append(OPERATIONS.SET_LANG_RU + " - русский").append(N);
+		b.append(OPERATIONS.SET_LANG_EN + " - english").append(N);
+		b.append(OPERATIONS.SET_LANG_CH + " - 中文").append(N);
+		Handlers.respond(bot, chatid, b.toString(), false);
+
 	}
 
 	private boolean processWithBackend (final HandleArgs args) throws BackendException, IOException {
@@ -126,24 +155,26 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT)) {
 			final StringBuilder b = new StringBuilder();
-			b.append("Команды для зачисления средств на биржу").append(N);
+			b.append(Translate.translate(args.settings.getLanguage(), Translate.TO_DEPOSIT)).append(N);
 			b.append(N);
-			b.append("пополнить DCR: " + OPERATIONS.DEPOSIT_DCR).append(N);
-			b.append("пополнить PFC: " + OPERATIONS.DEPOSIT_PFC).append(N);
+			b.append(Translate.translate(args.settings.getLanguage(), Translate.TO_DEPOSIT_DCR) + ": " + OPERATIONS.DEPOSIT_DCR)
+				.append(N);
+			b.append(Translate.translate(args.settings.getLanguage(), Translate.TO_DEPOSIT_PFC) + ": " + OPERATIONS.DEPOSIT_PFC)
+				.append(N);
 			Handlers.respond(bot, chatid, b.toString(), false);
 			return true;
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT_DCR)) {
 			final DCRAddress dcr_address = settings.getExchangeAddressDCR();
-			Handlers.respond(bot, chatid, "Засылай DCR на следующий адрес:", false);
+			Handlers.respond(bot, chatid, Translate.translate(args.settings.getLanguage(), Translate.DO_DEPOSIT_DCR) + ":", false);
 			Handlers.respond(bot, chatid, dcr_address.toString(), false);
 			return true;
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT_PFC)) {
 			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-			Handlers.respond(bot, chatid, "Засылай PFC на следующий адрес:", false);
+			Handlers.respond(bot, chatid, Translate.translate(args.settings.getLanguage(), Translate.DO_DEPOSIT_DCR) + ":", false);
 			Handlers.respond(bot, chatid, pfc_address.toString(), false);
 			return true;
 		}
@@ -475,37 +506,6 @@ public class TgBotMessageHandler implements Handler {
 		return false;
 	}
 
-	private void showMenuCharts (final HandleArgs args) throws IOException {
-		try {
-			final StringBuilder b = new StringBuilder();
-
-// b.append("Состояние пула биржи").append(N);
-
-			final FilesList files = args.filesystem.Executed.listAllChildren();
-			final ChartData data = new ChartData();
-
-			data.Title = "PFC/DCR";
-			data.X_Label = "Time";
-			data.Y_Label = "Price";
-			data.ImgWidth = 100.0;
-			data.ImgHeight = 75.0;
-
-			for (final File f : files) {
-				final ExecutedOrder order = f.readJson(ExecutedOrder.class);
-			}
-
-			final String content = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Cat_poster_1.jpg";
-			final URL u = new URL(content);
-			InputStream is = u.openStream();
-			is = u.openStream();
-			Handlers.respond(args.bot, args.update.message.chatID, is, false);
-			is.close();
-
-		} catch (final Throwable e) {
-			Handlers.respond(args.bot, args.update.message.chatID, e.toString(), false);
-		}
-	}
-
 	private void saveOrder (final HandleArgs args, final TradeResult result) {
 		try {
 			final String filename = System.currentTimeMillis() + ".json";
@@ -525,7 +525,7 @@ public class TgBotMessageHandler implements Handler {
 		final UserSettings settings = args.settings;
 		final AbsSender bot = args.bot;
 		final Long chatid = args.update.message.chatID;
-		Handlers.respond(bot, chatid, "Похоже пул протёк. Отправь @JFixby следующий отчёт об ошибке:", false);
+		Handlers.respond(bot, chatid, Translate.translate(settings.getLanguage(), Translate.POOL_LEAK) + ":", false);
 		Handlers.respond(bot, chatid, "" + result.toString(), false);
 	}
 
@@ -744,28 +744,36 @@ public class TgBotMessageHandler implements Handler {
 
 	public static final String N = "\n";
 
+	/** @param bot
+	 * @param settings
+	 * @param chatid
+	 * @throws IOException */
 	private void respondMenu (final AbsSender bot, final UserSettings settings, final Long chatid) throws IOException {
 		try {
 
 			final StringBuilder b = new StringBuilder();
-			b.append("Этот бот-биржа продаёт и покупает пикфайт-коины (PFC) за декреды (DCR)").append(N);
+			b.append(Translate.translate(settings.getLanguage(), Translate.THIS_BOT)).append(N);
 			b.append(N);
 
-			b.append("Команды для бота").append(N);
+			b.append(Translate.translate(settings.getLanguage(), Translate.USE_THIS)).append(N);
+			b.append(OPERATIONS.DEPOSIT + " - " + Translate.translate(settings.getLanguage(), Translate.DEPOSIT)).append(N);
+			b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
+			b.append(OPERATIONS.BUY_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.BUY_PFC)).append(N);
+			b.append(OPERATIONS.SELL_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.SELL_PFC)).append(N);
+			b.append(OPERATIONS.WITHDRAW + " - " + Translate.translate(settings.getLanguage(), Translate.WITHDRAW)).append(N);
+			b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
+			b.append(OPERATIONS.RESET_LANG + " - " + Translate.translate(settings.getLanguage(), Translate.RESET_LANG)).append(N);
 			b.append(N);
-			b.append(OPERATIONS.BALANCE + " - посмотреть свои текущие балансы на бирже").append(N);
-			b.append(OPERATIONS.DEPOSIT + " - пополнить балансы").append(N);
-			b.append(OPERATIONS.WITHDRAW + " - вывести монеты с биржи").append(N);
+			b.append(Translate.translate(settings.getLanguage(), Translate.NO_BTC)).append(N);
 			b.append(N);
-			b.append(OPERATIONS.MARKET + " - информация о состоянии торгового пула").append(N);
-// b.append(OPERATIONS.CHART + " - посмотреть график цены").append(N);
-			b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
-			b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
+			b.append(
+				Translate.translate(settings.getLanguage(), Translate.PFC_WALLET) + ": https://github.com/picfight/pfcredit/releases")
+				.append(N);
 			b.append(N);
-			b.append("Обмен на BTC отключён, т.к. из-за высокой цены биткоина операции с ним стоят по $20-$50.").append(N);
+			b.append(
+				Translate.translate(settings.getLanguage(), Translate.DCR_BINANCE) + ": https://www.binance.com/en/trade/DCR_BTC")
+				.append(N);
 			b.append(N);
-			b.append("PFC-кошелёк можно скачать тут: https://github.com/picfight/pfcredit").append(N);
-			b.append("DCR можно купить и продать на Бинансе: https://www.binance.com/en/trade/DCR_BTC").append(N);
 
 			Handlers.respond(bot, chatid, b.toString(), false);
 
@@ -780,20 +788,5 @@ public class TgBotMessageHandler implements Handler {
 		}
 
 	}
-
-	private String formatFloat (final double value, final boolean roundUP) {
-		final DecimalFormat formatter = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-		if (roundUP == UP) {
-			formatter.setRoundingMode(RoundingMode.UP);
-		}
-		if (roundUP == DOWN) {
-			formatter.setRoundingMode(RoundingMode.DOWN);
-		}
-		final String s = formatter.format(value);
-		return s;
-	}
-
-	static boolean UP = true;
-	static boolean DOWN = !UP;
 
 }

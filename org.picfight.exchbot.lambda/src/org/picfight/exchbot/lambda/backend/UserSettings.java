@@ -31,7 +31,11 @@ public class UserSettings {
 	}
 
 	public void setLanguage (final UserSettingsLanguage L) throws IOException {
-		this.data.language = L + "";
+		if (L == null) {
+			this.data.language = null;
+		} else {
+			this.data.language = L + "";
+		}
 		this.writeFile();
 	}
 
@@ -108,6 +112,10 @@ public class UserSettings {
 		a.AddressString = string;
 		a.Type = "PFC";
 		return a;
+	}
+
+	public UserSettingsLanguage getLanguage () {
+		return UserSettingsLanguage.resolve(this.data.language);
 	}
 
 // public BTCAddress getPrivateAddressBTC () {
