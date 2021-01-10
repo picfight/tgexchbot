@@ -23,11 +23,29 @@ public class Translate {
 	public static final String POOL_LEAK = "Похоже пул протёк. Отправь @JFixby следующий отчёт об ошибке";
 
 	public static final String TO_DEPOSIT = "Команды для зачисления средств на биржу";
+	public static final String TO_WITHDRAW = "Команды для вывода монет с биржи";
+
 	public static final String TO_DEPOSIT_DCR = "пополнить DCR";
 	public static final String TO_DEPOSIT_PFC = "пополнить PFC";
 
+	public static final String TO_WITHDRAW_DCR = "вывести DCR";
+	public static final String TO_WITHDRAW_PFC = "вывести PFC";
+
+	public static final String Your_balances = "Твои балансы";
+
+	public static final String Examples = "примеры";
+	public static final String Example = "пример";
+
+	public static final String Available = "Доступно для торгов";
+	public static final String Unconfirmed = "и ещё ожидается";
+
+	public static final String Amount = "количество";
+	public static final String Adress = "адрес кошелька";
+
 	public static final String DO_DEPOSIT_PFC = "Засылай PFC на следующий адрес";
 	public static final String DO_DEPOSIT_DCR = "Засылай DCR на следующий адрес";
+
+	public static final String UNRECOGNIZED_AMOUNT = "Количество монет не распознано";
 
 	static {
 		mappings.put(UserSettingsLanguage.RU, Collections.newMap());
@@ -36,6 +54,50 @@ public class Translate {
 		final Map<String, String> ru = mappings.get(UserSettingsLanguage.RU);
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
+
+		ru.put(Unconfirmed, Unconfirmed);
+		en.put(Unconfirmed, "Unconfirmed");
+		ch.put(Unconfirmed, "等待交货");
+
+		ru.put(Available, Available);
+		en.put(Available, "Available");
+		ch.put(Available, "可用资金");
+
+		ru.put(Your_balances, Your_balances);
+		en.put(Your_balances, "Your balances");
+		ch.put(Your_balances, "您的帐户余额");
+
+		ru.put(Example, Example);
+		en.put(Example, "example");
+		ch.put(Example, "例");
+
+		ru.put(Adress, Adress);
+		en.put(Adress, "wallet adress");
+		ch.put(Adress, "钱包地址");
+
+		ru.put(Amount, Amount);
+		en.put(Amount, "amount");
+		ch.put(Amount, "金额");
+
+		ru.put(TO_WITHDRAW, TO_WITHDRAW);
+		en.put(TO_WITHDRAW, "Use the following commands to withdraw funds");
+		ch.put(TO_WITHDRAW, "使用以下命令提取资金");
+
+		ru.put(Examples, Examples);
+		en.put(Examples, "examples");
+		ch.put(Examples, "例子");
+
+		ru.put(TO_WITHDRAW_PFC, TO_WITHDRAW_PFC);
+		en.put(TO_WITHDRAW_PFC, "Withdtaw PFC");
+		ch.put(TO_WITHDRAW_PFC, "取PFC");
+
+		ru.put(TO_WITHDRAW_DCR, TO_WITHDRAW_DCR);
+		en.put(TO_WITHDRAW_DCR, "Withdraw DCR");
+		ch.put(TO_WITHDRAW_DCR, "取DCR");
+
+		ru.put(UNRECOGNIZED_AMOUNT, UNRECOGNIZED_AMOUNT);
+		en.put(UNRECOGNIZED_AMOUNT, "Invalid amount");
+		ch.put(UNRECOGNIZED_AMOUNT, "无效金额");
 
 		ru.put(TO_DEPOSIT_PFC, TO_DEPOSIT_PFC);
 		en.put(TO_DEPOSIT_PFC, "Top up PFC balance");

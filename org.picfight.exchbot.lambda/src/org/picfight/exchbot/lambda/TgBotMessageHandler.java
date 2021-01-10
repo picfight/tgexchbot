@@ -132,26 +132,17 @@ public class TgBotMessageHandler implements Handler {
 
 		if (!settings.exchangeAddressIsSet()) {
 			settings.setupExchangeAddress(this.walletBackEnd);
-// return true;
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.BALANCE)) {
 			this.showBalances(args);
-
 			return true;
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.MARKET)) {
 			this.showMarketState(args);
-
 			return true;
 		}
-
-// if (args.command.equalsIgnoreCase(OPERATIONS.CHART)) {
-// this.showMenuCharts(args);
-//
-// return true;
-// }
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT)) {
 			final StringBuilder b = new StringBuilder();
@@ -179,13 +170,13 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW)) {
-			this.withdrawHelp(bot, chatid);
+			this.withdrawHelp(args, chatid);
 			return true;
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW_PFC)) {
 			if (args.arguments.size() != 2) {
-				this.withdrawHelp(bot, chatid);
+				this.withdrawHelp(args, chatid);
 				return true;
 			}
 
@@ -198,8 +189,8 @@ public class TgBotMessageHandler implements Handler {
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
-				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
-				this.withdrawHelp(bot, chatid);
+				Handlers.respond(bot, chatid, в": " + amount_text, false);
+				this.withdrawHelp(args, chatid);
 				return true;
 
 			}
@@ -209,7 +200,7 @@ public class TgBotMessageHandler implements Handler {
 			if (anal.PFCAddress == null) {
 				Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
 				Handlers.respond(bot, chatid, anal.Error, false);
-				this.withdrawHelp(bot, chatid);
+				this.withdrawHelp(args, chatid);
 				return true;
 			}
 
@@ -232,7 +223,7 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW_DCR)) {
 			if (args.arguments.size() != 2) {
-				this.withdrawHelp(bot, chatid);
+				this.withdrawHelp(args, chatid);
 				return true;
 			}
 
@@ -246,7 +237,7 @@ public class TgBotMessageHandler implements Handler {
 				e.printStackTrace();
 
 				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
-				this.withdrawHelp(bot, chatid);
+				this.withdrawHelp(args, chatid);
 				return true;
 
 			}
@@ -256,7 +247,7 @@ public class TgBotMessageHandler implements Handler {
 			if (anal.DCRAddress == null) {
 				Handlers.respond(bot, chatid, "Не удалось распознать адрес для вывода: " + address_text, false);
 				Handlers.respond(bot, chatid, anal.Error, false);
-				this.withdrawHelp(bot, chatid);
+				this.withdrawHelp(args, chatid);
 				return true;
 			}
 
@@ -529,26 +520,28 @@ public class TgBotMessageHandler implements Handler {
 		Handlers.respond(bot, chatid, "" + result.toString(), false);
 	}
 
-	private void buyHelp (final AbsSender bot, final Long chatid) throws IOException {
-
+	private void buyHelp (final HandleArgs args, final Long chatid) throws IOException {
+		final UserSettings settings = args.settings;
+		final AbsSender bot = args.bot;
 		final StringBuilder b = new StringBuilder();
 		b.append("Купить PFC:").append(N);
-		b.append(OPERATIONS.BUY_PFC + " %количество% ").append(N);
+		b.append(OPERATIONS.BUY_PFC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%").append(N);
 		b.append(N);
-		b.append("пример:").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.Example) + ":").append(N);
 		b.append(OPERATIONS.BUY_PFC + " 154.5").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 
 	}
 
-	private void sellHelp (final AbsSender bot, final Long chatid) throws IOException {
-
+	private void sellHelp (final HandleArgs args, final Long chatid) throws IOException {
+		final UserSettings settings = args.settings;
+		final AbsSender bot = args.bot;
 		final StringBuilder b = new StringBuilder();
 		b.append("Продать PFC:").append(N);
-		b.append(OPERATIONS.SELL_PFC + " %количество% ").append(N);
+		b.append(OPERATIONS.SELL_PFC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%").append(N);
 		b.append(N);
-		b.append("пример:").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.Example) + ":").append(N);
 		b.append(OPERATIONS.SELL_PFC + " 11.3").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
@@ -615,42 +608,19 @@ public class TgBotMessageHandler implements Handler {
 	}
 
 	static String round (final double v, final int digit) {
-// final double r = 100000;
 		final BigDecimal number = new BigDecimal(String.format("%." + digit + "f", v));
 		return (number.stripTrailingZeros().toPlainString());
-// final double d = v;
-// if (d == (long)d) {
-// return String.format("%d", (long)d);
-// } else {
-// return String.format("%s", d);
-// }
 	}
 
 	public static double usd_for_1_pfc (final double dcr_for_1_pfc) throws IOException {
-
 		final MarketPair btcusdpair = MarketPair.newMarketPair(CoinSign.TETHER, CoinSign.BITCOIN);
 		final Ticker btcusdticker = GetTicker.get(btcusdpair);
 		final double usd_for_1_btc = btcusdticker.result.Last;
-
-// L.d("usd_for_1_btc", usd_for_1_btc);
-
 		final MarketPair dcrbtcpair = MarketPair.newMarketPair(CoinSign.BITCOIN, CoinSign.DECRED);
 		final Ticker dcrbtcticker = GetTicker.get(dcrbtcpair);
 		final double btc_for_1_dcr = dcrbtcticker.result.Last;
-
-// L.d("btc_for_1_dcr", btc_for_1_dcr);
-
 		final double usd_for_1_dcr = usd_for_1_btc * btc_for_1_dcr;
-
-// L.d("usd_for_1_dcr", usd_for_1_dcr);
-
 		final double usd_for_1_pfc = usd_for_1_dcr * dcr_for_1_pfc;
-
-// L.d("usd_for_1_pfc", usd_for_1_pfc);
-
-		// final double btc_per_pfc = Exchange.sellPriceBTC(rate);
-		// final double usd_per_pfc = usd_per_btc * btc_per_pfc;
-
 		return usd_for_1_pfc;
 	}
 
@@ -674,7 +644,7 @@ public class TgBotMessageHandler implements Handler {
 		final Long chatid = args.update.message.chatID;
 
 		final StringBuilder b = new StringBuilder();
-		b.append("Твои балансы").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.Your_balances)).append(N);
 		b.append(N);
 		{
 			final PFCAddress user_pfc_address = settings.getExchangeAddressPFC();
@@ -688,12 +658,12 @@ public class TgBotMessageHandler implements Handler {
 				final double unconfirmed_dcr = user_dcr_balance.Unconfirmed.Value;
 				final double balance_dcr = user_dcr_balance.Spendable.Value;
 
-				b.append("Доступно для торгов:").append(N);
+				b.append(Translate.translate(settings.getLanguage(), Translate.Available) + "").append(N);
 				b.append("" + balance_pfc + " PFC ").append(N);
 				b.append("" + balance_dcr + " DCR ").append(N);
 				b.append(N);
 				if (unconfirmed_dcr > 0 || unconfirmed_pfc > 0) {
-					b.append("и ещё ожидается:").append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.Unconfirmed) + "").append(N);
 					if (unconfirmed_pfc > 0) {
 						b.append("" + unconfirmed_pfc + " PFC ").append(N);
 					}
@@ -704,34 +674,32 @@ public class TgBotMessageHandler implements Handler {
 				}
 			}
 		}
-		b.append(OPERATIONS.DEPOSIT + " - пополнить балансы").append(N);
-		b.append(OPERATIONS.WITHDRAW + " - вывести монеты с биржи").append(N);
-		b.append(OPERATIONS.MARKET + " - информация о состоянии торгового пула").append(N);
-		b.append(OPERATIONS.BUY_PFC + " - купить").append(N);
-		b.append(OPERATIONS.SELL_PFC + " - продать").append(N);
+
+		b.append(OPERATIONS.DEPOSIT + " - " + Translate.translate(settings.getLanguage(), Translate.DEPOSIT)).append(N);
+		b.append(OPERATIONS.WITHDRAW + " - " + Translate.translate(settings.getLanguage(), Translate.WITHDRAW)).append(N);
+		b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
+		b.append(OPERATIONS.BUY_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.BUY_PFC)).append(N);
+		b.append(OPERATIONS.SELL_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.SELL_PFC)).append(N);
+		b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
+
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
-// private void balanceString (final StringBuilder b, final double balance, final double unconfirmed, final double tradable,
-// final String sign) {
-// b.append("зачислено: " + balance + " " + sign).append(N);
-// if (unconfirmed > 0) {
-// b.append("ожидается: " + unconfirmed + " " + sign).append(N);
-// }
-//// b.append("доступно для торгов: " + tradable + " " + sign).append(N);
-// }
-
-	private void withdrawHelp (final AbsSender bot, final Long chatid) throws IOException {
+	private void withdrawHelp (final HandleArgs args, final Long chatid) throws IOException {
+		final AbsSender bot = args.bot;
+		final UserSettings settings = args.settings;
 		final StringBuilder b = new StringBuilder();
-		b.append("Команды для вывода монет с биржи").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW)).append(N);
 		b.append(N);
-		b.append("Вывести DCR: ").append(N);
-		b.append(OPERATIONS.WITHDRAW_DCR + " %количество% %адрес%").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW_DCR) + " ").append(N);
+		b.append(OPERATIONS.WITHDRAW_DCR + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%"
+			+ Translate.translate(settings.getLanguage(), Translate.Adress) + "%").append(N);
 		b.append(N);
-		b.append("Вывести PFC:").append(N);
-		b.append(OPERATIONS.WITHDRAW_PFC + " %количество% %адрес%").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW_PFC) + " ").append(N);
+		b.append(OPERATIONS.WITHDRAW_PFC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "%"
+			+ Translate.translate(settings.getLanguage(), Translate.Adress) + "%").append(N);
 		b.append(N);
-		b.append("Примеры").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.Examples) + " ").append(N);
 		b.append(OPERATIONS.WITHDRAW_DCR + " 0.5 D1aBcDeFg12345abcD").append(N);
 		b.append(OPERATIONS.WITHDRAW_PFC + " 120 JabcgeFg123456789H").append(N);
 		b.append(N);
