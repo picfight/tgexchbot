@@ -513,21 +513,6 @@ public class TgBotMessageHandler implements Handler {
 		return false;
 	}
 
-	private void saveOrder (final HandleArgs args, final TradeResult result) {
-		try {
-			final String filename = System.currentTimeMillis() + ".json";
-			final File orderFile = args.filesystem.Executed.child(filename);
-			final ExecutedOrder order = new ExecutedOrder();
-			order.timestamp = System.currentTimeMillis();
-			order.date = (new Date(order.timestamp)).toString();
-			order.price = result.DCRPFC_Executed_Price;
-			order.size = result.PFC_Executed_Amount.Value;
-			orderFile.writeJson(order);
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void reportUnfinishedTransaction (final HandleArgs args, final TradeResult result) throws IOException {
 		final UserSettings settings = args.settings;
 		final AbsSender bot = args.bot;
@@ -733,8 +718,15 @@ public class TgBotMessageHandler implements Handler {
 	 * @param settings
 	 * @param chatid
 	 * @throws IOException */
-	private void respondMenu (final AbsSender bot, final UserSettings settings, final Long chatid) throws IOException {
+	private void respondMenu (final HandleArgs args) throws IOException {
+
+		final AbsSender bot = args.bot;
+		final UserSettings settings = args.settings;
+		final Long chatid = args.update.message.chatID;
+
 		try {
+
+			final ExecutedOrder last = this.loadLastOrder(args);
 
 			final StringBuilder b = new StringBuilder();
 			b.append(Translate.translate(settings.getLanguage(), Translate.THIS_BOT)).append(N);
@@ -746,8 +738,14 @@ public class TgBotMessageHandler implements Handler {
 			b.append(OPERATIONS.BUY_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.BUY_PFC)).append(N);
 			b.append(OPERATIONS.SELL_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.SELL_PFC)).append(N);
 			b.append(OPERATIONS.WITHDRAW + " - " + Translate.translate(settings.getLanguage(), Translate.WITHDRAW)).append(N);
-			b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
+
 			b.append(OPERATIONS.RESET_LANG + " - " + Translate.translate(settings.getLanguage(), Translate.RESET_LANG)).append(N);
+			b.append(N);
+			final double dcr_for_1_pfc = last.price;
+			final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+			b.append("1 PFC = " + round(dcr_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+			b.append(N);
+			b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
 			b.append(N);
 			b.append(Translate.translate(settings.getLanguage(), Translate.NO_BTC)).append(N);
 			b.append(N);
@@ -772,6 +770,22 @@ public class TgBotMessageHandler implements Handler {
 			Handlers.respond(bot, chatid, b.toString(), false);
 		}
 
+	}
+
+	private ExecutedOrder loadLastOrder (final HandleArgs args) throws IOException {
+		final File orderFile = args.filesystem.Executed.listAllChildren().getLast();
+		return orderFile.readJson(ExecutedOrder.class);
+	}
+
+	private void saveOrder (final HandleArgs args, final TradeResult result) throws IOException {
+		final String filename = System.currentTimeMillis() + ".json";
+		final File orderFile = args.filesystem.Executed.child(filename);
+		final ExecutedOrder order = new ExecutedOrder();
+		order.timestamp = System.currentTimeMillis();
+		order.date = (new Date(order.timestamp)).toString();
+		order.price = result.DCRPFC_Executed_Price;
+		order.size = result.PFC_Executed_Amount.Value;
+		orderFile.writeJson(order);
 	}
 
 }

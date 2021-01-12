@@ -60,6 +60,8 @@ public class Translate {
 	public static final String WasAboveLim = "была выше запрошенной";
 	public static final String WasBelowLim = "была ниже запрошенной";
 
+	public static final String LAST_PRICE = "Цена за 1 PFC";
+
 	public static final String FailedToSubmitorder = "Не удалось выставить ордер";
 
 	public static final String NoEnoughCoinsForOrder = "Не хватает монет для ордера. Нужно";
