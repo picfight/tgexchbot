@@ -64,19 +64,19 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.SET_LANG_CH)) {
 			settings.setLanguage(UserSettingsLanguage.CH);
-			this.respondMenu(args.bot, settings, chatid);
+			this.respondMenu(args);
 			return true;
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.SET_LANG_EN)) {
 			settings.setLanguage(UserSettingsLanguage.EN);
-			this.respondMenu(args.bot, settings, chatid);
+			this.respondMenu(args);
 			return true;
 		}
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.SET_LANG_RU)) {
 			settings.setLanguage(UserSettingsLanguage.RU);
-			this.respondMenu(args.bot, settings, chatid);
+			this.respondMenu(args);
 			return true;
 		}
 
@@ -104,12 +104,12 @@ public class TgBotMessageHandler implements Handler {
 			args.command.equalsIgnoreCase(OPERATIONS.START) || //
 			args.command.equalsIgnoreCase(OPERATIONS.HELP) || //
 			false) {
-			this.respondMenu(args.bot, settings, chatid);
+			this.respondMenu(args);
 			return true;
 		}
 
 		L.e("Command not found", args.command);
-		this.respondMenu(args.bot, settings, chatid);
+		this.respondMenu(args);
 		return true;
 	}
 
