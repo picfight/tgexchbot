@@ -353,14 +353,14 @@ public class TgBotMessageHandler implements Handler {
 						.append(N);
 
 					b.append(N);
-					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
-						+ round(usd_for_1_pfc, 4) + "$").append(N);
+					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 8) + " DCR или "
+						+ round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
-					Handlers.respond(bot, chatid, OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
-						+ round(dcr_for_1_pfc * (1 - SPREAD), 10) + " execute", false);
+					Handlers.respond(bot, chatid, OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount.Value, 8) + " "
+						+ round(dcr_for_1_pfc * (1 - SPREAD), 8) + " execute", false);
 				} else {
 					Handlers.respond(bot, chatid,
 						"Продано " + round(result.PFC_Executed_Amount.Value, 8) + " PFC за "
@@ -469,14 +469,14 @@ public class TgBotMessageHandler implements Handler {
 						.append(N);
 
 					b.append(N);
-					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 10) + " DCR или "
-						+ round(usd_for_1_pfc, 4) + "$").append(N);
+					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 8) + " DCR или "
+						+ round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
-					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 10) + " "
-						+ round(dcr_for_1_pfc * (1 + SPREAD), 10) + " execute", false);
+					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 8) + " "
+						+ round(dcr_for_1_pfc * (1 + SPREAD), 8) + " execute", false);
 				} else {
 					Handlers.respond(bot, chatid,
 						"Куплено " + round(result.PFC_Executed_Amount.Value, 8) + " PFC за "
@@ -726,10 +726,18 @@ public class TgBotMessageHandler implements Handler {
 
 		try {
 
-			final ExecutedOrder last = this.loadLastOrder(args);
-
 			final StringBuilder b = new StringBuilder();
 			b.append(Translate.translate(settings.getLanguage(), Translate.THIS_BOT)).append(N);
+			{
+				b.append(N);
+				final PFCAddress exch_pfc_address = EXCHANGE_PFC_ADDRESS();
+				final PFCBalance exch_pfc_balance = this.walletBackEnd.getPFCBallance(exch_pfc_address, 1);
+				final DCRAddress exch_dcr_address = EXCHANGE_DCR_ADDRESS();
+				final DCRBalance exch_dcr_balance = this.walletBackEnd.getDCRBallance(exch_dcr_address, 1);
+				final double dcr_for_1_pfc = exch_dcr_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
+				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+				b.append("1 PFC = " + round(dcr_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+			}
 			b.append(N);
 
 			b.append(Translate.translate(settings.getLanguage(), Translate.USE_THIS)).append(N);
@@ -738,13 +746,7 @@ public class TgBotMessageHandler implements Handler {
 			b.append(OPERATIONS.BUY_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.BUY_PFC)).append(N);
 			b.append(OPERATIONS.SELL_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.SELL_PFC)).append(N);
 			b.append(OPERATIONS.WITHDRAW + " - " + Translate.translate(settings.getLanguage(), Translate.WITHDRAW)).append(N);
-
 			b.append(OPERATIONS.RESET_LANG + " - " + Translate.translate(settings.getLanguage(), Translate.RESET_LANG)).append(N);
-			b.append(N);
-			final double dcr_for_1_pfc = last.price;
-			final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
-			b.append("1 PFC = " + round(dcr_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
-			b.append(N);
 			b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
 			b.append(N);
 			b.append(Translate.translate(settings.getLanguage(), Translate.NO_BTC)).append(N);
