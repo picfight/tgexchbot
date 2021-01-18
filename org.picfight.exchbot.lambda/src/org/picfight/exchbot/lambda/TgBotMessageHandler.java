@@ -165,7 +165,7 @@ public class TgBotMessageHandler implements Handler {
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT_PFC)) {
 			final PFCAddress pfc_address = settings.getExchangeAddressPFC();
-			Handlers.respond(bot, chatid, Translate.translate(args.settings.getLanguage(), Translate.DO_DEPOSIT_DCR) + ":", false);
+			Handlers.respond(bot, chatid, Translate.translate(args.settings.getLanguage(), Translate.DO_DEPOSIT_PFC) + ":", false);
 			Handlers.respond(bot, chatid, pfc_address.toString(), false);
 			return true;
 		}
