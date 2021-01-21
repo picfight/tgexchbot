@@ -190,7 +190,7 @@ public class TgBotMessageHandler implements Handler {
 				e.printStackTrace();
 
 				Handlers.respond(bot, chatid,
-					Translate.translate(settings.getLanguage(), Translate.UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
+					Translate.translate(settings.getLanguage(), Translate.ERROR_UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
 				this.withdrawHelp(args, chatid);
 				return true;
 
@@ -244,7 +244,7 @@ public class TgBotMessageHandler implements Handler {
 				e.printStackTrace();
 
 				Handlers.respond(bot, chatid,
-					Translate.translate(settings.getLanguage(), Translate.UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
+					Translate.translate(settings.getLanguage(), Translate.ERROR_UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
 				this.withdrawHelp(args, chatid);
 				return true;
 
@@ -498,7 +498,7 @@ public class TgBotMessageHandler implements Handler {
 					Handlers.respond(bot, chatid, b.toString(), false);
 
 					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 8) + " "
-						+ round(dcr_for_1_pfc * (1 - SPREAD), 8) + " execute", false);
+						+ round(dcr_for_1_pfc * (1 + SPREAD), 8) + " execute", false);
 				} else {
 					final StringBuilder b = new StringBuilder();
 					b.append(Translate.translate(settings.getLanguage(), Translate.ORDER_EXECUTED) + ": "

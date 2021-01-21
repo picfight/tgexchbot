@@ -56,8 +56,6 @@ public class Translate {
 	public static final String DO_DEPOSIT_PFC = "Засылай PFC на следующий адрес";
 	public static final String DO_DEPOSIT_DCR = "Засылай DCR на следующий адрес";
 
-	public static final String UNRECOGNIZED_AMOUNT = "Количество монет не распознано";
-
 	public static final String WasAboveLim = "была выше запрошенной";
 	public static final String WasBelowLim = "была ниже запрошенной";
 
@@ -112,7 +110,7 @@ public class Translate {
 		en.put(ERROR_UNRECOGNIZED_AMOUNT, "Invalid amount");
 		ch.put(ERROR_UNRECOGNIZED_AMOUNT, "输入的金额无效");
 
-		ru.put(NoEnoughCoinsForOrder, ERROR_UNRECOGNIZED_AMOUNT);
+		ru.put(NoEnoughCoinsForOrder, NoEnoughCoinsForOrder);
 		en.put(NoEnoughCoinsForOrder, "No enough coins to execute the order; requred amount is ");
 		ch.put(NoEnoughCoinsForOrder, "没有足够的硬币来执行订单。所需数量为");
 
@@ -189,7 +187,7 @@ public class Translate {
 		ch.put(FailedToSubmitorder, "这高于要求的价格");
 
 		ru.put(WasAboveLim, WasAboveLim);
-		en.put(WasAboveLim, " whis is abolve the requested price");
+		en.put(WasAboveLim, "whis is abolve the requested price");
 		ch.put(WasAboveLim, "这高于要求的价格");
 
 		ru.put(UniSwap, UniSwap);
@@ -198,7 +196,7 @@ public class Translate {
 		ch.put(UniSwap, "常数乘积公式用于计算汇率。这类似于UniSwap分散式交换协议。");
 
 		ru.put(ProceFor1PFCDrionExecution, ProceFor1PFCDrionExecution);
-		en.put(ProceFor1PFCDrionExecution, "Price for 1PFC during order execution was");
+		en.put(ProceFor1PFCDrionExecution, "Price for 1 PFC during order execution was");
 		ch.put(ProceFor1PFCDrionExecution, "订单执行期间1PFC的价格为");
 
 		ru.put(OrderWasNotExecuted, OrderWasNotExecuted);
@@ -252,10 +250,6 @@ public class Translate {
 		ru.put(TO_WITHDRAW_DCR, TO_WITHDRAW_DCR);
 		en.put(TO_WITHDRAW_DCR, "Withdraw DCR");
 		ch.put(TO_WITHDRAW_DCR, "取DCR");
-
-		ru.put(UNRECOGNIZED_AMOUNT, UNRECOGNIZED_AMOUNT);
-		en.put(UNRECOGNIZED_AMOUNT, "Invalid amount");
-		ch.put(UNRECOGNIZED_AMOUNT, "无效金额");
 
 		ru.put(TO_DEPOSIT_PFC, TO_DEPOSIT_PFC);
 		en.put(TO_DEPOSIT_PFC, "Top up PFC balance");
