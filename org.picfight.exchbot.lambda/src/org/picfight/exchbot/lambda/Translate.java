@@ -50,6 +50,7 @@ public class Translate {
 	public static final String UniSwap = "Стоимость монет считается аналогично алгоритму работы децентрализованных бирж типа UniSwap, когда цена автоматически балансируется состоянием пула.";
 
 	public static final String Amount = "количество";
+	public static final String TotalAmount = "размер";
 	public static final String Adress = "адрес кошелька";
 
 	public static final String DO_DEPOSIT_PFC = "Засылай PFC на следующий адрес";
@@ -82,6 +83,9 @@ public class Translate {
 
 	public static final String UNRECOGNIZED_ADDRESS = "Неправильный адрес для вывода";
 
+	public static final String ORDER_TO_SELL = "продать";
+	public static final String ORDER_TO_BUY = "купить";
+
 	static {
 		mappings.put(UserSettingsLanguage.RU, Collections.newMap());
 		mappings.put(UserSettingsLanguage.CH, Collections.newMap());
@@ -103,8 +107,20 @@ public class Translate {
 		ch.put(TO_BUY_PFC, "购买PFC的命令");
 
 		ru.put(Price, Price);
-		en.put(Price, "price");
+		en.put(Price, "Price");
 		ch.put(Price, "价钱");
+
+		ru.put(ORDER_TO_SELL, ORDER_TO_SELL);
+		en.put(ORDER_TO_SELL, "sell");
+		ch.put(ORDER_TO_SELL, "出售");
+
+		ru.put(TotalAmount, TotalAmount);
+		en.put(TotalAmount, "Total amount");
+		ch.put(TotalAmount, "出售");
+
+		ru.put(ORDER_TO_BUY, ORDER_TO_BUY);
+		en.put(ORDER_TO_BUY, "buy");
+		ch.put(ORDER_TO_BUY, "收购");
 
 		ru.put(DO_DEPOSIT_DCR, DO_DEPOSIT_DCR);
 		en.put(DO_DEPOSIT_DCR, "Upload your DCR to the following address");
