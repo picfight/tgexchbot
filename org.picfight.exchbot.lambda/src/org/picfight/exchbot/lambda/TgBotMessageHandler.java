@@ -295,14 +295,18 @@ public class TgBotMessageHandler implements Handler {
 				amount = new AmountPFC(amountFloat);
 
 				if (amountFloat <= 0) {
-					Handlers.respond(bot, chatid, "Количество монет должно быть положительным: " + amount_text, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.ERROR_POSITIVE_AMOUNT_REQURED) + ": " + amount_text,
+						false);
 					this.buyHelp(args, chatid);
 					return true;
 				}
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
-				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+				Handlers.respond(bot, chatid,
+					Translate.translate(settings.getLanguage(), Translate.ERROR_UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
+
 				this.buyHelp(args, chatid);
 				return true;
 			}
@@ -315,7 +319,8 @@ public class TgBotMessageHandler implements Handler {
 					dcr_for_1_pfc_order = Double.parseDouble(price_text);
 				} catch (final Throwable e) {
 					e.printStackTrace();
-					Handlers.respond(bot, chatid, "Цена не распознана: " + price_text, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.ERROR_UNRECOGNIZED_PRICE) + ": " + price_text, false);
 					this.buyHelp(args, chatid);
 					return true;
 				}
@@ -342,13 +347,12 @@ public class TgBotMessageHandler implements Handler {
 				exchange_dcr_account//
 			);
 			if (result.Success) {
+				final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
+				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+				final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
+
 				if (!result.Executed) {
 					final StringBuilder b = new StringBuilder();
-
-					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
-					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
-					final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
-
 					b.append(Translate.translate(settings.getLanguage(), Translate.ORDER_FOR_EXECUTION) + ": "
 						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_SELL)).append(N);
 					b.append(N);
@@ -365,10 +369,18 @@ public class TgBotMessageHandler implements Handler {
 					Handlers.respond(bot, chatid, OPERATIONS.SELL_PFC + " " + round(result.PFC_Executed_Amount.Value, 8) + " "
 						+ round(dcr_for_1_pfc * (1 - SPREAD), 8) + " execute", false);
 				} else {
-					Handlers.respond(bot, chatid,
-						"Продано " + round(result.PFC_Executed_Amount.Value, 8) + " PFC за "
-							+ round(result.DCR_Executed_Amount.Value, 8) + " DCR по цене " + round(result.DCRPFC_Executed_Price, 8),
-						false);
+					final StringBuilder b = new StringBuilder();
+					b.append(Translate.translate(settings.getLanguage(), Translate.ORDER_EXECUTED) + ": "
+						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_SELL)).append(N);
+					b.append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.TotalAmount) + ": ").append(N);
+					b.append(result.PFC_Executed_Amount + " = " + round(result.DCR_Executed_Amount.Value, 8) + " DCR ("
+						+ round(amount_usd, 2) + "$)").append(N);
+					b.append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
+					b.append("1 PFC = " + round(dcr_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+					b.append(N);
+					Handlers.respond(bot, chatid, b.toString(), false);
 					this.saveOrder(args, result);
 					this.showBalances(args);
 				}
@@ -414,14 +426,18 @@ public class TgBotMessageHandler implements Handler {
 				amount = new AmountPFC(amountFloat);
 
 				if (amountFloat <= 0) {
-					Handlers.respond(bot, chatid, "Количество монет должно быть положительным: " + amount_text, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.ERROR_POSITIVE_AMOUNT_REQURED) + ": " + amount_text,
+						false);
 					this.buyHelp(args, chatid);
 					return true;
 				}
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
-				Handlers.respond(bot, chatid, "Количество монет не распознано: " + amount_text, false);
+				Handlers.respond(bot, chatid,
+					Translate.translate(settings.getLanguage(), Translate.ERROR_UNRECOGNIZED_AMOUNT) + ": " + amount_text, false);
+
 				this.buyHelp(args, chatid);
 				return true;
 			}
@@ -434,7 +450,8 @@ public class TgBotMessageHandler implements Handler {
 					dcr_for_1_pfc_order = Double.parseDouble(price_text);
 				} catch (final Throwable e) {
 					e.printStackTrace();
-					Handlers.respond(bot, chatid, "Цена не распознана: " + price_text, false);
+					Handlers.respond(bot, chatid,
+						Translate.translate(settings.getLanguage(), Translate.ERROR_UNRECOGNIZED_PRICE) + ": " + price_text, false);
 					this.buyHelp(args, chatid);
 					return true;
 				}
@@ -461,13 +478,12 @@ public class TgBotMessageHandler implements Handler {
 			);
 
 			if (result.Success) {
+				final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
+				final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
+				final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
+
 				if (!result.Executed) {
 					final StringBuilder b = new StringBuilder();
-
-					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
-					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
-					final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
-
 					b.append(Translate.translate(settings.getLanguage(), Translate.ORDER_FOR_EXECUTION) + ": "
 						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_BUY)).append(N);
 					b.append(N);
@@ -484,10 +500,19 @@ public class TgBotMessageHandler implements Handler {
 					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 8) + " "
 						+ round(dcr_for_1_pfc * (1 - SPREAD), 8) + " execute", false);
 				} else {
-					Handlers.respond(bot, chatid,
-						"Куплено " + round(result.PFC_Executed_Amount.Value, 8) + " PFC за "
-							+ round(result.DCR_Executed_Amount.Value, 8) + " DCR по цене " + round(result.DCRPFC_Executed_Price, 8),
-						false);
+					final StringBuilder b = new StringBuilder();
+					b.append(Translate.translate(settings.getLanguage(), Translate.ORDER_EXECUTED) + ": "
+						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_BUY)).append(N);
+					b.append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.TotalAmount) + ": ").append(N);
+					b.append(result.PFC_Executed_Amount + " = " + round(result.DCR_Executed_Amount.Value, 8) + " DCR ("
+						+ round(amount_usd, 2) + "$)").append(N);
+					b.append(N);
+					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
+					b.append("1 PFC = " + round(dcr_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+					b.append(N);
+					Handlers.respond(bot, chatid, b.toString(), false);
+
 					this.saveOrder(args, result);
 					this.showBalances(args);
 				}

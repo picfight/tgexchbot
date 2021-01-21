@@ -67,7 +67,7 @@ public class Translate {
 
 	public static final String FailedToSubmitorder = "Не удалось выставить ордер";
 
-	public static final String NoEnoughCoinsForOrder = "Не хватает монет для ордера. Нужно";
+	public static final String NoEnoughCoinsForOrder = "Не хватает монет для выполнения ордера. Нужно ";
 
 	public static final String ORDER_FOR_EXECUTION = "Ордер к исполнению";
 
@@ -86,6 +86,12 @@ public class Translate {
 	public static final String ORDER_TO_SELL = "продать";
 	public static final String ORDER_TO_BUY = "купить";
 
+	public static final String ORDER_EXECUTED = "Ордер успешно выполнен";
+
+	public static final String ERROR_UNRECOGNIZED_PRICE = "Цена не распознана";
+	public static final String ERROR_UNRECOGNIZED_AMOUNT = "Количество монет не распознано";
+	public static final String ERROR_POSITIVE_AMOUNT_REQURED = "Количество монет должно быть положительным";
+
 	static {
 		mappings.put(UserSettingsLanguage.RU, Collections.newMap());
 		mappings.put(UserSettingsLanguage.CH, Collections.newMap());
@@ -93,6 +99,26 @@ public class Translate {
 		final Map<String, String> ru = mappings.get(UserSettingsLanguage.RU);
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
+
+		ru.put(ORDER_EXECUTED, ORDER_EXECUTED);
+		en.put(ORDER_EXECUTED, "Order successfully executed");
+		ch.put(ORDER_EXECUTED, "订单成功执行");
+
+		ru.put(ERROR_POSITIVE_AMOUNT_REQURED, ERROR_POSITIVE_AMOUNT_REQURED);
+		en.put(ERROR_POSITIVE_AMOUNT_REQURED, "Positive amount required");
+		ch.put(ERROR_POSITIVE_AMOUNT_REQURED, "所需的正数");
+
+		ru.put(ERROR_UNRECOGNIZED_AMOUNT, ERROR_UNRECOGNIZED_AMOUNT);
+		en.put(ERROR_UNRECOGNIZED_AMOUNT, "Invalid amount");
+		ch.put(ERROR_UNRECOGNIZED_AMOUNT, "输入的金额无效");
+
+		ru.put(NoEnoughCoinsForOrder, ERROR_UNRECOGNIZED_AMOUNT);
+		en.put(NoEnoughCoinsForOrder, "No enough coins to execute the order; requred amount is ");
+		ch.put(NoEnoughCoinsForOrder, "没有足够的硬币来执行订单。所需数量为");
+
+		ru.put(ERROR_UNRECOGNIZED_PRICE, ERROR_UNRECOGNIZED_PRICE);
+		en.put(ERROR_UNRECOGNIZED_PRICE, "Invalid price");
+		ch.put(ERROR_UNRECOGNIZED_PRICE, "价格无效");
 
 		ru.put(ORDER_FOR_EXECUTION, ORDER_FOR_EXECUTION);
 		en.put(ORDER_FOR_EXECUTION, "Order for execution");
@@ -151,7 +177,7 @@ public class Translate {
 		ch.put(TO_EXECUTE_ORDER, "要执行订单，请发送以下命令");
 
 		ru.put(WasBelowLim, WasBelowLim);
-		en.put(WasBelowLim, " whis is below the requested price");
+		en.put(WasBelowLim, "whis is below the requested price");
 		ch.put(WasBelowLim, "这低于要求的价格");
 
 		ru.put(FailedToSubmitorder, FailedToSubmitorder);
