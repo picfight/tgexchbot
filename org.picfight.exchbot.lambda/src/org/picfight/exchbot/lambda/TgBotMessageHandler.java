@@ -348,13 +348,18 @@ public class TgBotMessageHandler implements Handler {
 					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
 					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
+					b.append(Translate.translate(settings.getLanguage(), Translate.ORDER_FOR_EXECUTION) + ": "
+						+ Translate.translate(settings.getLanguage(), Translate.TO_SELL_PFC)).append(N);
 					b.append(N);
-					b.append(result.PFC_Executed_Amount + " можно продать за " + round(result.DCR_Executed_Amount.Value, 8) + " DCR")
-						.append(N);
 
-					b.append(N);
-					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 8) + " DCR или "
-						+ round(usd_for_1_pfc, 2) + "$").append(N);
+					final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
+
+					b.append(Translate.translate(settings.getLanguage(), Translate.Amount) + ": " + result.PFC_Executed_Amount + " = "
+						+ round(result.DCR_Executed_Amount.Value, 8) + " DCR (" + round(amount_usd, 3) + "$)").append(N);
+
+					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ": " + "1 PFC = " + round(dcr_for_1_pfc, 8)
+						+ " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
@@ -464,19 +469,24 @@ public class TgBotMessageHandler implements Handler {
 					final double dcr_for_1_pfc = result.DCRPFC_Executed_Price;
 					final double usd_for_1_pfc = usd_for_1_pfc(dcr_for_1_pfc);
 
+					b.append(Translate.translate(settings.getLanguage(), Translate.ORDER_FOR_EXECUTION) + ": "
+						+ Translate.translate(settings.getLanguage(), Translate.TO_BUY_PFC)).append(N);
 					b.append(N);
-					b.append(result.PFC_Executed_Amount + " можно купить за " + round(result.DCR_Executed_Amount.Value, 8) + " DCR")
-						.append(N);
 
-					b.append(N);
-					b.append("1 PFC при этом будет стоить приблизительно " + round(dcr_for_1_pfc, 8) + " DCR или "
-						+ round(usd_for_1_pfc, 2) + "$").append(N);
+					final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
+
+					b.append(Translate.translate(settings.getLanguage(), Translate.Amount) + ": " + result.PFC_Executed_Amount + " = "
+						+ round(result.DCR_Executed_Amount.Value, 8) + " DCR (" + round(amount_usd, 3) + "$)").append(N);
+
+					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ": " + "1 PFC = " + round(dcr_for_1_pfc, 8)
+						+ " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
 					Handlers.respond(bot, chatid, OPERATIONS.BUY_PFC + " " + round(result.PFC_Executed_Amount.Value, 8) + " "
-						+ round(dcr_for_1_pfc * (1 + SPREAD), 8) + " execute", false);
+						+ round(dcr_for_1_pfc * (1 - SPREAD), 8) + " execute", false);
 				} else {
 					Handlers.respond(bot, chatid,
 						"Куплено " + round(result.PFC_Executed_Amount.Value, 8) + " PFC за "

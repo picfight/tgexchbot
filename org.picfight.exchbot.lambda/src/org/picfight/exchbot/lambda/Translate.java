@@ -62,9 +62,13 @@ public class Translate {
 
 	public static final String LAST_PRICE = "Цена за 1 PFC";
 
+	public static final String Price = "цена";
+
 	public static final String FailedToSubmitorder = "Не удалось выставить ордер";
 
 	public static final String NoEnoughCoinsForOrder = "Не хватает монет для ордера. Нужно";
+
+	public static final String ORDER_FOR_EXECUTION = "Ордер к исполнению";
 
 	public static final String TO_SELL_PFC = "Купить PFC";
 	public static final String TO_BUY_PFC = "Продать PFC";
@@ -86,6 +90,10 @@ public class Translate {
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
 
+		ru.put(ORDER_FOR_EXECUTION, ORDER_FOR_EXECUTION);
+		en.put(ORDER_FOR_EXECUTION, "Order for execution");
+		ch.put(ORDER_FOR_EXECUTION, "执行订单");
+
 		ru.put(TO_SELL_PFC, TO_SELL_PFC);
 		en.put(TO_SELL_PFC, "Command to sell PFC");
 		ch.put(TO_SELL_PFC, "出售PFC的命令");
@@ -93,6 +101,18 @@ public class Translate {
 		ru.put(TO_BUY_PFC, TO_BUY_PFC);
 		en.put(TO_BUY_PFC, "Command to buy PFC");
 		ch.put(TO_BUY_PFC, "购买PFC的命令");
+
+		ru.put(Price, Price);
+		en.put(Price, "price");
+		ch.put(Price, "价钱");
+
+		ru.put(DO_DEPOSIT_DCR, DO_DEPOSIT_DCR);
+		en.put(DO_DEPOSIT_DCR, "Upload your DCR to the following address");
+		ch.put(DO_DEPOSIT_DCR, "请将DCR发送到以下地址");
+
+		ru.put(DO_DEPOSIT_PFC, DO_DEPOSIT_PFC);
+		en.put(DO_DEPOSIT_PFC, "Upload your PFC to the following address");
+		ch.put(DO_DEPOSIT_PFC, "请将PFC发送到以下地址");
 
 		ru.put(UNRECOGNIZED_ADDRESS, UNRECOGNIZED_ADDRESS);
 		en.put(UNRECOGNIZED_ADDRESS, "Invalid address");
