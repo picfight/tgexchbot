@@ -457,22 +457,6 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 		result.BTCPFC_Ratio_BeforeTrade = SpendableBTC / SpendablePFC
 		PoolConstant := SpendableBTC * SpendablePFC
 		result.PoolConstant = PoolConstant
-		minPFCAmount := 0.0
-		minBTCAmount := 0.001
-		if amountPFC <= minPFCAmount {
-			result.ErrorMessage = fmt.Sprintf("Requested PFC amount(%v) must be > %v ", amountPFC, minPFCAmount)
-			result.Success = false
-			return toJson(result)
-		}
-		amountBTC := result.BTC_Executed_Amount.Value
-		if amountBTC <= minBTCAmount {
-			result.ErrorMessage = fmt.Sprintf("Requested BTC amount(%v) must be > %v ", amountBTC, minBTCAmount)
-			result.Success = false
-			result.MinBTCAmountError = true
-			result.MinBTCAmountValue.Value = minBTCAmount
-			return toJson(result)
-		}
-
 		if result.Operation == "BUY" {
 			result.PFC_InPool_AfterTrade.Value = SpendablePFC - amountPFC
 		} else {
@@ -508,6 +492,24 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 		return toJson(result)
 	}
 	// order execution:
+	{
+		minPFCAmount := 0.0
+		minBTCAmount := 0.001
+		if amountPFC <= minPFCAmount {
+			result.ErrorMessage = fmt.Sprintf("Requested PFC amount(%v) must be > %v ", amountPFC, minPFCAmount)
+			result.Success = false
+			return toJson(result)
+		}
+		amountBTC := result.BTC_Executed_Amount.Value
+		if amountBTC <= minBTCAmount {
+			result.ErrorMessage = fmt.Sprintf("Requested BTC amount(%v) must be > %v ", amountBTC, minBTCAmount)
+			result.Success = false
+			result.MinBTCAmountError = true
+			result.MinBTCAmountValue.Value = minBTCAmount
+			return toJson(result)
+		}
+	}
+
 	{
 		if result.Operation == "BUY" {
 			if result.BTCPFC_Executed_Price > Btc_for_1_pfc_order {
