@@ -331,6 +331,7 @@ func (s HttpsServer) executeGetBalanceBTC(address string, min_confirmations int)
 		}
 
 		validation, e := client.ValidateAddress(addr)
+		pin.D("validation", validation)
 		if e != nil {
 			return nil, err
 		}
