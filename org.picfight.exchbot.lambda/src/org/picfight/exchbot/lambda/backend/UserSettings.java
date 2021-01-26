@@ -68,18 +68,18 @@ public class UserSettings {
 //
 	public void setupExchangeAddress (final WalletBackEnd walletBackEnd) throws BackendException, IOException {
 		final String userID = this.data.accountName;
-// if (this.data.exchangeAddress.get("btc") == null) {
-// final BTCAddress add = walletBackEnd.getNewBTCAddress(userID);
-// this.data.exchangeAddress.put("btc", add.AddressString);
-// }
+		if (this.data.exchangeAddress.get("btc") == null) {
+			final BTCAddress add = walletBackEnd.getNewBTCAddress(userID);
+			this.data.exchangeAddress.put("btc", add.AddressString);
+		}
 		if (this.data.exchangeAddress.get("pfc") == null) {
 			final PFCAddress add = walletBackEnd.getNewPFCAddress(userID);
 			this.data.exchangeAddress.put("pfc", add.AddressString);
 		}
-		if (this.data.exchangeAddress.get("dcr") == null) {
-			final DCRAddress add = walletBackEnd.getNewDCRAddress(userID);
-			this.data.exchangeAddress.put("dcr", add.AddressString);
-		}
+// if (this.data.exchangeAddress.get("dcr") == null) {
+// final DCRAddress add = walletBackEnd.getNewDCRAddress(userID);
+// this.data.exchangeAddress.put("dcr", add.AddressString);
+// }
 		this.settingsFile.writeJson(this.data);
 	}
 
@@ -117,55 +117,5 @@ public class UserSettings {
 	public UserSettingsLanguage getLanguage () {
 		return UserSettingsLanguage.resolve(this.data.language);
 	}
-
-// public BTCAddress getPrivateAddressBTC () {
-// final String string = this.data.privateAddress.get("btc");
-// if (string == null) {
-// return null;
-// }
-//// Debug.checkNull("AddressString", string);
-//// Debug.checkEmpty("AddressString", string);
-// final BTCAddress a = new BTCAddress();
-// a.AddressString = string;
-// a.Type = "BTC";
-// return a;
-// }
-//
-// public PFCAddress getPrivateAddressPFC () {
-// final String string = this.data.privateAddress.get("pfc");
-// if (string == null) {
-// return null;
-// }
-//// Debug.checkNull("AddressString", string);
-//// Debug.checkEmpty("AddressString", string);
-// final PFCAddress a = new PFCAddress();
-// a.AddressString = string;
-// a.Type = "PFC";
-// return a;
-// }
-//
-// public void setupPrivateAddressBTC (final BTCAddress address) throws IOException {
-// this.data.privateAddress.put("btc", address.AddressString);
-// this.settingsFile.writeJson(this.data);
-// }
-//
-// public void setupPrivateAddressPFC (final PFCAddress address) throws IOException {
-// this.data.privateAddress.put("pfc", address.AddressString);
-// this.settingsFile.writeJson(this.data);
-// }
-//
-// public boolean privateBTCAddressIsSet () {
-// if (this.data.privateAddress.get("btc") == null) {
-// return false;
-// }
-// return true;
-// }
-//
-// public boolean privatePFCAddressIsSet () {
-// if (this.data.privateAddress.get("pfc") == null) {
-// return false;
-// }
-// return true;
-// }
 
 }

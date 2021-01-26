@@ -113,24 +113,6 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public BTCBalance getBTCBallance (final BTCAddress btc_address, final int confirmations) throws BackendException {
-		final String command = "get_balance_btc";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("access_key", this.access_key);
-		params.put("btc_address", btc_address.AddressString);
-		params.put("min_confirmations", confirmations + "");
-		JsonString resultJson;
-		try {
-			resultJson = BackEndConnector.retrieve(Url, params);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new BackendException(e);
-		}
-		final BTCBalance r = Json.deserializeFromString(BTCBalance.class, resultJson);
-		return r;
-	}
-
 	public TransactionResult transferPFC (final PFCAddress fromAccountAddress, final PFCAddress toAddress, final AmountPFC amount)
 		throws BackendException {
 		final String command = "transfer_pfc";
@@ -215,40 +197,6 @@ public class WalletBackEnd {
 		final PFCInputs r = Json.deserializeFromString(PFCInputs.class, resultJson);
 		return r;
 	}
-
-	public BTCAddress getNewBTCAddress (final String accountName) throws BackendException {
-		final String command = "new_btc_address";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("Access_key", this.access_key);
-		params.put("Account_name", accountName);
-		JsonString resultJson;
-		try {
-			resultJson = BackEndConnector.retrieve(Url, params);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new BackendException(e);
-		}
-		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
-		return r;
-	}
-
-// public PlottedChart plotChart (final String Chart_data_base64) throws BackendException {
-// final String command = "plot_chart";
-// final HttpURL Url = this.commadToUrl(command);
-// final Map<String, String> params = Collections.newMap();
-// params.put("Access_key", this.access_key);
-// params.put("Chart_data_base64", Chart_data_base64);
-// JsonString resultJson;
-// try {
-// resultJson = BackEndConnector.retrieve(Url, params);
-// } catch (final IOException e) {
-// e.printStackTrace();
-// throw new BackendException(e);
-// }
-// final PlottedChart r = Json.deserializeFromString(PlottedChart.class, resultJson);
-// return r;
-// }
 
 	public PFCAddress getNewPFCAddress (final String accountName) throws BackendException {
 		final String command = "new_pfc_address";

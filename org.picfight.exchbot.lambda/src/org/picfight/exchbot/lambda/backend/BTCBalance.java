@@ -3,12 +3,10 @@ package org.picfight.exchbot.lambda.backend;
 
 public class BTCBalance {
 
-	public AmountBTC AmountBTC;
-	public BTCAddress BTCAddress;
+	public AmountBTC Spendable;
+	public AmountBTC Unconfirmed;
 
-	@Override
-	public String toString () {
-		return "BTCBalance [AmountBTC=" + this.AmountBTC + ", BTCAddress=" + this.BTCAddress + "]";
-	}
+	public BTCAddress BTCAddress;
+	public String ResolvedAccountName;
 
 }
