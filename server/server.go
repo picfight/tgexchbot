@@ -344,7 +344,13 @@ func (s HttpsServer) executeGetBalanceBTC(address string, min_confirmations int)
 		}
 
 		result.Spendable.Value = balance.ToBTC()
-		result.Unconfirmed.Value = 0
+
+		ubalance, err := client.GetUnconfirmedBalance(resolvedAccountName)
+		if err != nil {
+			return nil, err
+		}
+
+		result.Unconfirmed.Value = ubalance.ToBTC()
 
 		result.ResolvedAccountName = resolvedAccountName
 	}
