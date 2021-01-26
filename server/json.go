@@ -4,7 +4,6 @@ type Rate struct {
 	CirculatingSupplyCoins AmountPFC `json: "CirculatingSupplyCoins"`
 	AvailablePFC           AmountPFC `json: "AvailablePFC"`
 	AvailableBTC           AmountBTC `json: "AvailableBTC"`
-	AvailableDCR           AmountBTC `json: "AvailableDCR"`
 
 	//MinBTCOperation AmountBTC `json: "MinBTCOperation"`
 	//BTCperPFC       float64   `json: "BTCperPFC"`
@@ -14,7 +13,6 @@ type Rate struct {
 
 type StringAnalysis struct {
 	BTCAddress *AddressString `json: "BTCAddress"`
-	DCRAddress *AddressString `json: "DCRAddress"`
 	PFCAddress *AddressString `json: "PFCAddress"`
 	Error      string         `json: "Error"`
 }
@@ -32,24 +30,15 @@ type PFCBalance struct {
 	ResolvedAccountName string        `json: "resolvedAccountName"`
 }
 
-type DCRBalance struct {
-	Spendable   AmountDCR `json: "Spendable"`
-	Unconfirmed AmountDCR `json: "Unconfirmed"`
+type BTCBalance struct {
+	Spendable   AmountBTC `json: "Spendable"`
+	Unconfirmed AmountBTC `json: "Unconfirmed"`
 
-	DCRAddress          AddressString `json: "DCRAddress"`
+	BTCAddress          AddressString `json: "BTCAddress"`
 	ResolvedAccountName string        `json: "resolvedAccountName"`
 }
 
-type BTCBalance struct {
-	AmountBTC  AmountBTC     `json: "AmountBTC"`
-	BTCAddress AddressString `json: "BTCAddress"`
-}
-
 type AmountPFC struct {
-	Value float64 `json: "Value"`
-}
-
-type AmountDCR struct {
 	Value float64 `json: "Value"`
 }
 
@@ -84,24 +73,24 @@ type TradeResult struct {
 	Operation     string `json: "Operation"`
 	Executed      bool   `json: "Executed"`
 
-	DCRPFC_Ratio_BeforeTrade float64 `json: "DCRPFC_Ratio_BeforeTrade"`
-	DCRPFC_Ratio_AfterTrade  float64 `json: "DCRPFC_Ratio_AfterTrade"`
+	BTCPFC_Ratio_BeforeTrade float64 `json: "BTCPFC_Ratio_BeforeTrade"`
+	BTCPFC_Ratio_AfterTrade  float64 `json: "BTCPFC_Ratio_AfterTrade"`
 
-	DCR_InPool_BeforeTrade AmountDCR `json: "DCR_InPool_BeforeTrade"`
+	BTC_InPool_BeforeTrade AmountBTC `json: "BTC_InPool_BeforeTrade"`
 	PFC_InPool_BeforeTrade AmountPFC `json: "PFC_InPool_BeforeTrade"`
 	PoolConstant           float64   `json: "PoolConstant"`
 	PFC_InPool_AfterTrade  AmountPFC `json: "PFC_InPool_AfterTrade"`
-	DCR_InPool_AfterTrade  AmountDCR `json: "DCR_InPool_AfterTrade"`
+	BTC_InPool_AfterTrade  AmountBTC `json: "BTC_InPool_AfterTrade"`
 
-	DCR_Executed_Amount AmountDCR `json: "DCR_Executed_Amount"`
+	BTC_Executed_Amount AmountBTC `json: "BTC_Executed_Amount"`
 	PFC_Executed_Amount AmountPFC `json: "PFC_Executed_Amount"`
 
-	DCRPFC_Executed_Price float64 `json: "DCRPFC_Executed_Price"`
+	BTCPFC_Executed_Price float64 `json: "BTCPFC_Executed_Price"`
 
-	DCR_Transaction TransactionResult `json: "DCR_Transaction"`
+	BTC_Transaction TransactionResult `json: "BTC_Transaction"`
 	PFC_Transaction TransactionResult `json: "PFC_Transaction"`
 
-	Requested_Price_Dcr_for_1_pfc float64 `json: "Requested_Price_Dcr_for_1_pfc"`
+	Requested_Price_Btc_for_1_pfc float64 `json: "Requested_Price_Btc_for_1_pfc"`
 
 	UnfinishedTransaction bool `json: "UnfinishedTransaction"`
 	PriceNotMet           bool `json: "PriceNotMet"`
@@ -111,11 +100,11 @@ type TransactionResult struct {
 	Success      bool   `json: "Success"`
 	ErrorMessage string `json: "ErrorMessage"`
 
-	DCR_FromAccountAddress  string    `json: "DCR_FromAccountAddress"`
-	DCR_ResolvedAccountName string    `json: "DCR_ResolvedAccountName"`
-	DCR_Amount              AmountDCR `json: "DCR_Amount"`
-	DCR_ToAddress           string    `json: "DCR_ToAddress"`
-	DCR_TransactionReceipt  string    `json: "DCR_TransactionReceipt"`
+	BTC_FromAccountAddress  string    `json: "BTC_FromAccountAddress"`
+	BTC_ResolvedAccountName string    `json: "BTC_ResolvedAccountName"`
+	BTC_Amount              AmountBTC `json: "BTC_Amount"`
+	BTC_ToAddress           string    `json: "BTC_ToAddress"`
+	BTC_TransactionReceipt  string    `json: "BTC_TransactionReceipt"`
 
 	PFC_FromAccountAddress  string    `json: "PFC_FromAccountAddress"`
 	PFC_ResolvedAccountName string    `json: "PFC_ResolvedAccountName"`
