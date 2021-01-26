@@ -136,6 +136,10 @@ func (s *HttpsServer) processRequest(command string, access_key string, params h
 	//	return s.PlotChart(Chart_data_base64)
 	//}
 
+	for k, v := range params {
+		pin.D(k, v)
+	}
+
 	mutex.Lock()
 	//------------------------------------------------------------------------------
 	defer mutex.Unlock()
@@ -208,7 +212,6 @@ func checkAccessKey(received_key string) bool {
 	set := os.Getenv(ACCESS_KEY)
 	return received_key == set
 }
-
 
 func (s HttpsServer) obrtainPFCAddress(walletAccountName string) string {
 	address := &AddressString{
