@@ -21,7 +21,6 @@ import org.picfight.exchbot.lambda.backend.WalletBackEnd;
 import org.picfight.exchbot.lambda.backend.WalletBackEndArgs;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.names.Names;
@@ -656,8 +655,7 @@ public class TgBotMessageHandler implements Handler {
 
 	public static final BTCAddress EXCHANGE_BTC_ADDRESS () {
 		final BTCAddress addr = new BTCAddress();
-		addr.AddressString = "DsdJYEiPaw1WTC4HW5ULqj2tpLPUxzG2ECn";
-		Err.throwNotImplementedYet();
+		addr.AddressString = "12LU2RHsb4aLad54DXYar2EtqhR3v22ZJj";
 		addr.Type = "BTC";
 		return addr;
 	}
