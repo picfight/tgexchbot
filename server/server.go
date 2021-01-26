@@ -667,7 +667,9 @@ func (s HttpsServer) executeTransferPFC(PFC_FromAccountAddress string, PFC_ToAdd
 	{
 		key := os.Getenv(PFCWKEY)
 		err = client.WalletPassphrase(key, 10000000)
-		lang.CheckErr(err)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	hash, err := client.SendFrom(result.PFC_ResolvedAccountName, toAddr, amount)
@@ -724,7 +726,9 @@ func (s HttpsServer) executeTransferBTC(BTC_FromAccountAddress string, BTC_ToAdd
 	{
 		key := os.Getenv(BTCWKEY)
 		err = client.WalletPassphrase(key, 10000000)
-		lang.CheckErr(err)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	hash, err := client.SendFrom(result.BTC_ResolvedAccountName, toAddr, amount)
