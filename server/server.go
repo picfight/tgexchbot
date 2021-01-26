@@ -655,6 +655,12 @@ func (s HttpsServer) executeTransferPFC(PFC_FromAccountAddress string, PFC_ToAdd
 
 	result.PFC_Amount = amountFloat
 
+	{
+		key := os.Getenv(PFCWKEY)
+		err = client.WalletPassphrase(key, 10000000)
+		lang.CheckErr(err)
+	}
+
 	hash, err := client.SendFrom(result.PFC_ResolvedAccountName, toAddr, amount)
 
 	if hash != nil {
