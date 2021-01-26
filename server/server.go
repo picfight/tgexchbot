@@ -706,6 +706,12 @@ func (s HttpsServer) executeTransferBTC(BTC_FromAccountAddress string, BTC_ToAdd
 
 	result.BTC_Amount = amountFloat
 
+	{
+		key := os.Getenv(BTCWKEY)
+		err = client.WalletPassphrase(key, 10000000)
+		lang.CheckErr(err)
+	}
+
 	hash, err := client.SendFrom(result.BTC_ResolvedAccountName, toAddr, amount)
 
 	if hash != nil {
