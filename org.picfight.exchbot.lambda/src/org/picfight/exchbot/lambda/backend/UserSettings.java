@@ -62,17 +62,26 @@ public class UserSettings {
 		if (this.data.exchangeAddress.get("dcr") == null) {
 			return false;
 		}
+		if ("".equals(this.data.exchangeAddress.get("btc"))) {
+			return false;
+		}
+		if ("".equals(this.data.exchangeAddress.get("pfc"))) {
+			return false;
+		}
+		if ("".equals(this.data.exchangeAddress.get("dcr"))) {
+			return false;
+		}
 		return true;
 	}
 
 //
 	public void setupExchangeAddress (final WalletBackEnd walletBackEnd) throws BackendException, IOException {
 		final String userID = this.data.accountName;
-		if (this.data.exchangeAddress.get("btc") == null) {
+		if (this.data.exchangeAddress.get("btc") == null || "".equals(this.data.exchangeAddress.get("btc"))) {
 			final BTCAddress add = walletBackEnd.getNewBTCAddress(userID);
 			this.data.exchangeAddress.put("btc", add.AddressString);
 		}
-		if (this.data.exchangeAddress.get("pfc") == null) {
+		if (this.data.exchangeAddress.get("pfc") == null || "".equals(this.data.exchangeAddress.get("btc"))) {
 			final PFCAddress add = walletBackEnd.getNewPFCAddress(userID);
 			this.data.exchangeAddress.put("pfc", add.AddressString);
 		}
