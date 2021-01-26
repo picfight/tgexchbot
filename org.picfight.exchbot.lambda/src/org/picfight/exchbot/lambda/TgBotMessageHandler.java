@@ -645,7 +645,6 @@ public class TgBotMessageHandler implements Handler {
 				b.append(N);
 			} else {
 				b.append(Translate.translate(settings.getLanguage(), Translate.POOL_IS_BALANCING)).append(N);
-				b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
 				b.append(N);
 				b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
 				b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
