@@ -25,14 +25,14 @@ public class TradeResult {
 	public boolean Executed;
 // Executed bool `json: "Executed"`
 
-	public double DCRPFC_Ratio_BeforeTrade;
-// DCRPFC_Ratio_BeforeTrade float64 `json: "DCRPFC_Ratio_BeforeTrade"`
+	public double BTCPFC_Ratio_BeforeTrade;
+// BTCPFC_Ratio_BeforeTrade float64 `json: "BTCPFC_Ratio_BeforeTrade"`
 
-	public double DCRPFC_Ratio_AfterTrade;
-// DCRPFC_Ratio_AfterTrade float64 `json: "DCRPFC_Ratio_AfterTrade"`
+	public double BTCPFC_Ratio_AfterTrade;
+// BTCPFC_Ratio_AfterTrade float64 `json: "BTCPFC_Ratio_AfterTrade"`
 
-	public AmountDCR DCR_InPool_BeforeTrade;
-// DCR_InPool_BeforeTrade float64 `json: "DCR_InPool_BeforeTrade"`
+	public AmountBTC BTC_InPool_BeforeTrade;
+// BTC_InPool_BeforeTrade float64 `json: "BTC_InPool_BeforeTrade"`
 
 	public AmountPFC PFC_InPool_BeforeTrade;
 // PFC_InPool_BeforeTrade float64 `json: "PFC_InPool_BeforeTrade"`
@@ -43,26 +43,26 @@ public class TradeResult {
 	public AmountPFC PFC_InPool_AfterTrade;
 // PFC_InPool_AfterTrade float64 `json: "PFC_InPool_AfterTrade"`
 
-	public AmountDCR DCR_InPool_AfterTrade;
-// DCR_InPool_AfterTrade float64 `json: "DCR_InPool_AfterTrade"`
+	public AmountBTC BTC_InPool_AfterTrade;
+// BTC_InPool_AfterTrade float64 `json: "BTC_InPool_AfterTrade"`
 
-	public AmountDCR DCR_Executed_Amount;
-// DCR_Executed_Amount float64 `json: "DCR_Executed_Amount"`
+	public AmountBTC BTC_Executed_Amount;
+// BTC_Executed_Amount float64 `json: "BTC_Executed_Amount"`
 
 	public AmountPFC PFC_Executed_Amount;
 // PFC_Executed_Amount float64 `json: "PFC_Executed_Amount"`
 
-	public double DCRPFC_Executed_Price;
-// DCRPFC_Executed_Price float64 `json: "DCRPFC_Executed_Price"`
+	public double BTCPFC_Executed_Price;
+// BTCPFC_Executed_Price float64 `json: "BTCPFC_Executed_Price"`
 
-	public TransactionResult DCR_Transaction;
-// DCR_Transaction TransactionResult `json: "DCR_Transaction"`
+	public TransactionResult BTC_Transaction;
+// BTC_Transaction TransactionResult `json: "BTC_Transaction"`
 
 	public TransactionResult PFC_Transaction;
 // PFC_Transaction TransactionResult `json: "PFC_Transaction"`
 
-	public double Requested_Price_Dcr_for_1_pfc;
-// Requested_Price_Dcr_for_1_pfc float64 `json: "Requested_Price_Dcr_for_1_pfc"`
+	public double Requested_Price_Btc_for_1_pfc;
+// Requested_Price_Btc_for_1_pfc float64 `json: "Requested_Price_Btc_for_1_pfc"`
 
 	public boolean UnfinishedTransaction;
 // UnfinishedTransaction bool `json: "UnfinishedTransaction"`

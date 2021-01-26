@@ -95,12 +95,12 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public DCRBalance getDCRBallance (final DCRAddress dcr_address, final int confirmations) throws BackendException {
-		final String command = "get_balance_dcr";
+	public BTCBalance getBTCBallance (final BTCAddress btc_address, final int confirmations) throws BackendException {
+		final String command = "get_balance_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
-		params.put("Dcr_address", dcr_address.AddressString);
+		params.put("Btc_address", btc_address.AddressString);
 		params.put("Min_confirmations", confirmations + "");
 		JsonString resultJson;
 		try {
@@ -109,7 +109,7 @@ public class WalletBackEnd {
 			e.printStackTrace();
 			throw new BackendException(e);
 		}
-		final DCRBalance r = Json.deserializeFromString(DCRBalance.class, resultJson);
+		final BTCBalance r = Json.deserializeFromString(BTCBalance.class, resultJson);
 		return r;
 	}
 
@@ -153,15 +153,15 @@ public class WalletBackEnd {
 
 	}
 
-	public TransactionResult transferDCR (final DCRAddress fromAccountAddress, final DCRAddress toAddress, final AmountDCR amount)
+	public TransactionResult transferBTC (final BTCAddress fromAccountAddress, final BTCAddress toAddress, final AmountBTC amount)
 		throws BackendException {
-		final String command = "transfer_dcr";
+		final String command = "transfer_btc";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
-		params.put("Dcr_fromaccountaddress", fromAccountAddress + "");
-		params.put("Dcr_toaddress", toAddress + "");
-		params.put("Dcr_amount", amount.Value + "");
+		params.put("Btc_fromaccountaddress", fromAccountAddress + "");
+		params.put("Btc_toaddress", toAddress + "");
+		params.put("Btc_amount", amount.Value + "");
 
 		JsonString resultJson;
 		try {
@@ -267,8 +267,8 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public DCRAddress getNewDCRAddress (final String accountName) throws BackendException {
-		final String command = "new_dcr_address";
+	public BTCAddress getNewBTCAddress (final String accountName) throws BackendException {
+		final String command = "new_btc_address";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
@@ -280,7 +280,7 @@ public class WalletBackEnd {
 			e.printStackTrace();
 			throw new BackendException(e);
 		}
-		final DCRAddress r = Json.deserializeFromString(DCRAddress.class, resultJson);
+		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
 		return r;
 	}
 
@@ -288,11 +288,11 @@ public class WalletBackEnd {
 		final TRADE_OPERATION op, //
 		final boolean getQuote, //
 		final AmountPFC amount, //
-		final Double dcr_for_1_pfc_order, //
+		final Double btc_for_1_pfc_order, //
 		final PFCAddress user_pfc_account, //
-		final DCRAddress user_dcr_account, //
+		final BTCAddress user_btc_account, //
 		final PFCAddress exchange_pfc_account, //
-		final DCRAddress exchange_dcr_account//
+		final BTCAddress exchange_btc_account//
 	) throws BackendException {
 
 		final String command = "trade_pfc";
@@ -304,11 +304,11 @@ public class WalletBackEnd {
 		params.put("Getquote", getQuote + "");
 
 		params.put("User_pfc_account", user_pfc_account + "");
-		params.put("User_dcr_account", user_dcr_account + "");
+		params.put("User_btc_account", user_btc_account + "");
 		params.put("Exchange_pfc_account", exchange_pfc_account + "");
-		params.put("Exchange_dcr_account", exchange_dcr_account + "");
+		params.put("Exchange_btc_account", exchange_btc_account + "");
 
-		params.put("Dcr_for_1_pfc_order", dcr_for_1_pfc_order + "");
+		params.put("Btc_for_1_pfc_order", btc_for_1_pfc_order + "");
 
 		JsonString resultJson;
 		try {
