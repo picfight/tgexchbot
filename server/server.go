@@ -469,7 +469,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 			result.ErrorMessage = fmt.Sprintf("Requested BTC amount(%v) must be > %v ", amountBTC, minBTCAmount)
 			result.Success = false
 			result.MinBTCAmountError = true
-			result.MinBTCAmountValue.Value = amountBTC
+			result.MinBTCAmountValue.Value = minBTCAmount
 			return toJson(result)
 		}
 
