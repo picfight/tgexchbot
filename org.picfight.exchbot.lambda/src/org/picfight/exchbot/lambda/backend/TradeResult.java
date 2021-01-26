@@ -67,6 +67,12 @@ public class TradeResult {
 	public boolean UnfinishedTransaction;
 // UnfinishedTransaction bool `json: "UnfinishedTransaction"`
 
+	public boolean MinBTCAmountError;
+// MinBTCAmountError bool `json: "MinBTCAmountError"`
+
+	public AmountBTC MinBTCAmountValue;
+// MinBTCAmountValue AmountBTC `json: "MinBTCAmountValue"`
+
 	@Override
 	public String toString () {
 		return Json.serializeToString(this).toString();

@@ -90,6 +90,10 @@ public class Translate {
 	public static final String ERROR_UNRECOGNIZED_AMOUNT = "Количество монет не распознано";
 	public static final String ERROR_POSITIVE_AMOUNT_REQURED = "Количество монет должно быть положительным";
 
+	public static final String EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL = "Слишком маленький объём операции";
+	public static final String EXCHANGE_BTC_AMOUNT_EXECUTED = "размер операции";
+	public static final String EXCHANGE_BTC_AMOUNT_MIN = "минимальный размер";
+
 	static {
 		mappings.put(UserSettingsLanguage.RU, Collections.newMap());
 		mappings.put(UserSettingsLanguage.CH, Collections.newMap());
@@ -97,6 +101,18 @@ public class Translate {
 		final Map<String, String> ru = mappings.get(UserSettingsLanguage.RU);
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
+
+		ru.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL);
+		en.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, "Executed amount is too small");
+		ch.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, "执行量太小");
+
+		ru.put(EXCHANGE_BTC_AMOUNT_EXECUTED, EXCHANGE_BTC_AMOUNT_EXECUTED);
+		en.put(EXCHANGE_BTC_AMOUNT_EXECUTED, "executed amount");
+		ch.put(EXCHANGE_BTC_AMOUNT_EXECUTED, "执行金额");
+
+		ru.put(EXCHANGE_BTC_AMOUNT_MIN, EXCHANGE_BTC_AMOUNT_MIN);
+		en.put(EXCHANGE_BTC_AMOUNT_MIN, "minimal amount");
+		ch.put(EXCHANGE_BTC_AMOUNT_MIN, "最小数量");
 
 		ru.put(ORDER_EXECUTED, ORDER_EXECUTED);
 		en.put(ORDER_EXECUTED, "Order successfully executed");

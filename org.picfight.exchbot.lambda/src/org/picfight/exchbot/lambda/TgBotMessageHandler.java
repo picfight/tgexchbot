@@ -402,6 +402,8 @@ public class TgBotMessageHandler implements Handler {
 					this.showMarketState(args);
 				} else if (result.UnfinishedTransaction) {
 					this.reportUnfinishedTransaction(args, result);
+				} else if (result.MinBTCAmountError) {
+					this.reportMinBTCAmountError(args, result);
 				} else {
 					Handlers.respond(bot, chatid,
 						Translate.translate(settings.getLanguage(), Translate.FailedToSubmitorder) + ": " + result.ErrorMessage, false);
@@ -534,6 +536,8 @@ public class TgBotMessageHandler implements Handler {
 					this.showMarketState(args);
 				} else if (result.UnfinishedTransaction) {
 					this.reportUnfinishedTransaction(args, result);
+				} else if (result.MinBTCAmountError) {
+					this.reportMinBTCAmountError(args, result);
 				} else {
 					Handlers.respond(bot, chatid,
 						Translate.translate(settings.getLanguage(), Translate.FailedToSubmitorder) + ": " + result.ErrorMessage, false);
@@ -542,6 +546,20 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 		return false;
+	}
+
+	private void reportMinBTCAmountError (final HandleArgs args, final TradeResult result) throws IOException {
+		final UserSettings settings = args.settings;
+		final AbsSender bot = args.bot;
+		final Long chatid = args.update.message.chatID;
+		final StringBuilder b = new StringBuilder();
+		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL)).append(N);
+		b.append(
+			Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_EXECUTED) + ":" + result.BTC_Executed_Amount)
+			.append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_MIN) + ":" + result.MinBTCAmountValue)
+			.append(N);
+		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
 	private void reportUnfinishedTransaction (final HandleArgs args, final TradeResult result) throws IOException {

@@ -458,9 +458,18 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 		PoolConstant := SpendableBTC * SpendablePFC
 		result.PoolConstant = PoolConstant
 		minPFCAmount := 0.0
+		minBTCAmount := 0.001
 		if amountPFC <= minPFCAmount {
-			result.ErrorMessage = fmt.Sprintf("Requested amount(%v) must be > %v ", amountPFC, minPFCAmount)
+			result.ErrorMessage = fmt.Sprintf("Requested PFC amount(%v) must be > %v ", amountPFC, minPFCAmount)
 			result.Success = false
+			return toJson(result)
+		}
+		amountBTC := result.BTC_Executed_Amount.Value
+		if amountBTC <= minBTCAmount {
+			result.ErrorMessage = fmt.Sprintf("Requested BTC amount(%v) must be > %v ", amountBTC, minBTCAmount)
+			result.Success = false
+			result.MinBTCAmountError = true
+			result.MinBTCAmountValue.Value = amountBTC
 			return toJson(result)
 		}
 

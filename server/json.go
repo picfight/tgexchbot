@@ -94,6 +94,8 @@ type TradeResult struct {
 
 	UnfinishedTransaction bool `json: "UnfinishedTransaction"`
 	PriceNotMet           bool `json: "PriceNotMet"`
+	MinBTCAmountError     bool `json: "MinBTCAmountError"`
+	MinBTCAmountValue     AmountBTC `json: "MinBTCAmountValue"`
 }
 
 type TransactionResult struct {
