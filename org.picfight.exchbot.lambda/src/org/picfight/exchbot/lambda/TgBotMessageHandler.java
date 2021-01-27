@@ -827,6 +827,7 @@ public class TgBotMessageHandler implements Handler {
 		order.date = (new Date(order.timestamp)).toString();
 		order.price = result.BTCPFC_Executed_Price;
 		order.size = result.PFC_Executed_Amount.Value;
+		order.receipt = result;
 		orderFile.writeJson(order);
 	}
 
