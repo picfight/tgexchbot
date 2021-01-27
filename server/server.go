@@ -737,6 +737,18 @@ func (s HttpsServer) executeTransferBTC(BTC_FromAccountAddress string, BTC_ToAdd
 		if err != nil {
 			return nil, err
 		}
+		fee, err := client.EstimateFee(1)
+		if err != nil {
+			return nil, err
+		}
+		feea, err := btcutil.NewAmount(fee)
+		if err != nil {
+			return nil, err
+		}
+		err = client.SetTxFee(feea)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	hash, err := client.SendFrom(result.BTC_ResolvedAccountName, toAddr, amount)
