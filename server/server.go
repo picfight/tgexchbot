@@ -478,7 +478,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 		result.BTC_InPool_AfterTrade.Value = PoolConstant / result.PFC_InPool_AfterTrade.Value
 
 		if result.BTC_InPool_AfterTrade.Value <= 0 {
-			result.ErrorMessage = fmt.Sprintf("Pool drain (%v BTC) ", result.BTC_InPool_AfterTrade)
+			result.ErrorMessage = fmt.Sprintf("Pool drain (%v BTC) ", result.BTC_InPool_AfterTrade.Value)
 			result.Success = false
 			return toJson(result)
 		}
@@ -501,6 +501,22 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 	{
 		minPFCAmount := 0.0
 		minBTCAmount := 0.001
+
+		{
+			client, err := connect.BTCWallet(s.config)
+			lang.CheckErr(err)
+
+			fee, err := client.EstimateFee(1)
+			lang.CheckErr(err)
+
+			feea, err := btcutil.NewAmount(fee)
+			lang.CheckErr(err)
+
+			minBTCAmount = feea.ToBTC() * 3.0
+
+			client.Disconnect()
+		}
+
 		if amountPFC <= minPFCAmount {
 			result.ErrorMessage = fmt.Sprintf("Requested PFC amount(%v) must be > %v ", amountPFC, minPFCAmount)
 			result.Success = false
