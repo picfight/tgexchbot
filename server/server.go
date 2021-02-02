@@ -493,29 +493,32 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 
 	}
 
+	minPFCAmount := 0.0
+	minBTCAmount := 0.001
+
+	{
+		client, err := connect.BTCWallet(s.config)
+		lang.CheckErr(err)
+
+		fee, err := client.EstimateFee(1)
+		lang.CheckErr(err)
+
+		feea, err := btcutil.NewAmount(fee)
+		lang.CheckErr(err)
+
+		result.BTC_Fee.Value = feea.ToBTC()
+
+		minBTCAmount = feea.ToBTC() * 3.0
+
+		client.Disconnect()
+	}
+
 	if getQuote {
 		result.Success = true
 		return toJson(result)
 	}
 	// order execution:
 	{
-		minPFCAmount := 0.0
-		minBTCAmount := 0.001
-
-		{
-			client, err := connect.BTCWallet(s.config)
-			lang.CheckErr(err)
-
-			fee, err := client.EstimateFee(1)
-			lang.CheckErr(err)
-
-			feea, err := btcutil.NewAmount(fee)
-			lang.CheckErr(err)
-
-			minBTCAmount = feea.ToBTC() * 3.0
-
-			client.Disconnect()
-		}
 
 		if amountPFC <= minPFCAmount {
 			result.ErrorMessage = fmt.Sprintf("Requested PFC amount(%v) must be > %v ", amountPFC, minPFCAmount)
@@ -592,6 +595,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 				result.Success = false
 				return toJson(result)
 			}
+
 			pay_pfc_result, err := s.executeTransferPFC(User_pfc_account, Exchange_pfc_account, result.PFC_Executed_Amount)
 			if err != nil {
 				result.ErrorMessage = err.Error()
@@ -600,7 +604,9 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 			}
 			result.PFC_Transaction = *pay_pfc_result
 
-			deliver_btc_result, err := s.executeTransferBTC(Exchange_btc_account, User_btc_account, result.BTC_Executed_Amount)
+			BTC_Executed_Amount_MUNIS_Fee := AmountBTC{result.BTC_Executed_Amount.Value - result.BTC_Fee.Value}
+			pin.AssertTrue("BTC_Executed_Amount_MUNIS_Fee > 0 ", BTC_Executed_Amount_MUNIS_Fee.Value > 0)
+			deliver_btc_result, err := s.executeTransferBTC(Exchange_btc_account, User_btc_account, BTC_Executed_Amount_MUNIS_Fee)
 			if err != nil {
 				result.ErrorMessage = err.Error()
 				result.Success = false

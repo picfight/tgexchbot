@@ -84,6 +84,7 @@ type TradeResult struct {
 
 	BTC_Executed_Amount AmountBTC `json: "BTC_Executed_Amount"`
 	PFC_Executed_Amount AmountPFC `json: "PFC_Executed_Amount"`
+	BTC_Fee AmountBTC `json: "BTC_Fee"`
 
 	BTCPFC_Executed_Price float64 `json: "BTCPFC_Executed_Price"`
 
