@@ -46,6 +46,9 @@ public class TradeResult {
 	public AmountBTC BTC_InPool_AfterTrade;
 // BTC_InPool_AfterTrade float64 `json: "BTC_InPool_AfterTrade"`
 
+	public AmountBTC BTC_Fee;
+// BTC_Fee AmountBTC `json: "BTC_Fee"`
+
 	public AmountBTC BTC_Executed_Amount;
 // BTC_Executed_Amount float64 `json: "BTC_Executed_Amount"`
 
