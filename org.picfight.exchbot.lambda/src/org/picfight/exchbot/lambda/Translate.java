@@ -39,6 +39,8 @@ public class Translate {
 
 	public static final String POOL_IS_BALANCING = "Пул балансируется...";
 
+	public static final String Execution_Fee = "стоимость операции";
+
 	public static final String Examples = "примеры";
 	public static final String Example = "пример";
 
@@ -101,6 +103,10 @@ public class Translate {
 		final Map<String, String> ru = mappings.get(UserSettingsLanguage.RU);
 		final Map<String, String> en = mappings.get(UserSettingsLanguage.EN);
 		final Map<String, String> ch = mappings.get(UserSettingsLanguage.CH);
+
+		ru.put(Execution_Fee, Execution_Fee);
+		en.put(Execution_Fee, "Execution fee");
+		ch.put(Execution_Fee, "执行费");
 
 		ru.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL);
 		en.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, "Executed amount is too small");

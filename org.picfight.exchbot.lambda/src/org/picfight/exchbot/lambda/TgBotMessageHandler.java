@@ -363,6 +363,14 @@ public class TgBotMessageHandler implements Handler {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
 					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
+					{
+						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
+						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_usd = usd_for_btc(fee_btc);
+						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(N);
+					}
+
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
@@ -380,6 +388,13 @@ public class TgBotMessageHandler implements Handler {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
 					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
+					{
+						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
+						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_usd = usd_for_btc(fee_btc);
+						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(N);
+					}
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.saveOrder(args, result);
 					this.showBalances(args);
@@ -496,6 +511,13 @@ public class TgBotMessageHandler implements Handler {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
 					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
+					{
+						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
+						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_usd = usd_for_btc(fee_btc);
+						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(N);
+					}
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
@@ -513,6 +535,13 @@ public class TgBotMessageHandler implements Handler {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
 					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
+					{
+						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
+						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_usd = usd_for_btc(fee_btc);
+						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(N);
+					}
 					Handlers.respond(bot, chatid, b.toString(), false);
 
 					this.saveOrder(args, result);
@@ -668,6 +697,13 @@ public class TgBotMessageHandler implements Handler {
 		final double usd_for_1_btc = btcusdticker.result.Last;
 		final double usd_for_1_pfc = usd_for_1_btc * btc_for_1_pfc;
 		return usd_for_1_pfc;
+	}
+
+	public static double usd_for_btc (final double btc) throws IOException {
+		final MarketPair btcusdpair = MarketPair.newMarketPair(CoinSign.TETHER, CoinSign.BITCOIN);
+		final Ticker btcusdticker = GetTicker.get(btcusdpair);
+		final double usd_for_1_btc = btcusdticker.result.Last;
+		return usd_for_1_btc * btc;
 	}
 
 	public static final BTCAddress EXCHANGE_BTC_ADDRESS () {
