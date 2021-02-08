@@ -336,6 +336,11 @@ func (s HttpsServer) executeGetBalanceBTC(address string, min_confirmations int)
 			return nil, err
 		}
 
+		if !validation.IsMine {
+			e := fmt.Errorf("account for %v not found", addr)
+			return nil, e
+		}
+
 		resolvedAccountName := validation.Account
 
 		balance, err := client.GetBalanceMinConf(resolvedAccountName, min_confirmations)

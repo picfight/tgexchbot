@@ -583,11 +583,10 @@ public class TgBotMessageHandler implements Handler {
 		final Long chatid = args.update.message.chatID;
 		final StringBuilder b = new StringBuilder();
 		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL)).append(N);
-		b.append(
-			Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_EXECUTED) + ": " + result.BTC_Executed_Amount)
-			.append(N);
-		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_MIN) + ": " + result.MinBTCAmountValue)
-			.append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_EXECUTED) + ": "
+			+ round(result.BTC_Executed_Amount.Value, 10) + " BTC").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_MIN) + ": "
+			+ round(result.MinBTCAmountValue.Value, 10) + " BTC").append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
