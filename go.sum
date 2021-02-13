@@ -94,6 +94,8 @@ github.com/jfixby/coinharness v0.0.0-20200327152748-5be5b892422b/go.mod h1:d/brl
 github.com/jfixby/coinknife v0.0.0-20190926203656-03d129b9318a/go.mod h1:xSXEkW0zBqOCyL49Pn5m2jMtjx+rjlB/EuPCJeP9g5Q=
 github.com/jfixby/difficulty v1.0.0 h1:lvI8yfV7Mz09HvD70fB/PICgHjcbFa6HrA2ER8X1CNg=
 github.com/jfixby/difficulty v1.0.0/go.mod h1:eKUkJx0XjkDwjU7lA22IfU30feJcoObdPJ7rF46turk=
+github.com/jfixby/go-bitcoin-core-rpc v0.0.0-20181021223752-1f5e57e12ba1 h1:6fjF71pGe5keCmJfiZS/zgr7fvxDui+u7yHKqkj6QNk=
+github.com/jfixby/go-bitcoin-core-rpc v0.0.0-20181021223752-1f5e57e12ba1/go.mod h1:LMlyeICLN4kFNP0urtBOXttC2x1/KRNpGxl4YHznyfY=
 github.com/jfixby/lineardown v0.0.0-20190929093142-b0842926b9a7 h1:X/mLit9Q1H9p899uOa+nVNJckSzdeOQGW60WsNNXEaU=
 github.com/jfixby/lineardown v0.0.0-20190929093142-b0842926b9a7/go.mod h1:wNAWWpWuZfpLqZAKmm/PljmNIqC1uWSSxlHc8LNvYCk=
 github.com/jfixby/pin v0.0.0-20190926185208-4828e1e664f4 h1:D7GpxLTy82tCGW56r/88JMHEC/d7VtHl/Q2jJ9awZKc=
@@ -119,6 +121,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/pplcc/plotext v0.0.0-20180221170324-68ab3c6e05c3 h1:WVk4t3fiXlStmX4VC5/aytj7yVkGpPQoTwFe4UkvcbU=
 github.com/pplcc/plotext v0.0.0-20180221170324-68ab3c6e05c3/go.mod h1:T5zMhoB+npaS+GUWJNnokjBpf8Abq8cU+LH6zM26jdQ=
 github.com/ruudk/golang-pdf417 v0.0.0-20181029194003-1af4ab5afa58/go.mod h1:6lfFZQK844Gfx8o5WFuvpxWRwnSoipWe/p622j1v06w=
+github.com/stevenroose/go-bitcoin-core-rpc v0.0.0-20181021223752-1f5e57e12ba1 h1:rl2BuwTdkj7WmQ9zzQWgAxYhkay3cP9s6NidSqVLnf0=
+github.com/stevenroose/go-bitcoin-core-rpc v0.0.0-20181021223752-1f5e57e12ba1/go.mod h1:rn5skMzkhZBpniGygSlL5St7wWW0CkwTpVQQxuU6atI=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20180718160520-a2144134853f/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=

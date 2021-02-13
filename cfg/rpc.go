@@ -2,7 +2,8 @@ package cfg
 
 import (
 	"fmt"
-	btcclient "github.com/btcsuite/btcd/rpcclient"
+	//btcclient "github.com/btcsuite/btcd/rpcclient"
+	btcclient "github.com/stevenroose/go-bitcoin-core-rpc"
 	dcrclient "github.com/decred/dcrd/rpcclient"
 	"github.com/jfixby/pin/lang"
 	pfcclient "github.com/picfight/pfcd/rpcclient"
@@ -45,14 +46,11 @@ func NewBTCConnection(config RPCConnectionConfig) (*btcclient.Client, error) {
 	lang.CheckErr(err)
 	cfg := &btcclient.ConnConfig{
 		Host:                 config.Host,
-		Endpoint:             config.Endpoint,
 		User:                 config.User,
 		Pass:                 config.Pass,
 		Certificates:         cert,
-		DisableAutoReconnect: true,
-		HTTPPostMode:         false,
 	}
-	legacy, err := btcclient.New(cfg, nil)
+	legacy, err := btcclient.New(cfg)
 	if err != nil {
 		return nil, err
 	}

@@ -264,7 +264,7 @@ func (s HttpsServer) obrtainBTCAddress(walletAccountName string) string {
 
 		addressResult, err := client.GetNewAddress(walletAccountName)
 		lang.CheckErr(err)
-		client.Disconnect()
+		client.Shutdown()
 
 		address.AddressString = addressResult.String()
 	}
@@ -320,7 +320,7 @@ func (s HttpsServer) executeGetBalanceBTC(address string, min_confirmations int)
 	}
 	{
 		client, err := connect.BTCWallet(s.config)
-		defer client.Disconnect()
+		defer client.Shutdown()
 		if err != nil {
 			return nil, err
 		}
@@ -444,7 +444,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 			balance, err := client.GetBalanceMinConf(resolvedAccountName, 1)
 			lang.CheckErr(err)
 
-			client.Disconnect()
+			client.Shutdown()
 
 			SpendableBTC = balance.ToBTC()
 
@@ -515,7 +515,7 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 
 		minBTCAmount = feea.ToBTC() * 3.0
 
-		client.Disconnect()
+		client.Shutdown()
 	}
 
 	if getQuote {
@@ -727,7 +727,7 @@ func (s HttpsServer) executeTransferBTC(BTC_FromAccountAddress string, BTC_ToAdd
 	result := &TransactionResult{}
 
 	client, err := connect.BTCWallet(s.config)
-	defer client.Disconnect()
+	defer client.Shutdown()
 	if err != nil {
 		return nil, err
 	}

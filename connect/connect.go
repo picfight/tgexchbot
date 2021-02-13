@@ -1,7 +1,7 @@
 package connect
 
 import (
-	btcclient "github.com/btcsuite/btcd/rpcclient"
+	btcclient "github.com/stevenroose/go-bitcoin-core-rpc"
 	dcrclient "github.com/decred/dcrd/rpcclient"
 	pfcclient "github.com/picfight/pfcd/rpcclient"
 
@@ -29,7 +29,6 @@ func BTCD(conf *cfg.ConfigJson) (*btcclient.Client, error) {
 		User:            conf.BTCDConfig.User,
 		Pass:            conf.BTCDConfig.Pass,
 		CertificateFile: conf.BTCDConfig.CertificateFile,
-		Endpoint:        "ws",
 	}
 
 	return cfg.NewBTCConnection(btcconnect)
