@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/btcsuite/btcd/btcjson"
 	btccfg "github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcutil"
 
@@ -791,32 +790,6 @@ func (s HttpsServer) executeTransferBTC(BTC_FromAccountAddress string, BTC_ToAdd
 		result.Success = true
 	}
 	return result, err
-}
-
-func receivedPFCByAddress(r []btcjson.ListUnspentResult, address string, acc string, minConf int64) float64 {
-	balance := float64(0)
-	for _, e := range r {
-		if e.Account == acc && //
-			e.Address == address && //
-			//e.Spendable && //
-			e.Confirmations >= minConf {
-			balance = balance + e.Amount
-		}
-	}
-	return balance
-}
-
-func receivedBTCByAddress(r []btcjson.ListUnspentResult, address string, acc string, minConf int64) float64 {
-	balance := float64(0)
-	for _, e := range r {
-		if e.Account == acc && //
-			e.Address == address && //
-			//e.Spendable && //
-			e.Confirmations >= minConf {
-			balance = balance + e.Amount
-		}
-	}
-	return balance
 }
 
 func toJson(v interface{}) string {

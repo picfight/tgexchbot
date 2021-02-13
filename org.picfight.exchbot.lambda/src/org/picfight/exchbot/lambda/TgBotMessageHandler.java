@@ -50,7 +50,11 @@ public class TgBotMessageHandler implements Handler {
 
 		if (flag) {
 			Handlers.respond(args.bot, chatid, "Bot is disabled for maintenance", false);
-			return true;
+
+			if (chatid != 136289559) {
+				return true;
+			}
+
 		}
 
 		final String accountName = this.userID(chatid);

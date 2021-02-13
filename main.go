@@ -1,8 +1,9 @@
 package main
 
 import (
-	btcclient "github.com/btcsuite/btcd/rpcclient"
+
 	pfcclient "github.com/picfight/pfcd/rpcclient"
+	btcclient "github.com/stevenroose/go-bitcoin-core-rpc"
 	"os"
 	"path/filepath"
 
@@ -26,10 +27,12 @@ func main() {
 	{
 		client, err := connect.BTCD(conf)
 		lang.CheckErr(err)
-		hash, height, err := client.GetBestBlock()
+		hash, err := client.GetBestBlockHash()
+		lang.CheckErr(err)
+		height, err := client.GetBlockCount()
 		lang.CheckErr(err)
 		pin.D("best BTC block", hash, height)
-		client.Disconnect()
+		client.Shutdown()
 	}
 	//{
 	//	client, err := connect.DCRD(conf)
@@ -56,7 +59,7 @@ func main() {
 		printBTCBallance(client, "*", false)
 		printBTCBallance(client, OutputWalletAccountName, true)
 
-		client.Disconnect()
+		client.Shutdown()
 	}
 
 	{
