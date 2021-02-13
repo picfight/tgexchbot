@@ -94,9 +94,9 @@ func main() {
 
 func printBTCBallance(client *btcclient.Client, s string, getAddress bool) {
 	pin.D("Checking BTC account", s)
-	key := os.Getenv(BTCWKEY)
-	err := client.WalletPassphrase(key, 10)
-	lang.CheckErr(err)
+	//key := os.Getenv(BTCWKEY)
+	//err := client.WalletPassphrase(key, 10)
+	//lang.CheckErr(err)
 	if getAddress {
 		addr, err := client.GetAccountAddress(s)
 		if err != nil {

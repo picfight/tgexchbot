@@ -250,9 +250,9 @@ func (s HttpsServer) obrtainBTCAddress(walletAccountName string) string {
 		lang.CheckErr(err)
 
 		pin.D("Checking BTC account", walletAccountName)
-		key := os.Getenv(BTCWKEY)
-		err = client.WalletPassphrase(key, 10000000)
-		lang.CheckErr(err)
+		//key := os.Getenv(BTCWKEY)
+		//err = client.WalletPassphrase(key, 10000000)
+		//lang.CheckErr(err)
 		_, err = client.GetAccountAddress(walletAccountName)
 		if err != nil {
 			pin.D("Error", err)
@@ -758,11 +758,11 @@ func (s HttpsServer) executeTransferBTC(BTC_FromAccountAddress string, BTC_ToAdd
 	result.BTC_Amount = amountFloat
 
 	{
-		key := os.Getenv(BTCWKEY)
-		err = client.WalletPassphrase(key, 10000000)
-		if err != nil {
-			return nil, err
-		}
+		//key := os.Getenv(BTCWKEY)
+		//err = client.WalletPassphrase(key, 10000000)
+		//if err != nil {
+		//	return nil, err
+		//}
 		fee, err := client.EstimateFee(1)
 		if err != nil {
 			return nil, err
