@@ -7,7 +7,7 @@ import com.jfixby.scarabei.api.collections.Map;
 public class Translate {
 
 	public static final Map<UserSettingsLanguage, Map<String, String>> mappings = Collections.newMap();
-	public static final String THIS_BOT = "Этот бот-биржа продаёт и покупает пикфайт-коины (PFC) за биткоины (BTC)";
+	public static final String THIS_BOT = "Этот бот-биржа продаёт и покупает пикфайт-коины (PFC) за декреды (DCR)";
 	public static final String USE_THIS = "Используй следующие команды:";
 	public static final String DEPOSIT = "зачислить монеты на биржу";
 	public static final String BALANCE = "посмотреть свои текущие балансы на бирже";
@@ -16,19 +16,19 @@ public class Translate {
 	public static final String WITHDRAW = "вывести монеты с биржи на свой кошелёк";
 	public static final String MARKET = "информация о состоянии торгового пула";
 	public static final String RESET_LANG = "сменить язык";
-// public static final String NO_BTC = "Обмен на BTC отключён, т.к. из-за высокой цены биткоина операции с ним стоят по $20-$50";
+// public static final String NO_DCR = "Обмен на DCR отключён, т.к. из-за высокой цены биткоина операции с ним стоят по $20-$50";
 	public static final String PFC_WALLET = "PFC-кошелёк можно скачать тут";
-	public static final String BTC_BINANCE = "BTC можно купить и продать на Бинансе";
+	public static final String DCR_BINANCE = "DCR можно купить и продать на Бинансе";
 
 	public static final String POOL_LEAK = "Похоже пул протёк. Отправь @JFixby следующий отчёт об ошибке";
 
 	public static final String TO_DEPOSIT = "Команды для зачисления средств на биржу";
 	public static final String TO_WITHDRAW = "Команды для вывода монет с биржи";
 
-	public static final String TO_DEPOSIT_BTC = "пополнить BTC";
+	public static final String TO_DEPOSIT_DCR = "пополнить DCR";
 	public static final String TO_DEPOSIT_PFC = "пополнить PFC";
 
-	public static final String TO_WITHDRAW_BTC = "вывести BTC";
+	public static final String TO_WITHDRAW_DCR = "вывести DCR";
 	public static final String TO_WITHDRAW_PFC = "вывести PFC";
 
 	public static final String POOL_STATE = "Состояние пула биржи";
@@ -56,7 +56,7 @@ public class Translate {
 	public static final String Adress = "адрес кошелька";
 
 	public static final String DO_DEPOSIT_PFC = "Засылай PFC на следующий адрес";
-	public static final String DO_DEPOSIT_BTC = "Засылай BTC на следующий адрес";
+	public static final String DO_DEPOSIT_DCR = "Засылай DCR на следующий адрес";
 
 	public static final String WasAboveLim = "была выше запрошенной";
 	public static final String WasBelowLim = "была ниже запрошенной";
@@ -92,9 +92,9 @@ public class Translate {
 	public static final String ERROR_UNRECOGNIZED_AMOUNT = "Количество монет не распознано";
 	public static final String ERROR_POSITIVE_AMOUNT_REQURED = "Количество монет должно быть положительным";
 
-	public static final String EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL = "Слишком маленький объём операции";
-	public static final String EXCHANGE_BTC_AMOUNT_EXECUTED = "размер операции";
-	public static final String EXCHANGE_BTC_AMOUNT_MIN = "минимальный размер";
+	public static final String EXCHANGE_DCR_AMOUNT_IS_TOO_SMALL = "Слишком маленький объём операции";
+	public static final String EXCHANGE_DCR_AMOUNT_EXECUTED = "размер операции";
+	public static final String EXCHANGE_DCR_AMOUNT_MIN = "минимальный размер";
 
 	static {
 		mappings.put(UserSettingsLanguage.RU, Collections.newMap());
@@ -108,17 +108,17 @@ public class Translate {
 		en.put(Execution_Fee, "Execution fee");
 		ch.put(Execution_Fee, "执行费");
 
-		ru.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL);
-		en.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, "Executed amount is too small");
-		ch.put(EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL, "执行量太小");
+		ru.put(EXCHANGE_DCR_AMOUNT_IS_TOO_SMALL, EXCHANGE_DCR_AMOUNT_IS_TOO_SMALL);
+		en.put(EXCHANGE_DCR_AMOUNT_IS_TOO_SMALL, "Executed amount is too small");
+		ch.put(EXCHANGE_DCR_AMOUNT_IS_TOO_SMALL, "执行量太小");
 
-		ru.put(EXCHANGE_BTC_AMOUNT_EXECUTED, EXCHANGE_BTC_AMOUNT_EXECUTED);
-		en.put(EXCHANGE_BTC_AMOUNT_EXECUTED, "executed amount");
-		ch.put(EXCHANGE_BTC_AMOUNT_EXECUTED, "执行金额");
+		ru.put(EXCHANGE_DCR_AMOUNT_EXECUTED, EXCHANGE_DCR_AMOUNT_EXECUTED);
+		en.put(EXCHANGE_DCR_AMOUNT_EXECUTED, "executed amount");
+		ch.put(EXCHANGE_DCR_AMOUNT_EXECUTED, "执行金额");
 
-		ru.put(EXCHANGE_BTC_AMOUNT_MIN, EXCHANGE_BTC_AMOUNT_MIN);
-		en.put(EXCHANGE_BTC_AMOUNT_MIN, "minimal amount");
-		ch.put(EXCHANGE_BTC_AMOUNT_MIN, "最小数量");
+		ru.put(EXCHANGE_DCR_AMOUNT_MIN, EXCHANGE_DCR_AMOUNT_MIN);
+		en.put(EXCHANGE_DCR_AMOUNT_MIN, "minimal amount");
+		ch.put(EXCHANGE_DCR_AMOUNT_MIN, "最小数量");
 
 		ru.put(ORDER_EXECUTED, ORDER_EXECUTED);
 		en.put(ORDER_EXECUTED, "Order successfully executed");
@@ -168,9 +168,9 @@ public class Translate {
 		en.put(ORDER_TO_BUY, "buy");
 		ch.put(ORDER_TO_BUY, "收购");
 
-		ru.put(DO_DEPOSIT_BTC, DO_DEPOSIT_BTC);
-		en.put(DO_DEPOSIT_BTC, "Upload your BTC to the following address");
-		ch.put(DO_DEPOSIT_BTC, "请将BTC发送到以下地址");
+		ru.put(DO_DEPOSIT_DCR, DO_DEPOSIT_DCR);
+		en.put(DO_DEPOSIT_DCR, "Upload your DCR to the following address");
+		ch.put(DO_DEPOSIT_DCR, "请将DCR发送到以下地址");
 
 		ru.put(DO_DEPOSIT_PFC, DO_DEPOSIT_PFC);
 		en.put(DO_DEPOSIT_PFC, "Upload your PFC to the following address");
@@ -269,17 +269,17 @@ public class Translate {
 		en.put(TO_WITHDRAW_PFC, "Withdtaw PFC");
 		ch.put(TO_WITHDRAW_PFC, "取PFC");
 
-		ru.put(TO_WITHDRAW_BTC, TO_WITHDRAW_BTC);
-		en.put(TO_WITHDRAW_BTC, "Withdraw BTC");
-		ch.put(TO_WITHDRAW_BTC, "取BTC");
+		ru.put(TO_WITHDRAW_DCR, TO_WITHDRAW_DCR);
+		en.put(TO_WITHDRAW_DCR, "Withdraw DCR");
+		ch.put(TO_WITHDRAW_DCR, "取DCR");
 
 		ru.put(TO_DEPOSIT_PFC, TO_DEPOSIT_PFC);
 		en.put(TO_DEPOSIT_PFC, "Top up PFC balance");
 		ch.put(TO_DEPOSIT_PFC, "PFC充值余额");
 
-		ru.put(TO_DEPOSIT_BTC, TO_DEPOSIT_BTC);
-		en.put(TO_DEPOSIT_BTC, "Top up BTC balance");
-		ch.put(TO_DEPOSIT_BTC, "BTC充值余额");
+		ru.put(TO_DEPOSIT_DCR, TO_DEPOSIT_DCR);
+		en.put(TO_DEPOSIT_DCR, "Top up DCR balance");
+		ch.put(TO_DEPOSIT_DCR, "DCR充值余额");
 
 		ru.put(TO_DEPOSIT, TO_DEPOSIT);
 		en.put(TO_DEPOSIT, "Commands for deposits");
@@ -321,21 +321,21 @@ public class Translate {
 		en.put(RESET_LANG, "change language");
 		ch.put(RESET_LANG, "设定语言");
 
-// ru.put(NO_BTC, NO_BTC);
-// en.put(NO_BTC, "BTC trading is not available due to the high transaction fees ~$20-$50");
-// ch.put(NO_BTC, "由于高昂的交易费用〜$20-$50，BTC交易无法进行");
+// ru.put(NO_DCR, NO_DCR);
+// en.put(NO_DCR, "DCR trading is not available due to the high transaction fees ~$20-$50");
+// ch.put(NO_DCR, "由于高昂的交易费用〜$20-$50，DCR交易无法进行");
 
 		ru.put(PFC_WALLET, PFC_WALLET);
 		en.put(PFC_WALLET, "You can download PFC-wallet here");
 		ch.put(PFC_WALLET, "您可以在此处下载PFC钱包");
 
-		ru.put(BTC_BINANCE, BTC_BINANCE);
-		en.put(BTC_BINANCE, "You can sell and buy BTC on Binance");
-		ch.put(BTC_BINANCE, "您可以在Binance上买卖BTC");
+		ru.put(DCR_BINANCE, DCR_BINANCE);
+		en.put(DCR_BINANCE, "You can sell and buy DCR on Binance");
+		ch.put(DCR_BINANCE, "您可以在Binance上买卖DCR");
 
 		ru.put(THIS_BOT, THIS_BOT);
-		en.put(THIS_BOT, "This bot-exchange sells and buys picfight coins (PFC) for bitcoins (BTC)");
-		ch.put(THIS_BOT, "这是一个交换机器人。它为BTC买卖PFC硬币。");
+		en.put(THIS_BOT, "This bot-exchange sells and buys picfight coins (PFC) for decreds (DCR)");
+		ch.put(THIS_BOT, "这是一个交换机器人。它为DCR买卖PFC硬币。");
 
 		ru.put(USE_THIS, USE_THIS);
 		en.put(USE_THIS, "Use the following commands for trading:");
