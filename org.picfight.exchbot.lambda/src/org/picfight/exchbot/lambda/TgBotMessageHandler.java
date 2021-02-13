@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.picfight.exchbot.lambda.backend.AmountBTC;
+import org.picfight.exchbot.lambda.backend.AmountDCR;
 import org.picfight.exchbot.lambda.backend.AmountPFC;
-import org.picfight.exchbot.lambda.backend.BTCAddress;
-import org.picfight.exchbot.lambda.backend.BTCBalance;
 import org.picfight.exchbot.lambda.backend.BackendException;
+import org.picfight.exchbot.lambda.backend.DCRAddress;
+import org.picfight.exchbot.lambda.backend.DCRBalance;
 import org.picfight.exchbot.lambda.backend.PFCAddress;
 import org.picfight.exchbot.lambda.backend.PFCBalance;
 import org.picfight.exchbot.lambda.backend.StringAnalysis;
@@ -60,6 +60,7 @@ public class TgBotMessageHandler implements Handler {
 		final String accountName = this.userID(chatid);
 
 		final UserSettings settings = this.transactionsBackEnd.getUserSettings(accountName, args.filesystem);
+		settings.setUser(chatid, args.update.message.from);
 		args.settings = settings;
 
 		if (args.command.equalsIgnoreCase(OPERATIONS.RESET_LANG)) {
@@ -152,7 +153,7 @@ public class TgBotMessageHandler implements Handler {
 			final StringBuilder b = new StringBuilder();
 			b.append(Translate.translate(args.settings.getLanguage(), Translate.TO_DEPOSIT)).append(N);
 			b.append(N);
-			b.append(Translate.translate(args.settings.getLanguage(), Translate.TO_DEPOSIT_BTC) + ": " + OPERATIONS.DEPOSIT_BTC)
+			b.append(Translate.translate(args.settings.getLanguage(), Translate.TO_DEPOSIT_DCR) + ": " + OPERATIONS.DEPOSIT_DCR)
 				.append(N);
 			b.append(Translate.translate(args.settings.getLanguage(), Translate.TO_DEPOSIT_PFC) + ": " + OPERATIONS.DEPOSIT_PFC)
 				.append(N);
@@ -160,9 +161,9 @@ public class TgBotMessageHandler implements Handler {
 			return true;
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT_BTC)) {
-			final BTCAddress btc_address = settings.getExchangeAddressBTC();
-			Handlers.respond(bot, chatid, Translate.translate(args.settings.getLanguage(), Translate.DO_DEPOSIT_BTC) + ":", false);
+		if (args.command.equalsIgnoreCase(OPERATIONS.DEPOSIT_DCR)) {
+			final DCRAddress btc_address = settings.getExchangeAddressDCR();
+			Handlers.respond(bot, chatid, Translate.translate(args.settings.getLanguage(), Translate.DO_DEPOSIT_DCR) + ":", false);
 			Handlers.respond(bot, chatid, btc_address.toString(), false);
 			return true;
 		}
@@ -232,18 +233,18 @@ public class TgBotMessageHandler implements Handler {
 			}
 		}
 
-		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW_BTC)) {
+		if (args.command.equalsIgnoreCase(OPERATIONS.WITHDRAW_DCR)) {
 			if (args.arguments.size() != 2) {
 				this.withdrawHelp(args, chatid);
 				return true;
 			}
 
 			Double amountFloat = null;
-			AmountBTC amount = null;
+			AmountDCR amount = null;
 			final String amount_text = args.arguments.getElementAt(0).toLowerCase();
 			try {
 				amountFloat = Double.parseDouble(amount_text);
-				amount = new AmountBTC(amountFloat);
+				amount = new AmountDCR(amountFloat);
 			} catch (final Throwable e) {
 				e.printStackTrace();
 
@@ -256,7 +257,7 @@ public class TgBotMessageHandler implements Handler {
 
 			final String address_text = args.arguments.getElementAt(1);
 			final StringAnalysis anal = this.walletBackEnd.analyzeString(address_text);
-			if (anal.BTCAddress == null) {
+			if (anal.DCRAddress == null) {
 				Handlers.respond(bot, chatid,
 					Translate.translate(settings.getLanguage(), Translate.UNRECOGNIZED_ADDRESS) + ": " + address_text, false);
 				Handlers.respond(bot, chatid, anal.Error, false);
@@ -265,17 +266,17 @@ public class TgBotMessageHandler implements Handler {
 			}
 
 			{
-				final BTCAddress exch_address = settings.getExchangeAddressBTC();
-				final TransactionResult result = this.walletBackEnd.transferBTC(exch_address, anal.BTCAddress, amount);
+				final DCRAddress exch_address = settings.getExchangeAddressDCR();
+				final TransactionResult result = this.walletBackEnd.transferDCR(exch_address, anal.DCRAddress, amount);
 
 				if (result.Success) {
 
 					Handlers.respond(bot, chatid,
-						Translate.translate(settings.getLanguage(), Translate.COINS_WERE_SENT) + " " + result.BTC_ToAddress + "",
+						Translate.translate(settings.getLanguage(), Translate.COINS_WERE_SENT) + " " + result.DCR_ToAddress + "",
 						false);
 					Handlers.respond(bot, chatid, Translate.translate(settings.getLanguage(), Translate.TRANSACTION_RECEIPT) + ":",
 						false);
-					Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/tx" + result.BTC_TransactionReceipt, true);
+					Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/tx" + result.DCR_TransactionReceipt, true);
 				} else {
 					Handlers.respond(bot, chatid,
 						Translate.translate(settings.getLanguage(), Translate.TRANSACTION_FAILED) + ": " + result.ErrorMessage, false);
@@ -335,10 +336,10 @@ public class TgBotMessageHandler implements Handler {
 			}
 
 			final PFCAddress user_pfc_account = settings.getExchangeAddressPFC();
-			final BTCAddress user_btc_account = settings.getExchangeAddressBTC();
+			final DCRAddress user_btc_account = settings.getExchangeAddressDCR();
 
 			final PFCAddress exchange_pfc_account = EXCHANGE_PFC_ADDRESS();
-			final BTCAddress exchange_btc_account = EXCHANGE_BTC_ADDRESS();
+			final DCRAddress exchange_btc_account = EXCHANGE_DCR_ADDRESS();
 
 			final TradeResult result = this.walletBackEnd.tradePFC(//
 				TRADE_OPERATION.SELL, //
@@ -351,7 +352,7 @@ public class TgBotMessageHandler implements Handler {
 				exchange_btc_account//
 			);
 			if (result.Success) {
-				final double btc_for_1_pfc = result.BTCPFC_Executed_Price;
+				final double btc_for_1_pfc = result.DCRPFC_Executed_Price;
 				final double usd_for_1_pfc = usd_for_1_pfc(btc_for_1_pfc);
 				final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
 
@@ -361,17 +362,17 @@ public class TgBotMessageHandler implements Handler {
 						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_SELL)).append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TotalAmount) + ": ").append(N);
-					b.append(result.PFC_Executed_Amount + " = " + round(result.BTC_Executed_Amount.Value, 8) + " BTC ("
+					b.append(result.PFC_Executed_Amount + " = " + round(result.DCR_Executed_Amount.Value, 8) + " DCR ("
 						+ round(amount_usd, 2) + "$)").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
-					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
+					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
 					{
 						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_btc = result.DCR_Fee.Value;
 						final double fee_usd = usd_for_btc(fee_btc);
-						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
 						b.append(N);
 					}
 
@@ -386,17 +387,17 @@ public class TgBotMessageHandler implements Handler {
 						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_SELL)).append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TotalAmount) + ": ").append(N);
-					b.append(result.PFC_Executed_Amount + " = " + round(result.BTC_Executed_Amount.Value, 8) + " BTC ("
+					b.append(result.PFC_Executed_Amount + " = " + round(result.DCR_Executed_Amount.Value, 8) + " DCR ("
 						+ round(amount_usd, 2) + "$)").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
-					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
+					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
 					{
 						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_btc = result.DCR_Fee.Value;
 						final double fee_usd = usd_for_btc(fee_btc);
-						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
 						b.append(N);
 					}
 					Handlers.respond(bot, chatid, b.toString(), false);
@@ -412,17 +413,17 @@ public class TgBotMessageHandler implements Handler {
 				} else if (result.PriceNotMet) {
 					final StringBuilder b = new StringBuilder();
 					b.append(Translate.translate(settings.getLanguage(), Translate.ProceFor1PFCDrionExecution)).append(N);
-					b.append(round(result.BTCPFC_Executed_Price, 8) + " BTC").append(N);
+					b.append(round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.WasBelowLim)).append(N);
-					b.append(round(result.Requested_Price_Btc_for_1_pfc, 8) + " BTC").append(N);
+					b.append(round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.OrderWasNotExecuted));
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.showMarketState(args);
 				} else if (result.UnfinishedTransaction) {
 					this.reportUnfinishedTransaction(args, result);
-				} else if (result.MinBTCAmountError) {
-					this.reportMinBTCAmountError(args, result);
+				} else if (result.MinDCRAmountError) {
+					this.reportMinDCRAmountError(args, result);
 				} else {
 					Handlers.respond(bot, chatid,
 						Translate.translate(settings.getLanguage(), Translate.FailedToSubmitorder) + ": " + result.ErrorMessage, false);
@@ -482,10 +483,10 @@ public class TgBotMessageHandler implements Handler {
 				}
 			}
 			final PFCAddress user_pfc_account = settings.getExchangeAddressPFC();
-			final BTCAddress user_btc_account = settings.getExchangeAddressBTC();
+			final DCRAddress user_btc_account = settings.getExchangeAddressDCR();
 
 			final PFCAddress exchange_pfc_account = EXCHANGE_PFC_ADDRESS();
-			final BTCAddress exchange_btc_account = EXCHANGE_BTC_ADDRESS();
+			final DCRAddress exchange_btc_account = EXCHANGE_DCR_ADDRESS();
 
 			final TradeResult result = this.walletBackEnd.tradePFC(//
 				TRADE_OPERATION.BUY, //
@@ -499,7 +500,7 @@ public class TgBotMessageHandler implements Handler {
 			);
 
 			if (result.Success) {
-				final double btc_for_1_pfc = result.BTCPFC_Executed_Price;
+				final double btc_for_1_pfc = result.DCRPFC_Executed_Price;
 				final double usd_for_1_pfc = usd_for_1_pfc(btc_for_1_pfc);
 				final double amount_usd = usd_for_1_pfc * result.PFC_Executed_Amount.Value;
 
@@ -509,17 +510,17 @@ public class TgBotMessageHandler implements Handler {
 						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_BUY)).append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TotalAmount) + ": ").append(N);
-					b.append(result.PFC_Executed_Amount + " = " + round(result.BTC_Executed_Amount.Value, 8) + " BTC ("
+					b.append(result.PFC_Executed_Amount + " = " + round(result.DCR_Executed_Amount.Value, 8) + " DCR ("
 						+ round(amount_usd, 2) + "$)").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
-					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
+					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
 					{
 						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_btc = result.DCR_Fee.Value;
 						final double fee_usd = usd_for_btc(fee_btc);
-						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
 						b.append(N);
 					}
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
@@ -533,17 +534,17 @@ public class TgBotMessageHandler implements Handler {
 						+ Translate.translate(settings.getLanguage(), Translate.ORDER_TO_BUY)).append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.TotalAmount) + ": ").append(N);
-					b.append(result.PFC_Executed_Amount + " = " + round(result.BTC_Executed_Amount.Value, 8) + " BTC ("
+					b.append(result.PFC_Executed_Amount + " = " + round(result.DCR_Executed_Amount.Value, 8) + " DCR ("
 						+ round(amount_usd, 2) + "$)").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
-					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
+					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
 					{
 						b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-						final double fee_btc = result.BTC_Fee.Value;
+						final double fee_btc = result.DCR_Fee.Value;
 						final double fee_usd = usd_for_btc(fee_btc);
-						b.append(round(fee_btc, 8) + " BTC (" + round(fee_usd, 2) + "$)").append(N);
+						b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
 						b.append(N);
 					}
 					Handlers.respond(bot, chatid, b.toString(), false);
@@ -554,23 +555,23 @@ public class TgBotMessageHandler implements Handler {
 			} else {
 				if (result.NoEnoughFunds) {
 					Handlers.respond(bot, chatid,
-						Translate.translate(settings.getLanguage(), Translate.NoEnoughCoinsForOrder) + result.BTC_Executed_Amount,
+						Translate.translate(settings.getLanguage(), Translate.NoEnoughCoinsForOrder) + result.DCR_Executed_Amount,
 						false);
 					this.showBalances(args);
 				} else if (result.PriceNotMet) {
 					final StringBuilder b = new StringBuilder();
 					b.append(Translate.translate(settings.getLanguage(), Translate.ProceFor1PFCDrionExecution)).append(N);
-					b.append(round(result.BTCPFC_Executed_Price, 8) + " BTC").append(N);
+					b.append(round(result.DCRPFC_Executed_Price, 8) + " DCR").append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.WasAboveLim)).append(N);
-					b.append(round(result.Requested_Price_Btc_for_1_pfc, 8) + " BTC").append(N);
+					b.append(round(result.Requested_Price_Dcr_for_1_pfc, 8) + " DCR").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.OrderWasNotExecuted));
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.showMarketState(args);
 				} else if (result.UnfinishedTransaction) {
 					this.reportUnfinishedTransaction(args, result);
-				} else if (result.MinBTCAmountError) {
-					this.reportMinBTCAmountError(args, result);
+				} else if (result.MinDCRAmountError) {
+					this.reportMinDCRAmountError(args, result);
 				} else {
 					Handlers.respond(bot, chatid,
 						Translate.translate(settings.getLanguage(), Translate.FailedToSubmitorder) + ": " + result.ErrorMessage, false);
@@ -581,16 +582,16 @@ public class TgBotMessageHandler implements Handler {
 		return false;
 	}
 
-	private void reportMinBTCAmountError (final HandleArgs args, final TradeResult result) throws IOException {
+	private void reportMinDCRAmountError (final HandleArgs args, final TradeResult result) throws IOException {
 		final UserSettings settings = args.settings;
 		final AbsSender bot = args.bot;
 		final Long chatid = args.update.message.chatID;
 		final StringBuilder b = new StringBuilder();
-		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_IS_TOO_SMALL)).append(N);
-		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_EXECUTED) + ": "
-			+ round(result.BTC_Executed_Amount.Value, 10) + " BTC").append(N);
-		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_BTC_AMOUNT_MIN) + ": "
-			+ round(result.MinBTCAmountValue.Value, 10) + " BTC").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_DCR_AMOUNT_IS_TOO_SMALL)).append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_DCR_AMOUNT_EXECUTED) + ": "
+			+ round(result.DCR_Executed_Amount.Value, 10) + " DCR").append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.EXCHANGE_DCR_AMOUNT_MIN) + ": "
+			+ round(result.MinDCRAmountValue.Value, 10) + " DCR").append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 
@@ -639,8 +640,8 @@ public class TgBotMessageHandler implements Handler {
 		{
 			final PFCAddress exch_pfc_address = EXCHANGE_PFC_ADDRESS();
 			final PFCBalance exch_pfc_balance = this.walletBackEnd.getPFCBallance(exch_pfc_address, 1);
-			final BTCAddress exch_btc_address = EXCHANGE_BTC_ADDRESS();
-			final BTCBalance exch_btc_balance = this.walletBackEnd.getBTCBallance(exch_btc_address, 1);
+			final DCRAddress exch_btc_address = EXCHANGE_DCR_ADDRESS();
+			final DCRBalance exch_btc_balance = this.walletBackEnd.getDCRBallance(exch_btc_address, 1);
 			{
 
 				final double unconfirmed_pfc = exch_pfc_balance.Unconfirmed.Value;
@@ -650,7 +651,7 @@ public class TgBotMessageHandler implements Handler {
 
 				b.append(Translate.translate(settings.getLanguage(), Translate.Available) + "").append(N);
 				b.append("" + balance_pfc + " PFC ").append(N);
-				b.append("" + balance_btc + " BTC ").append(N);
+				b.append("" + balance_btc + " DCR ").append(N);
 				b.append(N);
 				if (unconfirmed_btc > 0 || unconfirmed_pfc > 0) {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Unconfirmed) + "").append(N);
@@ -658,7 +659,7 @@ public class TgBotMessageHandler implements Handler {
 						b.append("" + unconfirmed_pfc + " PFC ").append(N);
 					}
 					if (unconfirmed_btc > 0) {
-						b.append("" + unconfirmed_btc + " BTC ").append(N);
+						b.append("" + unconfirmed_btc + " DCR ").append(N);
 					}
 					b.append(N);
 				}
@@ -667,7 +668,7 @@ public class TgBotMessageHandler implements Handler {
 			if (exch_btc_balance.Spendable.Value != 0 && exch_pfc_balance.Spendable.Value != 0) {
 				final double btc_for_1_pfc = exch_btc_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
 				final double usd_for_1_pfc = usd_for_1_pfc(btc_for_1_pfc);
-				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
+				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 				b.append(N);
 
 				b.append(OPERATIONS.BUY_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.BUY_PFC)).append(N);
@@ -709,10 +710,10 @@ public class TgBotMessageHandler implements Handler {
 		return usd_for_1_btc * btc;
 	}
 
-	public static final BTCAddress EXCHANGE_BTC_ADDRESS () {
-		final BTCAddress addr = new BTCAddress();
+	public static final DCRAddress EXCHANGE_DCR_ADDRESS () {
+		final DCRAddress addr = new DCRAddress();
 		addr.AddressString = "12LU2RHsb4aLad54DXYar2EtqhR3v22ZJj";
-		addr.Type = "BTC";
+		addr.Type = "DCR";
 		return addr;
 	}
 
@@ -734,8 +735,8 @@ public class TgBotMessageHandler implements Handler {
 		{
 			final PFCAddress user_pfc_address = settings.getExchangeAddressPFC();
 			final PFCBalance user_pfc_balance = this.walletBackEnd.getPFCBallance(user_pfc_address, 1);
-			final BTCAddress user_btc_address = settings.getExchangeAddressBTC();
-			final BTCBalance user_btc_balance = this.walletBackEnd.getBTCBallance(user_btc_address, 1);
+			final DCRAddress user_btc_address = settings.getExchangeAddressDCR();
+			final DCRBalance user_btc_balance = this.walletBackEnd.getDCRBallance(user_btc_address, 1);
 			{
 
 				final double unconfirmed_pfc = user_pfc_balance.Unconfirmed.Value;
@@ -745,7 +746,7 @@ public class TgBotMessageHandler implements Handler {
 
 				b.append(Translate.translate(settings.getLanguage(), Translate.Available) + "").append(N);
 				b.append("" + balance_pfc + " PFC ").append(N);
-				b.append("" + balance_btc + " BTC ").append(N);
+				b.append("" + balance_btc + " DCR ").append(N);
 				b.append(N);
 				if (unconfirmed_btc > 0 || unconfirmed_pfc > 0) {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Unconfirmed) + "").append(N);
@@ -753,7 +754,7 @@ public class TgBotMessageHandler implements Handler {
 						b.append("" + unconfirmed_pfc + " PFC ").append(N);
 					}
 					if (unconfirmed_btc > 0) {
-						b.append("" + unconfirmed_btc + " BTC ").append(N);
+						b.append("" + unconfirmed_btc + " DCR ").append(N);
 					}
 					b.append(N);
 				}
@@ -776,8 +777,8 @@ public class TgBotMessageHandler implements Handler {
 		final StringBuilder b = new StringBuilder();
 		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW)).append(N);
 		b.append(N);
-		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW_BTC) + " ").append(N);
-		b.append(OPERATIONS.WITHDRAW_BTC + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "% %"
+		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW_DCR) + " ").append(N);
+		b.append(OPERATIONS.WITHDRAW_DCR + " %" + Translate.translate(settings.getLanguage(), Translate.Amount) + "% %"
 			+ Translate.translate(settings.getLanguage(), Translate.Adress) + "%").append(N);
 		b.append(N);
 		b.append(Translate.translate(settings.getLanguage(), Translate.TO_WITHDRAW_PFC) + " ").append(N);
@@ -785,7 +786,7 @@ public class TgBotMessageHandler implements Handler {
 			+ Translate.translate(settings.getLanguage(), Translate.Adress) + "%").append(N);
 		b.append(N);
 		b.append(Translate.translate(settings.getLanguage(), Translate.Examples) + " ").append(N);
-		b.append(OPERATIONS.WITHDRAW_BTC + " 0.5 11aBcDeFg12345abcD").append(N);
+		b.append(OPERATIONS.WITHDRAW_DCR + " 0.5 11aBcDeFg12345abcD").append(N);
 		b.append(OPERATIONS.WITHDRAW_PFC + " 120 JabcgeFg123456789H").append(N);
 		b.append(N);
 		Handlers.respond(bot, chatid, b.toString(), false);
@@ -815,11 +816,11 @@ public class TgBotMessageHandler implements Handler {
 				b.append(N);
 				final PFCAddress exch_pfc_address = EXCHANGE_PFC_ADDRESS();
 				final PFCBalance exch_pfc_balance = this.walletBackEnd.getPFCBallance(exch_pfc_address, 1);
-				final BTCAddress exch_btc_address = EXCHANGE_BTC_ADDRESS();
-				final BTCBalance exch_btc_balance = this.walletBackEnd.getBTCBallance(exch_btc_address, 1);
+				final DCRAddress exch_btc_address = EXCHANGE_DCR_ADDRESS();
+				final DCRBalance exch_btc_balance = this.walletBackEnd.getDCRBallance(exch_btc_address, 1);
 				final double btc_for_1_pfc = exch_btc_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
 				final double usd_for_1_pfc = usd_for_1_pfc(btc_for_1_pfc);
-				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " BTC = " + round(usd_for_1_pfc, 2) + "$").append(N);
+				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 			}
 			b.append(N);
 
@@ -832,7 +833,7 @@ public class TgBotMessageHandler implements Handler {
 			b.append(OPERATIONS.RESET_LANG + " - " + Translate.translate(settings.getLanguage(), Translate.RESET_LANG)).append(N);
 			b.append(OPERATIONS.MARKET + " - " + Translate.translate(settings.getLanguage(), Translate.MARKET)).append(N);
 			b.append(N);
-// b.append(Translate.translate(settings.getLanguage(), Translate.NO_BTC)).append(N);
+// b.append(Translate.translate(settings.getLanguage(), Translate.NO_DCR)).append(N);
 // b.append(N);
 			b.append(
 				Translate.translate(settings.getLanguage(), Translate.PFC_WALLET) + ": https://github.com/picfight/pfcredit/releases")
@@ -864,7 +865,7 @@ public class TgBotMessageHandler implements Handler {
 		final ExecutedOrder order = new ExecutedOrder();
 		order.timestamp = System.currentTimeMillis();
 		order.date = (new Date(order.timestamp)).toString();
-		order.price = result.BTCPFC_Executed_Price;
+		order.price = result.DCRPFC_Executed_Price;
 		order.size = result.PFC_Executed_Amount.Value;
 		order.receipt = result;
 		orderFile.writeJson(order);

@@ -9,7 +9,6 @@ import org.picfight.exchbot.lambda.TransactionResult;
 
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
-import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.json.JsonString;
 import com.jfixby.scarabei.api.net.http.Http;
@@ -95,12 +94,12 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public BTCBalance getBTCBallance (final BTCAddress btc_address, final int confirmations) throws BackendException {
-		final String command = "get_balance_btc";
+	public DCRBalance getDCRBallance (final DCRAddress dcr_address, final int confirmations) throws BackendException {
+		final String command = "get_balance_dcr";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
-		params.put("Btc_address", btc_address.AddressString);
+		params.put("Dcr_address", dcr_address.AddressString);
 		params.put("Min_confirmations", confirmations + "");
 		JsonString resultJson;
 		try {
@@ -109,7 +108,7 @@ public class WalletBackEnd {
 			e.printStackTrace();
 			throw new BackendException(e);
 		}
-		final BTCBalance r = Json.deserializeFromString(BTCBalance.class, resultJson);
+		final DCRBalance r = Json.deserializeFromString(DCRBalance.class, resultJson);
 		return r;
 	}
 
@@ -135,15 +134,15 @@ public class WalletBackEnd {
 
 	}
 
-	public TransactionResult transferBTC (final BTCAddress fromAccountAddress, final BTCAddress toAddress, final AmountBTC amount)
+	public TransactionResult transferDCR (final DCRAddress fromAccountAddress, final DCRAddress toAddress, final AmountDCR amount)
 		throws BackendException {
-		final String command = "transfer_btc";
+		final String command = "transfer_dcr";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key + "");
-		params.put("Btc_fromaccountaddress", fromAccountAddress + "");
-		params.put("Btc_toaddress", toAddress + "");
-		params.put("Btc_amount", amount.Value + "");
+		params.put("Dcr_fromaccountaddress", fromAccountAddress + "");
+		params.put("Dcr_toaddress", toAddress + "");
+		params.put("Dcr_amount", amount.Value + "");
 
 		JsonString resultJson;
 		try {
@@ -155,47 +154,6 @@ public class WalletBackEnd {
 		final TransactionResult r = Json.deserializeFromString(TransactionResult.class, resultJson);
 		return r;
 
-	}
-
-	public TransactionResult transferBTC (final Operation t) throws BackendException {
-		Err.throwNotImplementedYet();
-		return null;
-	}
-
-	public BTCInputs listBTCInputs (final BTCAddress address, final String accountName) throws BackendException {
-		final String command = "list_btc_inputs";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("Access_key", this.access_key + "");
-		params.put("Btc_address", address.AddressString + "");
-		params.put("Account_name", accountName);
-		JsonString resultJson;
-		try {
-			resultJson = BackEndConnector.retrieve(Url, params);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new BackendException(e);
-		}
-		final BTCInputs r = Json.deserializeFromString(BTCInputs.class, resultJson);
-		return r;
-	}
-
-	public PFCInputs listPFCInputs (final PFCAddress address, final String accountName) throws BackendException {
-		final String command = "list_pfc_inputs";
-		final HttpURL Url = this.commadToUrl(command);
-		final Map<String, String> params = Collections.newMap();
-		params.put("Access_key", this.access_key + "");
-		params.put("Pfc_address", address.AddressString + "");
-		params.put("Account_name", accountName);
-		JsonString resultJson;
-		try {
-			resultJson = BackEndConnector.retrieve(Url, params);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new BackendException(e);
-		}
-		final PFCInputs r = Json.deserializeFromString(PFCInputs.class, resultJson);
-		return r;
 	}
 
 	public PFCAddress getNewPFCAddress (final String accountName) throws BackendException {
@@ -215,8 +173,8 @@ public class WalletBackEnd {
 		return r;
 	}
 
-	public BTCAddress getNewBTCAddress (final String accountName) throws BackendException {
-		final String command = "new_btc_address";
+	public DCRAddress getNewDCRAddress (final String accountName) throws BackendException {
+		final String command = "new_dcr_address";
 		final HttpURL Url = this.commadToUrl(command);
 		final Map<String, String> params = Collections.newMap();
 		params.put("Access_key", this.access_key);
@@ -228,7 +186,7 @@ public class WalletBackEnd {
 			e.printStackTrace();
 			throw new BackendException(e);
 		}
-		final BTCAddress r = Json.deserializeFromString(BTCAddress.class, resultJson);
+		final DCRAddress r = Json.deserializeFromString(DCRAddress.class, resultJson);
 		return r;
 	}
 
@@ -236,11 +194,11 @@ public class WalletBackEnd {
 		final TRADE_OPERATION op, //
 		final boolean getQuote, //
 		final AmountPFC amount, //
-		final Double btc_for_1_pfc_order, //
+		final Double dcr_for_1_pfc_order, //
 		final PFCAddress user_pfc_account, //
-		final BTCAddress user_btc_account, //
+		final DCRAddress user_dcr_account, //
 		final PFCAddress exchange_pfc_account, //
-		final BTCAddress exchange_btc_account//
+		final DCRAddress exchange_dcr_account//
 	) throws BackendException {
 
 		final String command = "trade_pfc";
@@ -252,11 +210,11 @@ public class WalletBackEnd {
 		params.put("Getquote", getQuote + "");
 
 		params.put("User_pfc_account", user_pfc_account + "");
-		params.put("User_btc_account", user_btc_account + "");
+		params.put("User_dcr_account", user_dcr_account + "");
 		params.put("Exchange_pfc_account", exchange_pfc_account + "");
-		params.put("Exchange_btc_account", exchange_btc_account + "");
+		params.put("Exchange_dcr_account", exchange_dcr_account + "");
 
-		params.put("Btc_for_1_pfc_order", btc_for_1_pfc_order + "");
+		params.put("Dcr_for_1_pfc_order", dcr_for_1_pfc_order + "");
 
 		JsonString resultJson;
 		try {

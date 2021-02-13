@@ -3,6 +3,7 @@ package org.picfight.exchbot.lambda.backend;
 
 import java.io.IOException;
 
+import org.picfight.exchbot.lambda.User;
 import org.picfight.exchbot.lambda.UserSettingsLanguage;
 
 import com.jfixby.scarabei.api.debug.Debug;
@@ -53,16 +54,10 @@ public class UserSettings {
 	}
 
 	public boolean exchangeAddressIsSet () {
-		if (this.data.exchangeAddress.get("btc") == null) {
-			return false;
-		}
 		if (this.data.exchangeAddress.get("pfc") == null) {
 			return false;
 		}
 		if (this.data.exchangeAddress.get("dcr") == null) {
-			return false;
-		}
-		if ("".equals(this.data.exchangeAddress.get("btc"))) {
 			return false;
 		}
 		if ("".equals(this.data.exchangeAddress.get("pfc"))) {
@@ -77,30 +72,15 @@ public class UserSettings {
 //
 	public void setupExchangeAddress (final WalletBackEnd walletBackEnd) throws BackendException, IOException {
 		final String userID = this.data.accountName;
-		if (this.data.exchangeAddress.get("btc") == null || "".equals(this.data.exchangeAddress.get("btc"))) {
-			final BTCAddress add = walletBackEnd.getNewBTCAddress(userID);
-			this.data.exchangeAddress.put("btc", add.AddressString);
+		if (this.data.exchangeAddress.get("dcr") == null || "".equals(this.data.exchangeAddress.get("dcr"))) {
+			final DCRAddress add = walletBackEnd.getNewDCRAddress(userID);
+			this.data.exchangeAddress.put("dcr", add.AddressString);
 		}
-		if (this.data.exchangeAddress.get("pfc") == null || "".equals(this.data.exchangeAddress.get("btc"))) {
+		if (this.data.exchangeAddress.get("pfc") == null || "".equals(this.data.exchangeAddress.get("dcr"))) {
 			final PFCAddress add = walletBackEnd.getNewPFCAddress(userID);
 			this.data.exchangeAddress.put("pfc", add.AddressString);
 		}
-// if (this.data.exchangeAddress.get("dcr") == null) {
-// final DCRAddress add = walletBackEnd.getNewDCRAddress(userID);
-// this.data.exchangeAddress.put("dcr", add.AddressString);
-// }
 		this.settingsFile.writeJson(this.data);
-	}
-
-//
-	public BTCAddress getExchangeAddressBTC () {
-		final String string = this.data.exchangeAddress.get("btc");
-		Debug.checkNull("AddressString", string);
-		Debug.checkEmpty("AddressString", string);
-		final BTCAddress a = new BTCAddress();
-		a.AddressString = string;
-		a.Type = "BTC";
-		return a;
 	}
 
 	public DCRAddress getExchangeAddressDCR () {
@@ -125,6 +105,13 @@ public class UserSettings {
 
 	public UserSettingsLanguage getLanguage () {
 		return UserSettingsLanguage.resolve(this.data.language);
+	}
+
+	public void setUser (final Long chatid, final User from) {
+		this.data.chatid = chatid;
+		this.data.firstName = from.firstName;
+		this.data.lastName = from.lastName;
+		this.data.userName = from.userName;
 	}
 
 }
