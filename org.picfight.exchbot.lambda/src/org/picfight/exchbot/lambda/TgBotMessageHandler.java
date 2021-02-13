@@ -276,7 +276,7 @@ public class TgBotMessageHandler implements Handler {
 						false);
 					Handlers.respond(bot, chatid, Translate.translate(settings.getLanguage(), Translate.TRANSACTION_RECEIPT) + ":",
 						false);
-					Handlers.respond(args.bot, chatid, "https://www.blockchain.com/btc/tx" + result.DCR_TransactionReceipt, true);
+					Handlers.respond(args.bot, chatid, "https://dcrdata.decred.org/tx/" + result.DCR_TransactionReceipt, true);
 				} else {
 					Handlers.respond(bot, chatid,
 						Translate.translate(settings.getLanguage(), Translate.TRANSACTION_FAILED) + ": " + result.ErrorMessage, false);
