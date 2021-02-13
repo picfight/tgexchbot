@@ -154,7 +154,7 @@ func (s HttpsServer) executeTransferDCR(DCR_FromAccountAddress string, DCR_ToAdd
 
 func PrintDCRBallance(client *dcrclient.Client, s string, getAddress bool) {
 	pin.D("Checking DCR account", s)
-	key := os.Getenv(server.DCRWKEY)
+	key := os.Getenv(DCRWKEY)
 	err := client.WalletPassphrase(key, 10)
 	lang.CheckErr(err)
 	if getAddress {
