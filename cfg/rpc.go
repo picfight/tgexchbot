@@ -2,8 +2,7 @@ package cfg
 
 import (
 	"fmt"
-	//btcclient "github.com/btcsuite/btcd/rpcclient"
-	btcclient "github.com/stevenroose/go-bitcoin-core-rpc"
+
 	dcrclient "github.com/decred/dcrd/rpcclient"
 	"github.com/jfixby/pin/lang"
 	pfcclient "github.com/picfight/pfcd/rpcclient"
@@ -33,24 +32,6 @@ func NewDCRConnection(config RPCConnectionConfig) (*dcrclient.Client, error) {
 		HTTPPostMode:         false,
 	}
 	legacy, err := dcrclient.New(cfg, nil)
-	if err != nil {
-		return nil, err
-	}
-	return legacy, nil
-}
-
-func NewBTCConnection(config RPCConnectionConfig) (*btcclient.Client, error) {
-	file := config.CertificateFile
-	fmt.Println("reading: " + file)
-	cert, err := ioutil.ReadFile(file)
-	lang.CheckErr(err)
-	cfg := &btcclient.ConnConfig{
-		Host:                 config.Host,
-		User:                 config.User,
-		Pass:                 config.Pass,
-		Certificates:         cert,
-	}
-	legacy, err := btcclient.New(cfg)
 	if err != nil {
 		return nil, err
 	}

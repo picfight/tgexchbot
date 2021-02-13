@@ -2,7 +2,6 @@ package cfg
 
 import (
 	"encoding/json"
-	"github.com/btcsuite/btcutil"
 	"github.com/jfixby/pin/lang"
 	"github.com/picfight/pfcd/dcrutil"
 	"io/ioutil"
@@ -10,24 +9,16 @@ import (
 )
 
 type ConfigJson struct {
-	BTCDConfig       RPCConfig         `json: "btcdconfig"`
 	PFCDConfig       RPCConfig         `json: "pfcdconfig"`
 	DCRDConfig       RPCConfig         `json: "dcrdconfig"`
-	BTCWalletConfig  RPCConfig         `json: "btcwalletconfig"`
 	PFCWalletConfig  RPCConfig         `json: "pfcwalletconfig"`
 	DCRWalletConfig  RPCConfig         `json: "dcrwalletconfig"`
 	ServerConfig     HttpsServerConfig `json: "serverconfig"`
-	ExchangeSettings ExchangeSettings  `json: "exchangesettings"`
 }
 
-type ExchangeSettings struct {
-	ExchangeRate    float64 `json: "ExchangeRate"`
-	ExchangeMargin  float64 `json: "ExchangeMargin"`
-	MinBTCOperation float64 `json: "MinBTCOperation"`
-}
 
 type HttpsServerConfig struct {
-	Port               int    `json: "Port"`
+	Port int `json: "Port"`
 	// AccessKey          string `json: "accessKey"`
 	CertificateFile    string `json: "certfile"`
 	CertificateKeyFile string `json: "certfile_key"`
@@ -51,26 +42,7 @@ func ReadCfgFile(filePath string) (*ConfigJson, error) {
 	lang.CheckErr(err)
 
 	{
-		//defaultConfigFilename := "btcd.conf"
-		//defaultDataDirname := "data"
-		defaultHomeDir := btcutil.AppDataDir("btcd", false)
-		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
-		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
-		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
-		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
-
-		if data.BTCDConfig.CertificateFile == "" {
-			data.BTCDConfig.CertificateFile = defaultRPCCertFile
-		}
-	}
-
-	{
-		//defaultConfigFilename := "btcd.conf"
-		//defaultDataDirname := "data"
 		defaultHomeDir := dcrutil.AppDataDir("pfcd", false)
-		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
-		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
-		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
 		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
 
 		if data.PFCDConfig.CertificateFile == "" {
@@ -79,12 +51,7 @@ func ReadCfgFile(filePath string) (*ConfigJson, error) {
 	}
 
 	{
-		//defaultConfigFilename := "btcd.conf"
-		//defaultDataDirname := "data"
 		defaultHomeDir := dcrutil.AppDataDir("dcrd", false)
-		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
-		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
-		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
 		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
 
 		if data.DCRDConfig.CertificateFile == "" {
@@ -93,26 +60,7 @@ func ReadCfgFile(filePath string) (*ConfigJson, error) {
 	}
 
 	{
-		//defaultConfigFilename := "btcd.conf"
-		//defaultDataDirname := "data"
-		defaultHomeDir := btcutil.AppDataDir("btcwallet", false)
-		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
-		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
-		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
-		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
-
-		if data.BTCWalletConfig.CertificateFile == "" {
-			data.BTCWalletConfig.CertificateFile = defaultRPCCertFile
-		}
-	}
-
-	{
-		//defaultConfigFilename := "btcd.conf"
-		//defaultDataDirname := "data"
 		defaultHomeDir := dcrutil.AppDataDir("pfcwallet", false)
-		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
-		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
-		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
 		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
 
 		if data.PFCWalletConfig.CertificateFile == "" {
@@ -121,12 +69,7 @@ func ReadCfgFile(filePath string) (*ConfigJson, error) {
 	}
 
 	{
-		//defaultConfigFilename := "btcd.conf"
-		//defaultDataDirname := "data"
 		defaultHomeDir := dcrutil.AppDataDir("dcrwallet", false)
-		//defaultConfigFile := filepath.Join(defaultHomeDir, defaultConfigFilename)
-		//defaultDataDir := filepath.Join(defaultHomeDir, defaultDataDirname)
-		//defaultRPCKeyFile := filepath.Join(defaultHomeDir, "rpc.key")
 		defaultRPCCertFile := filepath.Join(defaultHomeDir, "rpc.cert")
 
 		if data.DCRWalletConfig.CertificateFile == "" {

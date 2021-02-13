@@ -10,7 +10,6 @@ import (
 type Setup struct {
 	// WorkingDir defines test setup working dir
 	WorkingDir *pin.TempDirHandler
-	btcNet     *coinharness.ChainWithMatureOutputsSpawner
 }
 
 func NewInstance(harnessName string, testSetup *coinharness.ChainWithMatureOutputsSpawner) pin.Spawnable {

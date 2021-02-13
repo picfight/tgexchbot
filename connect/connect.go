@@ -1,7 +1,6 @@
 package connect
 
 import (
-	btcclient "github.com/stevenroose/go-bitcoin-core-rpc"
 	dcrclient "github.com/decred/dcrd/rpcclient"
 	pfcclient "github.com/picfight/pfcd/rpcclient"
 
@@ -22,18 +21,6 @@ func DCRD(conf *cfg.ConfigJson) (*dcrclient.Client, error) {
 	return cfg.NewDCRConnection(dcrconnect)
 }
 
-func BTCD(conf *cfg.ConfigJson) (*btcclient.Client, error) {
-	pin.D("connect BTCD RPC")
-	btcconnect := cfg.RPCConnectionConfig{
-		Host:            conf.BTCDConfig.Host,
-		User:            conf.BTCDConfig.User,
-		Pass:            conf.BTCDConfig.Pass,
-		CertificateFile: conf.BTCDConfig.CertificateFile,
-	}
-
-	return cfg.NewBTCConnection(btcconnect)
-}
-
 func PFCD(conf *cfg.ConfigJson) (*pfcclient.Client, error) {
 	pin.D("connect PFCD RPC")
 	pfcconnect := cfg.RPCConnectionConfig{
@@ -45,19 +32,6 @@ func PFCD(conf *cfg.ConfigJson) (*pfcclient.Client, error) {
 	}
 
 	return cfg.NewPFCConnection(pfcconnect)
-}
-
-func BTCWallet(conf *cfg.ConfigJson) (*btcclient.Client, error) {
-	pin.D("connect BTCWallet RPC")
-	btcconnect := cfg.RPCConnectionConfig{
-		Host:            conf.BTCWalletConfig.Host,
-		User:            conf.BTCWalletConfig.User,
-		Pass:            conf.BTCWalletConfig.Pass,
-		CertificateFile: conf.BTCWalletConfig.CertificateFile,
-		Endpoint:        "ws",
-	}
-
-	return cfg.NewBTCConnection(btcconnect)
 }
 
 func DCRWallet(conf *cfg.ConfigJson) (*dcrclient.Client, error) {
