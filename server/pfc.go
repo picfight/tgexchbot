@@ -4,10 +4,12 @@ import (
 	"github.com/jfixby/pin"
 	"github.com/jfixby/pin/lang"
 	pfcutil "github.com/picfight/pfcd/dcrutil"
+	pfcclient "github.com/picfight/pfcd/rpcclient"
 	"github.com/picfight/tgexchbot/connect"
 	"os"
 )
 
+const PFCWKEY = "PFCWKEY"
 
 func (s HttpsServer) obrtainPFCAddress(walletAccountName string) string {
 	address := &AddressString{
@@ -148,4 +150,24 @@ func (s HttpsServer) executeTransferPFC(PFC_FromAccountAddress string, PFC_ToAdd
 	}
 	return result, err
 
+}
+
+func PrintPFCBallance(client *pfcclient.Client, s string, getAddress bool) {
+	pin.D("Checking PFC account", s)
+	key := os.Getenv(PFCWKEY)
+	err := client.WalletPassphrase(key, 10)
+	lang.CheckErr(err)
+	if getAddress {
+		addr, err := client.GetAccountAddress(s)
+		if err != nil {
+			pin.D("Creating PFC account", s)
+			err := client.CreateNewAccount(s)
+			lang.CheckErr(err)
+		} else {
+			pin.D("PFC exchange address", addr)
+		}
+	}
+	br, err := client.GetBalance(s)
+	lang.CheckErr(err)
+	pin.D("PFC balance", br)
 }

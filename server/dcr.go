@@ -1,13 +1,15 @@
 package server
 
 import (
+	dcrutil "github.com/decred/dcrd/dcrutil"
+	dcrclient "github.com/decred/dcrd/rpcclient"
 	"github.com/jfixby/pin"
 	"github.com/jfixby/pin/lang"
-	dcrutil "github.com/decred/dcrd/dcrutil"
 	"github.com/picfight/tgexchbot/connect"
 	"os"
 )
 
+const DCRWKEY = "DCRWKEY"
 
 func (s HttpsServer) obrtainDCRAddress(walletAccountName string) string {
 	address := &AddressString{
@@ -148,4 +150,24 @@ func (s HttpsServer) executeTransferDCR(DCR_FromAccountAddress string, DCR_ToAdd
 	}
 	return result, err
 
+}
+
+func PrintDCRBallance(client *dcrclient.Client, s string, getAddress bool) {
+	pin.D("Checking DCR account", s)
+	key := os.Getenv(server.DCRWKEY)
+	err := client.WalletPassphrase(key, 10)
+	lang.CheckErr(err)
+	if getAddress {
+		addr, err := client.GetAccountAddress(s)
+		if err != nil {
+			pin.D("Creating DCR account", s)
+			err := client.CreateNewAccount(s)
+			lang.CheckErr(err)
+		} else {
+			pin.D("DCR exchange address", addr)
+		}
+	}
+	br, err := client.GetBalance(s)
+	lang.CheckErr(err)
+	pin.D("DCR balance", br)
 }

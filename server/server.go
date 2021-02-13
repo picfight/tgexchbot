@@ -27,8 +27,6 @@ type HttpsServer struct {
 }
 
 const ACCESS_KEY = "TGEXCHBOTKEY"
-const DCRWKEY = "DCRWKEY"
-const PFCWKEY = "PFCWKEY"
 
 func (s HttpsServer) Start() {
 	pin.D("Check access key...")
@@ -310,8 +308,8 @@ func (s HttpsServer) tradePFC(amountPFC float64, operation bool, getQuote bool, 
 
 	}
 
-	minPFCAmount := 0.0
-	minDCRAmount := 0.0
+	minPFCAmount := 0.0001
+	minDCRAmount := 0.0001
 
 	if getQuote {
 		result.Success = true

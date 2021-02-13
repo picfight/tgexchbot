@@ -1,9 +1,6 @@
 package main
 
 import (
-	dcrclient "github.com/decred/dcrd/rpcclient"
-	pfcclient "github.com/picfight/pfcd/rpcclient"
-	"os"
 	"path/filepath"
 
 	"github.com/jfixby/pin"
@@ -12,9 +9,6 @@ import (
 	"github.com/picfight/tgexchbot/connect"
 	"github.com/picfight/tgexchbot/server"
 )
-
-const PFCWKEY = "PFCWKEY"
-const DCRWKEY = "DCRWKEY"
 
 func main() {
 	filePath, err := filepath.Abs("tgexchbot.cfg")
@@ -39,25 +33,23 @@ func main() {
 		client.Disconnect()
 	}
 	//-------------------------------------------
-
 	{
 		client, err := connect.PFCWallet(conf)
 		lang.CheckErr(err)
 
 		OutputWalletAccountName := conf.PFCWalletConfig.OutputWalletAccountName
-		printPFCBallance(client, "*", false)
-		printPFCBallance(client, OutputWalletAccountName, true)
+		server.PrintPFCBallance(client, "*", false)
+		server.PrintPFCBallance(client, OutputWalletAccountName, true)
 
 		client.Disconnect()
 	}
-
 	{
 		client, err := connect.DCRWallet(conf)
 		lang.CheckErr(err)
 
 		OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
-		printDCRBallance(client, "*", false)
-		printDCRBallance(client, OutputWalletAccountName, true)
+		server.PrintDCRBallance(client, "*", false)
+		server.PrintDCRBallance(client, OutputWalletAccountName, true)
 
 		client.Disconnect()
 	}
@@ -69,43 +61,7 @@ func main() {
 
 }
 
-func printPFCBallance(client *pfcclient.Client, s string, getAddress bool) {
-	pin.D("Checking PFC account", s)
-	key := os.Getenv(PFCWKEY)
-	err := client.WalletPassphrase(key, 10)
-	lang.CheckErr(err)
-	if getAddress {
-		addr, err := client.GetAccountAddress(s)
-		if err != nil {
-			pin.D("Creating PFC account", s)
-			err := client.CreateNewAccount(s)
-			lang.CheckErr(err)
-		} else {
-			pin.D("PFC exchange address", addr)
-		}
-	}
-	br, err := client.GetBalance(s)
-	lang.CheckErr(err)
-	pin.D("PFC balance", br)
-}
 
 
-func printDCRBallance(client *dcrclient.Client, s string, getAddress bool) {
-	pin.D("Checking DCR account", s)
-	key := os.Getenv(DCRWKEY)
-	err := client.WalletPassphrase(key, 10)
-	lang.CheckErr(err)
-	if getAddress {
-		addr, err := client.GetAccountAddress(s)
-		if err != nil {
-			pin.D("Creating DCR account", s)
-			err := client.CreateNewAccount(s)
-			lang.CheckErr(err)
-		} else {
-			pin.D("DCR exchange address", addr)
-		}
-	}
-	br, err := client.GetBalance(s)
-	lang.CheckErr(err)
-	pin.D("DCR balance", br)
-}
+
+
