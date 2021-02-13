@@ -712,7 +712,7 @@ public class TgBotMessageHandler implements Handler {
 
 	public static final DCRAddress EXCHANGE_DCR_ADDRESS () {
 		final DCRAddress addr = new DCRAddress();
-		addr.AddressString = "12LU2RHsb4aLad54DXYar2EtqhR3v22ZJj";
+		addr.AddressString = "DsoqqWiPUx3AQHh5ovo97marSm9NBhHZ1LZ";
 		addr.Type = "DCR";
 		return addr;
 	}
