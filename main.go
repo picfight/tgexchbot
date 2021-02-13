@@ -55,7 +55,7 @@ func main() {
 		client, err := connect.BTCWallet(conf)
 		lang.CheckErr(err)
 
-		OutputWalletAccountName := conf.DCRWalletConfig.OutputWalletAccountName
+		OutputWalletAccountName := conf.BTCWalletConfig.OutputWalletAccountName
 		printBTCBallance(client, "*", false)
 		printBTCBallance(client, OutputWalletAccountName, true)
 
