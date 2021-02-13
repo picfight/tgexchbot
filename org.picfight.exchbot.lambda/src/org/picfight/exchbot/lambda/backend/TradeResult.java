@@ -46,7 +46,7 @@ public class TradeResult {
 	public AmountDCR DCR_InPool_AfterTrade;
 // DCR_InPool_AfterTrade float64 `json: "DCR_InPool_AfterTrade"`
 
-	public AmountDCR DCR_Fee;
+// public AmountDCR DCR_Fee;
 // DCR_Fee AmountDCR `json: "DCR_Fee"`
 
 	public AmountDCR DCR_Executed_Amount;
