@@ -780,6 +780,9 @@ public class TgBotMessageHandler implements Handler {
 		b.append(OPERATIONS.SELL_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.SELL_PFC)).append(N);
 		b.append(OPERATIONS.BALANCE + " - " + Translate.translate(settings.getLanguage(), Translate.BALANCE)).append(N);
 
+		b.append(N);
+		b.append(Translate.translate(settings.getLanguage(), Translate.DO_NOT_KEEP)).append(N);
+
 		Handlers.respond(bot, chatid, b.toString(), false);
 	}
 

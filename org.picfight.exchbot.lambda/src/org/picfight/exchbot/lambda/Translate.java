@@ -16,6 +16,9 @@ public class Translate {
 	public static final String WITHDRAW = "вывести монеты с биржи на свой кошелёк";
 	public static final String MARKET = "информация о состоянии торгового пула";
 	public static final String RESET_LANG = "сменить язык";
+
+	public static final String DO_NOT_KEEP = "Никогда не храни свои монеты на бирже";
+
 // public static final String NO_DCR = "Обмен на DCR отключён, т.к. из-за высокой цены биткоина операции с ним стоят по $20-$50";
 	public static final String PFC_WALLET = "PFC-кошелёк можно скачать тут";
 	public static final String DCR_BINANCE = "DCR можно купить и продать на Бинансе";
@@ -119,6 +122,10 @@ public class Translate {
 		ru.put(EXCHANGE_DCR_AMOUNT_MIN, EXCHANGE_DCR_AMOUNT_MIN);
 		en.put(EXCHANGE_DCR_AMOUNT_MIN, "minimal amount");
 		ch.put(EXCHANGE_DCR_AMOUNT_MIN, "最小数量");
+
+		ru.put(DO_NOT_KEEP, DO_NOT_KEEP);
+		en.put(DO_NOT_KEEP, "Never leave your coins on any exchange");
+		ch.put(DO_NOT_KEEP, "不要将硬币留在任何交易所");
 
 		ru.put(ORDER_EXECUTED, ORDER_EXECUTED);
 		en.put(ORDER_EXECUTED, "Order successfully executed");
