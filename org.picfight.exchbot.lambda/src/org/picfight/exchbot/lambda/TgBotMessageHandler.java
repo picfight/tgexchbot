@@ -684,7 +684,7 @@ public class TgBotMessageHandler implements Handler {
 				b.append(N);
 			}
 		}
-		b.append(Translate.translate(settings.getLanguage(), Translate.UniSwap)).append(N);
+// b.append(Translate.translate(settings.getLanguage(), Translate.UniSwap)).append(N);
 
 		Handlers.respond(args.bot, args.update.message.chatID, b.toString(), false);
 
