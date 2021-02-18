@@ -366,15 +366,8 @@ public class TgBotMessageHandler implements Handler {
 						+ round(amount_usd, 2) + "$)").append(N);
 					b.append(N);
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
-					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 4) + "$").append(N);
 					b.append(N);
-					{
-// b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-// final double fee_btc = result.DCR_Fee.Value;
-// final double fee_usd = usd_for_btc(fee_btc);
-// b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
-// b.append(N);
-					}
 
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
@@ -393,13 +386,7 @@ public class TgBotMessageHandler implements Handler {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
 					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
-					{
-// b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-// final double fee_btc = result.DCR_Fee.Value;
-// final double fee_usd = usd_for_btc(fee_btc);
-// b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
-// b.append(N);
-					}
+
 					Handlers.respond(bot, chatid, b.toString(), false);
 					this.saveOrder(args, result);
 					this.showBalances(args);
@@ -516,13 +503,6 @@ public class TgBotMessageHandler implements Handler {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
 					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
-					{
-// b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-// final double fee_btc = result.DCR_Fee.Value;
-// final double fee_usd = usd_for_btc(fee_btc);
-// b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
-// b.append(N);
-					}
 					b.append(Translate.translate(settings.getLanguage(), Translate.TO_EXECUTE_ORDER) + ":");
 					Handlers.respond(bot, chatid, b.toString(), false);
 
@@ -540,13 +520,6 @@ public class TgBotMessageHandler implements Handler {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Price) + ":").append(N);
 					b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
 					b.append(N);
-					{
-// b.append(Translate.translate(settings.getLanguage(), Translate.Execution_Fee) + ":").append(N);
-// final double fee_btc = result.DCR_Fee.Value;
-// final double fee_usd = usd_for_btc(fee_btc);
-// b.append(round(fee_btc, 8) + " DCR (" + round(fee_usd, 2) + "$)").append(N);
-// b.append(N);
-					}
 					Handlers.respond(bot, chatid, b.toString(), false);
 
 					this.saveOrder(args, result);
@@ -650,16 +623,16 @@ public class TgBotMessageHandler implements Handler {
 				final double balance_btc = exch_btc_balance.Spendable.Value;
 
 				b.append(Translate.translate(settings.getLanguage(), Translate.Available) + "").append(N);
-				b.append("" + balance_pfc + " PFC ").append(N);
-				b.append("" + balance_btc + " DCR ").append(N);
+				b.append("" + round(balance_pfc, 8) + " PFC ").append(N);
+				b.append("" + round(balance_btc, 8) + " DCR ").append(N);
 				b.append(N);
 				if (unconfirmed_btc > 0 || unconfirmed_pfc > 0) {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Unconfirmed) + "").append(N);
 					if (unconfirmed_pfc > 0) {
-						b.append("" + unconfirmed_pfc + " PFC ").append(N);
+						b.append("" + round(unconfirmed_pfc, 8) + " PFC ").append(N);
 					}
 					if (unconfirmed_btc > 0) {
-						b.append("" + unconfirmed_btc + " DCR ").append(N);
+						b.append("" + round(unconfirmed_btc, 8) + " DCR ").append(N);
 					}
 					b.append(N);
 				}
@@ -668,7 +641,7 @@ public class TgBotMessageHandler implements Handler {
 			if (exch_btc_balance.Spendable.Value != 0 && exch_pfc_balance.Spendable.Value != 0) {
 				final double btc_for_1_pfc = exch_btc_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
 				final double usd_for_1_pfc = usd_for_1_pfc(btc_for_1_pfc);
-				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 4) + "$").append(N);
 				b.append(N);
 
 				b.append(OPERATIONS.BUY_PFC + " - " + Translate.translate(settings.getLanguage(), Translate.BUY_PFC)).append(N);
@@ -757,16 +730,16 @@ public class TgBotMessageHandler implements Handler {
 				final double balance_btc = user_btc_balance.Spendable.Value;
 
 				b.append(Translate.translate(settings.getLanguage(), Translate.Available) + "").append(N);
-				b.append("" + balance_pfc + " PFC ").append(N);
-				b.append("" + balance_btc + " DCR ").append(N);
+				b.append("" + round(balance_pfc, 8) + " PFC ").append(N);
+				b.append("" + round(balance_btc, 8) + " DCR ").append(N);
 				b.append(N);
 				if (unconfirmed_btc > 0 || unconfirmed_pfc > 0) {
 					b.append(Translate.translate(settings.getLanguage(), Translate.Unconfirmed) + "").append(N);
 					if (unconfirmed_pfc > 0) {
-						b.append("" + unconfirmed_pfc + " PFC ").append(N);
+						b.append("" + round(unconfirmed_pfc, 8) + " PFC ").append(N);
 					}
 					if (unconfirmed_btc > 0) {
-						b.append("" + unconfirmed_btc + " DCR ").append(N);
+						b.append("" + round(unconfirmed_btc, 8) + " DCR ").append(N);
 					}
 					b.append(N);
 				}
@@ -835,7 +808,7 @@ public class TgBotMessageHandler implements Handler {
 				final DCRBalance exch_btc_balance = this.walletBackEnd.getDCRBallance(exch_btc_address, 1);
 				final double btc_for_1_pfc = exch_btc_balance.Spendable.Value / exch_pfc_balance.Spendable.Value;
 				final double usd_for_1_pfc = usd_for_1_pfc(btc_for_1_pfc);
-				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 2) + "$").append(N);
+				b.append("1 PFC = " + round(btc_for_1_pfc, 8) + " DCR = " + round(usd_for_1_pfc, 4) + "$").append(N);
 			}
 			b.append(N);
 
