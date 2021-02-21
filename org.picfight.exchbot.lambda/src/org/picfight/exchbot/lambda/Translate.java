@@ -74,8 +74,8 @@ public class Translate {
 
 	public static final String ORDER_FOR_EXECUTION = "Ордер к исполнению";
 
-	public static final String TO_SELL_PFC = "Купить PFC";
-	public static final String TO_BUY_PFC = "Продать PFC";
+	public static final String TO_SELL_PFC = "Продать PFC";
+	public static final String TO_BUY_PFC = "Купить PFC";
 
 	public static final String TRANSACTION_RECEIPT = "Чек операции";
 	public static final String TRANSACTION_FAILED = "Не удалось записать транзакцию";
